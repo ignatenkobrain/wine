@@ -59,6 +59,12 @@ Windows(TM) emulation libraries.
 
 
 %prep
+echo "
+--------------------------------------------------------------
+Unmaintained since RHL9. Maintainer needed.
+--------------------------------------------------------------" > /dev/null
+exit 1
+
 %setup -q -n wine-%{DATE}
 find . -type d -name CVS |xargs rm -rf
 %patch -p1 -b .initial
