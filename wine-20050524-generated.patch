@@ -1,0 +1,27 @@
+Index: wine/tools/wineprefixcreate.in
+===================================================================
+RCS file: /home/wine/wine/tools/wineprefixcreate.in,v
+retrieving revision 1.10
+diff -u -r1.10 wineprefixcreate.in
+--- wine/tools/wineprefixcreate.in	19 May 2005 11:12:34 -0000	1.10
++++ wine/tools/wineprefixcreate.in	29 May 2005 00:00:00 -0000
+@@ -38,6 +38,7 @@
+ 
+ dlldir="@dlldir@"
+ datadir="@datadir@/wine"
++fontdir="@datadir@/fonts/wine"
+ 
+ do_wait=0
+ quiet=0
+@@ -175,6 +176,11 @@
+ link_app winhelp      "$CROOT/windows/winhelp.exe"
+ link_app winhelp      "$CROOT/windows/winhlp32.exe"
+ link_app winebrowser  "$CROOT/windows/winebrowser.exe"
++
++# Copy the generated fonts
++
++cp $fontdir/*.ttf "$CROOT/windows/fonts"
++cp $fontdir/*.fon "$CROOT/windows/fonts"
+ 
+ # Copy the .inf script and run it
+ 

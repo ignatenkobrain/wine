@@ -1,0 +1,15 @@
+Wine directory structure used in Fedora Core Linux:
+===================================================
+
+\${HOME}/.wine/drive_c is the root directory (aka C: drive) wine looks for by
+default. It is created with (empty) C:\windows and C:\windows\system
+directories, needed to operate Wine without an existing Windows
+installation, if it doesn't already exists.
+
+If you want to use Wine with an existing Windows installation that is
+mounted, for example, in /mnt/windows-c, change the symlink
+\${HOME}/.wine/dosdevices/c: to point to /mnt/windows-c instead of the
+defaults set by installation.
+
+If you do this, you can safely remove \${HOME}/.wine/drive_c.
+(Alternatively, just mount your Windows partition to \${HOME}/.wine/drive_c.)

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Wine File
+Comment=Wine File Browser
+Exec=winefile
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;

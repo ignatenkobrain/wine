@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=winhelp
+Comment=Windows Help Browser
+Exec=winhelp
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;

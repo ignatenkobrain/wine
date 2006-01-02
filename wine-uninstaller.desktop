@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Wine Software Uninstaller
+Comment=Interface to uninstall software
+Exec=uninstaller
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;

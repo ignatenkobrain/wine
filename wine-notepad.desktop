@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=notepad
+Comment=Text Editor
+Exec=notepad
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;

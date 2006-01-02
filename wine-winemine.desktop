@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=WineMine
+Comment=Wine Minesweeper 
+Exec=winemine
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;
