@@ -1,6 +1,6 @@
 Name:		wine
 Version:	0.9.4
-Release:	3
+Release:	4%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -679,6 +679,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Jan 02 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.4-4
+- add dist
+
 * Sun Jan 01 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.4-3
 - use ExclusiveArch instead of ExcludeArch
