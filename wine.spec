@@ -1,6 +1,6 @@
 Name:		wine
 Version:	0.9.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -310,6 +310,8 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineconsole.exe.so
 %{_libdir}/wine/winemenubuilder.exe.so
 %{_libdir}/wine/winevdm.exe.so
+%{_libdir}/wine/winecfg.exe.so
+%{_libdir}/wine/uninstaller.exe.so
 %{_datadir}/applications/fedora-wine.desktop
 %{_datadir}/applications/fedora-wine-regedit.desktop
 %{_datadir}/applications/fedora-wine-uninstaller.desktop
@@ -602,9 +604,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/notepad.exe.so
 %{_libdir}/wine/progman.exe.so
 %{_libdir}/wine/taskmgr.exe.so
-%{_libdir}/wine/uninstaller.exe.so
 %{_libdir}/wine/wcmd.exe.so
-%{_libdir}/wine/winecfg.exe.so
 %{_libdir}/wine/winedbg.exe.so
 %{_libdir}/wine/winefile.exe.so
 %{_libdir}/wine/winemine.exe.so
@@ -679,6 +679,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Wed Jan 04 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>     
+0.9.4-5                                                                 
+- fix #176834 
+
 * Mon Jan 02 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.4-4
 - add dist
