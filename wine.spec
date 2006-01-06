@@ -1,12 +1,14 @@
+%define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
+
 Name:		wine
-Version:	0.9.4
-Release:	5%{?dist}
+Version:	0.9.5
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
-Source0:        http://dl.sf.net/wine/wine-0.9.4.tar.bz2
+Source0:        http://dl.sf.net/wine/wine-0.9.5.tar.bz2
 Source1:	wine.init
 Source2:	wine-fonts-20050524.tar.gz
 Source3:        wine-README-Fedora
@@ -53,7 +55,7 @@ BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
 Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
 Requires(post): /usr/bin/update-desktop-database
 Requires(preun): /sbin/chkconfig
-Requires(postun): /sbin/ldconfig, /usr/bin/update-desktop-database, %{__perl}
+Requires(postun): /sbin/ldconfig, /usr/bin/update-desktop-database
 
 %description
 While Wine is usually thought of as a Windows(TM) emulator, the Wine
@@ -679,6 +681,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Jan 06 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.5-1
+- version upgrade
+- fix #177089 (winemine desktop entry should be in Game not in System)
+- fix cflags for compile
+
 * Wed Jan 04 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>     
 0.9.4-5                                                                 
 - fix #176834 
