@@ -52,6 +52,10 @@ BuildRequires:  mesa-libGL-devel mesa-libGLU-devel mesa-libGLw-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
 BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
 
+BuildRequires:  fontconfig-devel
+BuildRequires:  giflib-devel
+BuildRequires:  cups-devel
+
 Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
 Requires(post): /usr/bin/update-desktop-database
 Requires(preun): /sbin/chkconfig
@@ -154,7 +158,8 @@ autoconf
 %build
 export CFLAGS="$RPM_OPT_FLAGS"
 %configure \
-	--sysconfdir=%{_sysconfdir}/wine --disable-static
+	--sysconfdir=%{_sysconfdir}/wine --disable-static \
+	--x-includes=%{_includedir} --x-libraries=%{_libdir}
 
 %{__make} depend
 %{__make}
@@ -686,6 +691,7 @@ update-desktop-database &>/dev/null || :
 - version upgrade
 - fix #177089 (winemine desktop entry should be in Game not in System)
 - fix cflags for compile
+- test new BR
 
 * Wed Jan 04 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>     
 0.9.4-5                                                                 
