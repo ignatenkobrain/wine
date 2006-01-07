@@ -48,13 +48,15 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  fontforge
 # modular x
 BuildRequires:  libX11-devel
-BuildRequires:  mesa-libGL-devel mesa-libGLU-devel mesa-libGLw-devel
+BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
 BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
 
 BuildRequires:  fontconfig-devel
 BuildRequires:  giflib-devel
 BuildRequires:  cups-devel
+BuildRequires:  libXmu-devel
+BuildRequires:  libXi-devel
 
 Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
 Requires(post): /usr/bin/update-desktop-database
