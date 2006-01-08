@@ -2,7 +2,7 @@
 
 Name:		wine
 Version:	0.9.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -21,6 +21,10 @@ Source104:      wine-winefile.desktop
 Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
 Patch2:		wine-20050524-generated.patch
+# CVS-2005-4560 wmf exploit from wine cvs
+# http://cvs.winehq.org/cvsweb/wine/dlls/gdi/metafile.c.diff?r1=text&tr1=1.11&r2=text&tr2=1.12
+Patch100:       wine-CVE-2005-4560.patch
+
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch: %{ix86}
@@ -155,6 +159,7 @@ with the Wine Windows(TM) emulation libraries.
 %prep
 %setup -q
 %patch2 -p1 -b .generated
+%patch100 -p1
 autoconf
 
 %build
@@ -688,6 +693,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Jan 08 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.5-2
+- fix for CVE-2005-4560
+
 * Fri Jan 06 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.5-1
 - version upgrade
