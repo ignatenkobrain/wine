@@ -1,14 +1,14 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.5
-Release:	2%{?dist}
+Version:	0.9.6
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
-Source0:        http://dl.sf.net/wine/wine-0.9.5.tar.bz2
+Source0:        http://dl.sf.net/wine/wine-0.9.6.tar.bz2
 Source1:	wine.init
 Source2:	wine-fonts-20050524.tar.gz
 Source3:        wine-README-Fedora
@@ -21,9 +21,6 @@ Source104:      wine-winefile.desktop
 Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
 Patch2:		wine-20050524-generated.patch
-# CVS-2005-4560 wmf exploit from wine cvs
-# http://cvs.winehq.org/cvsweb/wine/dlls/gdi/metafile.c.diff?r1=text&tr1=1.11&r2=text&tr2=1.12
-Patch100:       wine-CVE-2005-4560.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -159,7 +156,6 @@ with the Wine Windows(TM) emulation libraries.
 %prep
 %setup -q
 %patch2 -p1 -b .generated
-%patch100 -p1
 autoconf
 
 %build
@@ -529,7 +525,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/winemp3.acm.so
 %{_libdir}/wine/wineoss.drv.so
-#%{_libdir}/wine/winetty.drv.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing.dll.so
 %{_libdir}/wine/wininet.dll.so
@@ -547,6 +542,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
+%{_libdir}/wine/security.dll.so
 %dir %{_datadir}/fonts/wine
 %{_datadir}/fonts/wine/wine_coure.fon
 %{_datadir}/fonts/wine/wine_couree.fon
@@ -693,6 +689,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Jan 19 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.6-1
+- version upgrade
+- drop wmf exploit patch (part of current version)
+
 * Sun Jan 08 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.5-2
 - fix for CVE-2005-4560
