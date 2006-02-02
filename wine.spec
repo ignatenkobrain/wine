@@ -1,14 +1,14 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.6
+Version:	0.9.7
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
-Source0:        http://dl.sf.net/wine/wine-0.9.6.tar.bz2
+Source0:        http://dl.sf.net/wine/wine-0.9.7.tar.bz2
 Source1:	wine.init
 Source2:	wine-fonts-20050524.tar.gz
 Source3:        wine-README-Fedora
@@ -293,7 +293,7 @@ update-desktop-database &>/dev/null || :
 
 %files
 %defattr(-,root,root,-)
-%doc ANNOUNCE BUGS COPYING.LIB ChangeLog DEVELOPERS-HINTS LICENSE LICENSE.OLD
+%doc ANNOUNCE COPYING.LIB ChangeLog DEVELOPERS-HINTS LICENSE LICENSE.OLD
 %doc AUTHORS README-Fedora README VERSION
 %doc documentation/*
 %{_bindir}/msiexec
@@ -689,6 +689,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Feb 02 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.7-1
+- version upgrade
+
 * Thu Jan 19 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.6-1
 - version upgrade
