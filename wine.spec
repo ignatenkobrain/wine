@@ -2,7 +2,7 @@
 
 Name:		wine
 Version:	0.9.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -61,7 +61,7 @@ BuildRequires:  libXi-devel
 
 Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
 Requires(post): /usr/bin/update-desktop-database
-Requires(preun): /sbin/chkconfig
+Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/ldconfig, /usr/bin/update-desktop-database
 
 %description
@@ -253,13 +253,16 @@ rm -rf %{buildroot}
 
 %post
 /sbin/ldconfig
+update-desktop-database &>/dev/null || :
+if [ $1 = 1 ]; then
 /sbin/chkconfig --add wine
 /sbin/chkconfig --level 2345 wine on
 /sbin/service wine start &>/dev/null || :
-update-desktop-database &>/dev/null || :
+fi
 
 %preun
-if test "$1" = "0"; then
+if [ $1 = 0 ]; then
+	/sbin/service wine stop >/dev/null 2>&1
 	/sbin/chkconfig --del wine
 fi
 
@@ -689,6 +692,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Wed Feb 08 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.7-2
+- fix up post/preun scriplets (#178954)
+
 * Thu Feb 02 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.7-1
 - version upgrade
