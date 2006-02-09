@@ -155,7 +155,7 @@ Header, include files and library definition files for developing applications
 with the Wine Windows(TM) emulation libraries.
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{version}-fe
 %patch2 -p1 -b .generated
 autoconf
 
