@@ -2,13 +2,14 @@
 
 Name:		wine
 Version:	0.9.7
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
-Source0:        http://dl.sf.net/wine/wine-0.9.7.tar.bz2
+# special fedora tarball without winemp3 stuff
+Source0:        wine-0.9.7-fe.tar.bz2
 Source1:	wine.init
 Source2:	wine-fonts-20050524.tar.gz
 Source3:        wine-README-Fedora
@@ -526,7 +527,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/windebug.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winedos.dll.so
-%{_libdir}/wine/winemp3.acm.so
 %{_libdir}/wine/wineoss.drv.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing.dll.so
@@ -692,6 +692,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Feb 09 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.7-3
+- fix up tarball
+
 * Wed Feb 08 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.7-2
 - fix up post/preun scriplets (#178954)
