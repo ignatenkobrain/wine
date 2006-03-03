@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.8
+Version:	0.9.9
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.8-fe.tar.bz2
+Source0:        wine-0.9.9-fe.tar.bz2
 Source1:	wine.init
 Source2:	wine-fonts-20050524.tar.gz
 Source3:        wine-README-Fedora
@@ -351,7 +351,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/atl.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
-%{_libdir}/wine/avifile.dll.so
+%{_libdir}/wine/avifile.dll16
 %{_libdir}/wine/aviinfo.exe.so
 %{_libdir}/wine/aviplay.exe.so
 %{_libdir}/wine/cabinet.dll.so
@@ -361,27 +361,27 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/comcat.dll.so
 %{_libdir}/wine/comctl32.dll.so
 %{_libdir}/wine/comdlg32.dll.so
-%{_libdir}/wine/comm.drv.so
+%{_libdir}/wine/comm.drv16
 %{_libdir}/wine/commdlg.dll.so
-%{_libdir}/wine/compobj.dll.so
+%{_libdir}/wine/compobj.dll16
 %{_libdir}/wine/crtdll.dll.so
 %{_libdir}/wine/crypt32.dll.so
 %{_libdir}/wine/cryptdll.dll.so
-%{_libdir}/wine/ctl3d.dll.so
+%{_libdir}/wine/ctl3d.dll16
 %{_libdir}/wine/ctl3d32.dll.so
-%{_libdir}/wine/ctl3dv2.dll.so
+%{_libdir}/wine/ctl3dv2.dll16
 %{_libdir}/wine/d3dim.dll.so
 %{_libdir}/wine/d3drm.dll.so
 %{_libdir}/wine/d3dxof.dll.so
 %{_libdir}/wine/dbghelp.dll.so
 %{_libdir}/wine/dciman32.dll.so
-%{_libdir}/wine/ddeml.dll.so
+%{_libdir}/wine/ddeml.dll16
 %{_libdir}/wine/ddraw.dll.so
 %{_libdir}/wine/devenum.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
-%{_libdir}/wine/dispdib.dll.so
-%{_libdir}/wine/display.drv.so
+%{_libdir}/wine/dispdib.dll16
+%{_libdir}/wine/display.drv16
 %{_libdir}/wine/dmband.dll.so
 %{_libdir}/wine/dmcompos.dll.so
 %{_libdir}/wine/dmime.dll.so
@@ -399,7 +399,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dswave.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/eject.exe.so
-%{_libdir}/wine/gdi.exe.so
+%{_libdir}/wine/gdi.exe16
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/hh.exe.so
 %{_libdir}/wine/hhctrl.ocx.so
@@ -409,16 +409,16 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/imaadp32.acm.so
 %{_libdir}/wine/imagehlp.dll.so
-%{_libdir}/wine/imm.dll.so
+%{_libdir}/wine/imm.dll16
 %{_libdir}/wine/imm32.dll.so
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itss.dll.so
 %{_libdir}/wine/joystick.drv.so
 %{_libdir}/wine/kernel32.dll.so
-%{_libdir}/wine/keyboard.drv.so
-%{_libdir}/wine/krnl386.exe.so
+%{_libdir}/wine/keyboard.drv16
+%{_libdir}/wine/krnl386.exe16
 %{_libdir}/wine/lz32.dll.so
-%{_libdir}/wine/lzexpand.dll.so
+%{_libdir}/wine/lzexpand.dll16
 %{_libdir}/wine/mapi32.dll.so
 %{_libdir}/wine/mciavi32.dll.so
 %{_libdir}/wine/mcicda.dll.so
@@ -427,15 +427,16 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/midimap.dll.so
 %{_libdir}/wine/mlang.dll.so
 %{_libdir}/wine/mmdevldr.vxd.so
-%{_libdir}/wine/mmsystem.dll.so
+%{_libdir}/wine/mmsystem.dll16
 %{_libdir}/wine/monodebg.vxd.so
-%{_libdir}/wine/mouse.drv.so
+%{_libdir}/wine/mouse.drv16
 %{_libdir}/wine/mpr.dll.so
-%{_libdir}/wine/msacm.dll.so
+%{_libdir}/wine/msacm.dll16
 %{_libdir}/wine/msacm.drv.so
 %{_libdir}/wine/msacm32.dll.so
 %{_libdir}/wine/msadp32.acm.so
 %{_libdir}/wine/msdmo.dll.so
+%{_libdir}/wine/msftedit.dll.so
 %{_libdir}/wine/msg711.acm.so
 %{_libdir}/wine/mshtml.dll.so
 %{_libdir}/wine/msi.dll.so
@@ -449,7 +450,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msvcrtd.dll.so
 %{_libdir}/wine/msvfw32.dll.so
 %{_libdir}/wine/msvidc32.dll.so
-%{_libdir}/wine/msvideo.dll.so
+%{_libdir}/wine/msvideo.dll16
 %{_libdir}/wine/mswsock.dll.so
 %{_libdir}/wine/msxml3.dll.so
 %{_libdir}/wine/netapi32.dll.so
@@ -458,26 +459,26 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/objsel.dll.so
 %{_libdir}/wine/odbc32.dll.so
 %{_libdir}/wine/odbccp32.dll.so
-%{_libdir}/wine/ole2.dll.so
-%{_libdir}/wine/ole2conv.dll.so
-%{_libdir}/wine/ole2disp.dll.so
-%{_libdir}/wine/ole2nls.dll.so
-%{_libdir}/wine/ole2prox.dll.so
-%{_libdir}/wine/ole2thk.dll.so
+%{_libdir}/wine/ole2.dll16
+%{_libdir}/wine/ole2conv.dll16
+%{_libdir}/wine/ole2disp.dll16
+%{_libdir}/wine/ole2nls.dll16
+%{_libdir}/wine/ole2prox.dll16
+%{_libdir}/wine/ole2thk.dll16
 %{_libdir}/wine/ole32.dll.so
 %{_libdir}/wine/oleacc.dll.so
 %{_libdir}/wine/oleaut32.dll.so
-%{_libdir}/wine/olecli.dll.so
+%{_libdir}/wine/olecli.dll16
 %{_libdir}/wine/olecli32.dll.so
 %{_libdir}/wine/oledlg.dll.so
 %{_libdir}/wine/olepro32.dll.so
-%{_libdir}/wine/olesvr.dll.so
+%{_libdir}/wine/olesvr.dll16
 %{_libdir}/wine/olesvr32.dll.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/qcap.dll.so
 %{_libdir}/wine/quartz.dll.so
-%{_libdir}/wine/rasapi16.dll.so
+%{_libdir}/wine/rasapi16.dll16
 %{_libdir}/wine/rasapi32.dll.so
 %{_libdir}/wine/riched20.dll.so
 %{_libdir}/wine/riched32.dll.so
@@ -488,33 +489,33 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/sensapi.dll.so
 %{_libdir}/wine/serialui.dll.so
 %{_libdir}/wine/setupapi.dll.so
-%{_libdir}/wine/setupx.dll.so
+%{_libdir}/wine/setupx.dll16
 %{_libdir}/wine/shdocvw.dll.so
-%{_libdir}/wine/shell.dll.so
+%{_libdir}/wine/shell.dll16
 %{_libdir}/wine/shell32.dll.so
 %{_libdir}/wine/shfolder.dll.so
 %{_libdir}/wine/shlwapi.dll.so
 %{_libdir}/wine/snmpapi.dll.so
-%{_libdir}/wine/sound.drv.so
+%{_libdir}/wine/sound.drv16
 %{_libdir}/wine/stdole2.tlb.so
 %{_libdir}/wine/stdole32.tlb.so
 %{_libdir}/wine/sti.dll.so
-%{_libdir}/wine/storage.dll.so
-%{_libdir}/wine/stress.dll.so
-%{_libdir}/wine/system.drv.so
+%{_libdir}/wine/storage.dll16
+%{_libdir}/wine/stress.dll16
+%{_libdir}/wine/system.drv16
 %{_libdir}/wine/tapi32.dll.so
-%{_libdir}/wine/toolhelp.dll.so
-%{_libdir}/wine/typelib.dll.so
+%{_libdir}/wine/toolhelp.dll16
+%{_libdir}/wine/typelib.dll16
 %{_libdir}/wine/unicows.dll.so
 %{_libdir}/wine/url.dll.so
 %{_libdir}/wine/urlmon.dll.so
-%{_libdir}/wine/user.exe.so
+%{_libdir}/wine/user.exe16
 %{_libdir}/wine/user32.dll.so
 %{_libdir}/wine/usp10.dll.so
 %{_libdir}/wine/uxtheme.dll.so
 %{_libdir}/wine/vdhcp.vxd.so
 %{_libdir}/wine/vdmdbg.dll.so
-%{_libdir}/wine/ver.dll.so
+%{_libdir}/wine/ver.dll16
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/vmm.vxd.so
 %{_libdir}/wine/vnbt.vxd.so
@@ -522,28 +523,28 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vtdapi.vxd.so
 %{_libdir}/wine/vwin32.vxd.so
 %{_libdir}/wine/w32skrnl.dll.so
-%{_libdir}/wine/w32sys.dll.so
-%{_libdir}/wine/win32s16.dll.so
-%{_libdir}/wine/win87em.dll.so
-%{_libdir}/wine/winaspi.dll.so
-%{_libdir}/wine/windebug.dll.so
+%{_libdir}/wine/w32sys.dll16
+%{_libdir}/wine/win32s16.dll16
+%{_libdir}/wine/win87em.dll16
+%{_libdir}/wine/winaspi.dll16
+%{_libdir}/wine/windebug.dll16
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/wineoss.drv.so
 %{_libdir}/wine/winex11.drv.so
-%{_libdir}/wine/wing.dll.so
+%{_libdir}/wine/wing.dll16
 %{_libdir}/wine/wininet.dll.so
 %{_libdir}/wine/winmm.dll.so
-%{_libdir}/wine/winnls.dll.so
+%{_libdir}/wine/winnls.dll16
 %{_libdir}/wine/winnls32.dll.so
-%{_libdir}/wine/winsock.dll.so
+%{_libdir}/wine/winsock.dll16
 %{_libdir}/wine/winspool.drv.so
-%{_libdir}/wine/wintab.dll.so
+%{_libdir}/wine/wintab.dll16
 %{_libdir}/wine/wintab32.dll.so
 %{_libdir}/wine/wintrust.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
 %{_libdir}/wine/wow32.dll.so
-%{_libdir}/wine/wprocs.dll.so
+%{_libdir}/wine/wprocs.dll16
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
@@ -593,7 +594,7 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/fonts/wine/vgasyst.fon
 %{_libdir}/wine/winealsa.drv.so
 %{_libdir}/wine/wineps.drv.so
-%{_libdir}/wine/wineps16.drv.so
+%{_libdir}/wine/wineps16.drv16
 %{_libdir}/wine/d3d8.dll.so
 %{_libdir}/wine/d3d9.dll.so
 %{_libdir}/wine/d3dx8.dll.so
@@ -659,7 +660,7 @@ update-desktop-database &>/dev/null || :
 
 %files twain
 %defattr(-,root,root,-)
-%{_libdir}/wine/twain.dll.so
+%{_libdir}/wine/twain.dll16
 %{_libdir}/wine/twain_32.dll.so
 
 %files capi
@@ -695,6 +696,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Mar 03 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.9-1
+- version upgrade
+
 * Thu Feb 16 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.8-1
 - version upgrade
