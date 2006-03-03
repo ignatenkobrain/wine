@@ -362,7 +362,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/comctl32.dll.so
 %{_libdir}/wine/comdlg32.dll.so
 %{_libdir}/wine/comm.drv16
-%{_libdir}/wine/commdlg.dll.so
+%{_libdir}/wine/commdlg.dll16
 %{_libdir}/wine/compobj.dll16
 %{_libdir}/wine/crtdll.dll.so
 %{_libdir}/wine/crypt32.dll.so
