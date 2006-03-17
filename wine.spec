@@ -11,7 +11,6 @@ URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
 Source0:        wine-0.9.10-fe.tar.bz2
 Source1:	wine.init
-Source2:	wine-fonts-20050524.tar.gz
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
 Source100:      wine-notepad.desktop
@@ -21,7 +20,6 @@ Source103:      wine-winecfg.desktop
 Source104:      wine-winefile.desktop
 Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
-Patch2:		wine-20050524-generated.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -158,8 +156,6 @@ with the Wine Windows(TM) emulation libraries.
 
 %prep
 %setup -q -n %{name}-%{version}-fe
-%patch2 -p1 -b .generated
-autoconf
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS"
@@ -192,10 +188,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/wine
 # Allow users to launch Windows programs by just clicking on the .exe file...
 mkdir -p %{buildroot}%{_initrddir}
 install -p -c -m 755 %SOURCE1 %{buildroot}%{_initrddir}/wine
-
-# Install Wine's fonts
-mkdir -p %{buildroot}%{_datadir}/fonts/wine
-tar xzf %SOURCE2 -C %{buildroot}%{_datadir}/fonts/wine
 
 desktop-file-install \
   --vendor=fedora \
@@ -550,48 +542,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wtsapi32.dll.so
 %{_libdir}/wine/security.dll.so
 %{_libdir}/wine/sfc.dll.so
-%dir %{_datadir}/fonts/wine
-%{_datadir}/fonts/wine/wine_coure.fon
-%{_datadir}/fonts/wine/wine_couree.fon
-%{_datadir}/fonts/wine/wine_courer.fon
-%{_datadir}/fonts/wine/wine_marlett.ttf
-%{_datadir}/fonts/wine/wine_sserife.fon
-%{_datadir}/fonts/wine/wine_sserifee.fon
-%{_datadir}/fonts/wine/wine_sserifer.fon
-%{_datadir}/fonts/wine/wine_vgasys.fon
-%{_datadir}/fonts/wine/wine_vgasyse.fon
-%{_datadir}/fonts/wine/wine_vgasysr.fon
-%{_datadir}/fonts/wine/coue1255.fon
-%{_datadir}/fonts/wine/coue1256.fon
-%{_datadir}/fonts/wine/coue1257.fon
-%{_datadir}/fonts/wine/coure.fon
-%{_datadir}/fonts/wine/couree.fon
-%{_datadir}/fonts/wine/coureg.fon
-%{_datadir}/fonts/wine/courer.fon
-%{_datadir}/fonts/wine/couret.fon
-%{_datadir}/fonts/wine/cvgasys.fon
-%{_datadir}/fonts/wine/hvgasys.fon
-%{_datadir}/fonts/wine/jvgasys.fon
-%{_datadir}/fonts/wine/marlett.ttf
-%{_datadir}/fonts/wine/ssee1255.fon
-%{_datadir}/fonts/wine/ssee1256.fon
-%{_datadir}/fonts/wine/ssee1257.fon
-%{_datadir}/fonts/wine/ssee874.fon
-%{_datadir}/fonts/wine/sserife.fon
-%{_datadir}/fonts/wine/sserifee.fon
-%{_datadir}/fonts/wine/sserifeg.fon
-%{_datadir}/fonts/wine/sserifer.fon
-%{_datadir}/fonts/wine/sserifet.fon
-%{_datadir}/fonts/wine/svgasys.fon
-%{_datadir}/fonts/wine/vgas1255.fon
-%{_datadir}/fonts/wine/vgas1256.fon
-%{_datadir}/fonts/wine/vgas1257.fon
-%{_datadir}/fonts/wine/vgas874.fon
-%{_datadir}/fonts/wine/vgasys.fon
-%{_datadir}/fonts/wine/vgasyse.fon
-%{_datadir}/fonts/wine/vgasysg.fon
-%{_datadir}/fonts/wine/vgasysr.fon
-%{_datadir}/fonts/wine/vgasyst.fon
+%{_datadir}/wine/fonts/
 %{_libdir}/wine/winealsa.drv.so
 %{_libdir}/wine/wineps.drv.so
 %{_libdir}/wine/wineps16.drv16
@@ -696,6 +647,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Mar 16 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.10-1
+- version upgrade
+- drop ancient extra fonts
+
 * Fri Mar 03 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.9-1
 - version upgrade
