@@ -25,7 +25,6 @@ Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch: %{ix86}
 
-BuildRequires:  autoconf
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:  alsa-lib-devel
