@@ -2,7 +2,7 @@
 
 Name:		wine
 Version:	0.9.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -646,6 +646,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Mar 20 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.10-2
+- bump for x86_64 tree inclusion \o/
+
 * Thu Mar 16 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.10-1
 - version upgrade
