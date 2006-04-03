@@ -1,15 +1,16 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.10
-Release:	2%{?dist}
+Version:	0.9.11
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.10-fe.tar.bz2
+Patch0:         wine-prefixfonts.patch
+Source0:        wine-0.9.11-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -155,6 +156,7 @@ with the Wine Windows(TM) emulation libraries.
 
 %prep
 %setup -q -n %{name}-%{version}-fe
+%patch0
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS"
@@ -343,8 +345,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
 %{_libdir}/wine/avifile.dll16
-%{_libdir}/wine/aviinfo.exe.so
-%{_libdir}/wine/aviplay.exe.so
 %{_libdir}/wine/cabinet.dll.so
 %{_libdir}/wine/cards.dll.so
 %{_libdir}/wine/cfgmgr32.dll.so
@@ -530,6 +530,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winnls32.dll.so
 %{_libdir}/wine/winsock.dll16
 %{_libdir}/wine/winspool.drv.so
+%{_libdir}/wine/spoolss.dll.so
 %{_libdir}/wine/wintab.dll16
 %{_libdir}/wine/wintab32.dll.so
 %{_libdir}/wine/wintrust.dll.so
@@ -646,6 +647,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Apr 03 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.11-1
+- version upgrade
+- fix #187546
+
 * Mon Mar 20 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.10-2
 - bump for x86_64 tree inclusion \o/
