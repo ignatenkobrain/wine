@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.11
+Version:	0.9.12
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -10,7 +10,8 @@ License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
 Patch0:         wine-prefixfonts.patch
-Source0:        wine-0.9.11-fe.tar.bz2
+Patch1:         wine-rpath.patch
+Source0:        wine-0.9.12-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -24,7 +25,7 @@ Source106:      wine-winhelp.desktop
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch: %{ix86}
+ExclusiveArch:  %{ix86}
 
 BuildRequires:	bison
 BuildRequires:	flex
@@ -157,6 +158,7 @@ with the Wine Windows(TM) emulation libraries.
 %prep
 %setup -q -n %{name}-%{version}-fe
 %patch0
+%patch1
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS"
@@ -553,6 +555,8 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/glut32.dll.so
 %{_libdir}/wine/opengl32.dll.so
 %{_libdir}/wine/wined3d.dll.so
+%{_libdir}/wine/dnsapi.dll.so
+%{_libdir}/wine/iexplore.exe.so
 %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 
 %files tools
@@ -647,6 +651,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Apr 15 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.12-1
+- fix rpath issues (#187429,#188905)
+- version upgrade 
+
 * Mon Apr 03 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.11-1
 - version upgrade
