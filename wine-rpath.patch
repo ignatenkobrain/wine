@@ -1,0 +1,41 @@
+--- configure.orig	2006-04-15 00:02:02.000000000 +0200
++++ configure	2006-04-15 00:03:26.000000000 +0200
+@@ -13375,7 +13375,7 @@
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+   ac_wine_try_cflags_saved=$CFLAGS
+-CFLAGS="$CFLAGS -fPIC -Wl,--rpath,\$ORIGIN/../lib"
++CFLAGS="$CFLAGS -fPIC"
+ cat >conftest.$ac_ext <<_ACEOF
+ /* confdefs.h.  */
+ _ACEOF
+@@ -13427,9 +13427,9 @@
+ echo "${ECHO_T}$ac_cv_ld_rpath" >&6
+         if test "$ac_cv_ld_rpath" = "yes"
+         then
+-          LDEXERPATH="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
++          LDEXERPATH=""
+ 
+-          LDDLLRPATH="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(dlldir) \$(libdir)\`"
++          LDDLLRPATH=""
+ 
+         fi
+ 
+--- configure.ac.orig	2006-04-15 00:15:32.000000000 +0200
++++ configure.ac	2006-04-15 00:04:51.000000000 +0200
+@@ -1052,15 +1052,6 @@
+           AC_SUBST(LDEXECFLAGS,["-Wl,--export-dynamic"])
+         fi
+ 
+-        AC_CACHE_CHECK([whether the linker accepts --rpath], ac_cv_ld_rpath,
+-          [WINE_TRY_CFLAGS([-fPIC -Wl,--rpath,\$ORIGIN/../lib],
+-                           ac_cv_ld_rpath="yes",ac_cv_ld_rpath="no")])
+-        if test "$ac_cv_ld_rpath" = "yes"
+-        then
+-          AC_SUBST(LDEXERPATH,["-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"])
+-          AC_SUBST(LDDLLRPATH,["-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(dlldir) \$(libdir)\`"])
+-        fi
+-
+         case $host_cpu in
+           *i[[3456789]]86*)
+             AC_CACHE_CHECK([whether we can relocate the executable to 0x7bf00000], ac_cv_ld_reloc_exec,
