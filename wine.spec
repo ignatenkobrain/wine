@@ -2,7 +2,7 @@
 
 Name:		wine
 Version:	0.9.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -52,12 +52,13 @@ BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
 BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
-
 BuildRequires:  fontconfig-devel
 BuildRequires:  giflib-devel
 BuildRequires:  cups-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXi-devel
+# dbus/hal >= FC5
+BuildRequires: dbus-devel hal-devel
 
 Requires:       %{_bindir}/xmessage
 
@@ -654,6 +655,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri May 19 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.13-2
+- enable dbus/hal support
+
 * Mon May 15 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.13-1
 - version upgrade
