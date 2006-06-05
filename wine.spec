@@ -1,17 +1,15 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.13
-Release:	2%{?dist}
+Version:	0.9.14
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Patch0:         wine-prefixfonts.patch
-Patch1:         wine-rpath.patch
-Source0:        wine-0.9.13-fe.tar.bz2
+Source0:        wine-0.9.14-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -22,6 +20,8 @@ Source103:      wine-winecfg.desktop
 Source104:      wine-winefile.desktop
 Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
+Patch0:         wine-prefixfonts.patch
+Patch1:         wine-rpath.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -174,13 +174,6 @@ export CFLAGS="$RPM_OPT_FLAGS"
 rm -rf %{buildroot}
 
 %makeinstall \
-	includedir=%{buildroot}%{_includedir}/wine \
-	sysconfdir=%{buildroot}%{_sysconfdir}/wine \
-	dlldir=%{buildroot}%{_libdir}/wine \
-	LDCONFIG=/bin/true \
-	UPDATE_DESKTOP_DATABASE=/bin/true
-%makeinstall \
-	-C dlls/wineps \
 	includedir=%{buildroot}%{_includedir}/wine \
 	sysconfdir=%{buildroot}%{_sysconfdir}/wine \
 	dlldir=%{buildroot}%{_libdir}/wine \
@@ -452,6 +445,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/newdev.dll.so
 %{_libdir}/wine/ntdll.dll.so
+%{_libdir}/wine/ntdsapi.dll.so
 %{_libdir}/wine/objsel.dll.so
 %{_libdir}/wine/odbc32.dll.so
 %{_libdir}/wine/odbccp32.dll.so
@@ -655,6 +649,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Tue May 30 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.14-1
+- version upgrade
+
 * Fri May 19 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.13-2
 - enable dbus/hal support
