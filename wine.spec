@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.14
+Version:	0.9.15
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.14-fe.tar.bz2
+Source0:        wine-0.9.15-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -22,7 +22,6 @@ Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
 Patch0:         wine-prefixfonts.patch
 Patch1:         wine-rpath.patch
-
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch:  %{ix86}
@@ -390,6 +389,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gphoto2.ds.so
 %{_libdir}/wine/hh.exe.so
+%{_libdir}/wine/hlink.dll.so
 %{_libdir}/wine/hhctrl.ocx.so
 %{_libdir}/wine/iccvid.dll.so
 %{_libdir}/wine/icinfo.exe.so
@@ -504,6 +504,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/user32.dll.so
 %{_libdir}/wine/usp10.dll.so
 %{_libdir}/wine/uxtheme.dll.so
+%{_libdir}/wine/userenv.dll.so
 %{_libdir}/wine/vdhcp.vxd.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/ver.dll16
@@ -522,6 +523,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/wineoss.drv.so
+%{_libdir}/wine/winecoreaudio.drv.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing.dll16
 %{_libdir}/wine/wininet.dll.so
@@ -649,6 +651,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Jun 09 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.15-1
+- version upgrade
+
 * Tue May 30 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.14-1
 - version upgrade
