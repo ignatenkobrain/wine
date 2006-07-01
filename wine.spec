@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.15
+Version:	0.9.16
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.15-fe.tar.bz2
+Source0:        wine-0.9.16-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -59,12 +59,16 @@ BuildRequires:  libXi-devel
 # dbus/hal >= FC5
 BuildRequires: dbus-devel hal-devel
 
-Requires:       %{_bindir}/xmessage
+Requires:       wine-core = %{version}-%{release}
+Requires:       wine-capi = %{version}-%{release}
+Requires:       wine-cms = %{version}-%{release}
+Requires:       wine-esd = %{version}-%{release}
+Requires:       wine-jack = %{version}-%{release}
+Requires:       wine-ldap = %{version}-%{release}
+Requires:       wine-nas = %{version}-%{release}
+Requires:       wine-tools = %{version}-%{release}
+Requires:       wine-twain = %{version}-%{release}
 
-Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
-Requires(post): /usr/bin/update-desktop-database
-Requires(preun): /sbin/chkconfig, /sbin/service
-Requires(postun): /sbin/ldconfig, /usr/bin/update-desktop-database
 
 %description
 While Wine is usually thought of as a Windows(TM) emulator, the Wine
@@ -74,10 +78,27 @@ which allows unmodified Windows 3.x/9x/NT binaries to run on x86 and x86_64
 Unixes. Wine does not require MS Windows, but it can use native system
 .dll files if they are available.
 
+In Fedora Extras wine is actually a meta-package which will install everything
+you need for wine to work smoothly. If you don't want to install everything
+take a look at the wine-* packages.
+
+%package core
+Summary:        Wine core package
+Group:		Applications/Emulators
+Requires:       %{_bindir}/xmessage
+Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
+Requires(post): /usr/bin/update-desktop-database
+Requires(preun): /sbin/chkconfig, /sbin/service
+Requires(postun): /sbin/ldconfig, /usr/bin/update-desktop-database
+Obsoletes:      wine <= 0.9.15-1%{?dist}
+
+%description core
+Wine core package includes the basic wine stuff needed by all other packages.
+
 %package tools
 Summary:        Additional wine tools
 Group:		Applications/Emulators
-Requires:       %{name} = %{version}-%{release}
+Requires:       wine-core = %{version}-%{release}
 
 %description tools
 Additional wine tools
@@ -85,7 +106,7 @@ Additional wine tools
 %package arts
 Summary: Arts sound support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description arts
 Arts sound support for wine
@@ -93,7 +114,7 @@ Arts sound support for wine
 %package esd
 Summary: ESD sound support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description esd
 ESD sound support for wine
@@ -101,7 +122,7 @@ ESD sound support for wine
 %package jack
 Summary: JACK sound support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description jack
 JACK sound support for wine
@@ -109,7 +130,7 @@ JACK sound support for wine
 %package nas
 Summary: NAS sound support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description nas
 JACK sound support for wine
@@ -117,7 +138,7 @@ JACK sound support for wine
 %package ldap
 Summary: LDAP support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description ldap
 LDAP support for wine
@@ -125,7 +146,7 @@ LDAP support for wine
 %package cms
 Summary: Color Managment for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description cms
 Color Management for wine
@@ -133,7 +154,7 @@ Color Management for wine
 %package twain
 Summary: Twain support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description twain
 Twain support for wine
@@ -141,7 +162,7 @@ Twain support for wine
 %package capi
 Summary: ISDN support for wine
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description capi
 ISDN support for wine
@@ -149,7 +170,7 @@ ISDN support for wine
 %package devel
 Summary: Wine development environment
 Group: System Environment/Libraries
-Requires: wine = %{version}-%{release}
+Requires: wine-core = %{version}-%{release}
 
 %description devel
 Header, include files and library definition files for developing applications
@@ -242,7 +263,7 @@ install -p -m644 %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 %clean
 rm -rf %{buildroot}
 
-%post
+%post core
 /sbin/ldconfig
 update-desktop-database &>/dev/null || :
 if [ $1 = 1 ]; then
@@ -251,13 +272,13 @@ if [ $1 = 1 ]; then
 /sbin/service wine start &>/dev/null || :
 fi
 
-%preun
+%preun core
 if [ $1 = 0 ]; then
 	/sbin/service wine stop >/dev/null 2>&1
 	/sbin/chkconfig --del wine
 fi
 
-%postun
+%postun core
 /sbin/ldconfig
 update-desktop-database &>/dev/null || :
 
@@ -287,6 +308,9 @@ update-desktop-database &>/dev/null || :
 
 %files
 %defattr(-,root,root,-)
+
+%files core
+%defattr(-,root,root,-)
 %doc ANNOUNCE COPYING.LIB ChangeLog DEVELOPERS-HINTS LICENSE LICENSE.OLD
 %doc AUTHORS README-Fedora README VERSION
 %doc documentation/*
@@ -304,6 +328,7 @@ update-desktop-database &>/dev/null || :
 %{_initrddir}/wine
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/msiexec.exe.so
+%{_libdir}/wine/oleview.exe.so
 %{_libdir}/wine/regedit.exe.so
 %{_libdir}/wine/regsvr32.exe.so
 %{_libdir}/wine/rpcss.exe.so
@@ -350,6 +375,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/comm.drv16
 %{_libdir}/wine/commdlg.dll16
 %{_libdir}/wine/compobj.dll16
+%{_libdir}/wine/compstui.dll.so
 %{_libdir}/wine/crtdll.dll.so
 %{_libdir}/wine/crypt32.dll.so
 %{_libdir}/wine/cryptdll.dll.so
@@ -399,6 +425,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/imagehlp.dll.so
 %{_libdir}/wine/imm.dll16
 %{_libdir}/wine/imm32.dll.so
+%{_libdir}/wine/inseng.dll.so
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itss.dll.so
 %{_libdir}/wine/joystick.drv.so
@@ -651,6 +678,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Jun 29 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.16-1
+- version upgrade
+- rename wine to wine-core
+- add meta package wine
+
 * Fri Jun 09 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.15-1
 - version upgrade
