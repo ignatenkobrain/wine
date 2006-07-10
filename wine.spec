@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.16
+Version:	0.9.17
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.16-fe.tar.bz2
+Source0:        wine-0.9.17-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -379,6 +379,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/crtdll.dll.so
 %{_libdir}/wine/crypt32.dll.so
 %{_libdir}/wine/cryptdll.dll.so
+%{_libdir}/wine/cryptnet.dll.so
 %{_libdir}/wine/ctl3d.dll16
 %{_libdir}/wine/ctl3d32.dll.so
 %{_libdir}/wine/ctl3dv2.dll16
@@ -495,6 +496,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/qcap.dll.so
 %{_libdir}/wine/quartz.dll.so
+%{_libdir}/wine/query.dll.so
 %{_libdir}/wine/rasapi16.dll16
 %{_libdir}/wine/rasapi32.dll.so
 %{_libdir}/wine/riched20.dll.so
@@ -678,6 +680,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Jul 10 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.17-1
+- version upgrade
+
 * Thu Jun 29 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.16-1
 - version upgrade
