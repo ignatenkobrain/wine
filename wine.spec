@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.17
+Version:	0.9.19
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.17-fe.tar.bz2
+Source0:        wine-0.9.19-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -354,8 +354,7 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/winelauncher
 %{_bindir}/wineserver
 %{_mandir}/man1/wineserver.1*
-%{_libdir}/libwine.so.1
-%{_libdir}/libwine_unicode.so.1
+%{_libdir}/libwine.so.1.0
 %dir %{_libdir}/wine
 %{_libdir}/wine/activeds.dll.so
 %{_libdir}/wine/advapi32.dll.so
@@ -415,6 +414,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/gdi.exe16
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gphoto2.ds.so
+%{_libdir}/wine/hid.dll.so
 %{_libdir}/wine/hh.exe.so
 %{_libdir}/wine/hlink.dll.so
 %{_libdir}/wine/hhctrl.ocx.so
@@ -426,6 +426,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/imagehlp.dll.so
 %{_libdir}/wine/imm.dll16
 %{_libdir}/wine/imm32.dll.so
+%{_libdir}/wine/infosoft.dll.so
 %{_libdir}/wine/inseng.dll.so
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itss.dll.so
@@ -680,6 +681,14 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Aug 21 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.19-1
+- version upgrade
+
+* Thu Aug 03 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.18-1
+- version upgrade
+
 * Mon Jul 10 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.17-1
 - version upgrade
