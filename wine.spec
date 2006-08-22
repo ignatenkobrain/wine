@@ -354,7 +354,7 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/winelauncher
 %{_bindir}/wineserver
 %{_mandir}/man1/wineserver.1*
-%{_libdir}/libwine.so.1.0
+%{_libdir}/libwine.so.1*
 %dir %{_libdir}/wine
 %{_libdir}/wine/activeds.dll.so
 %{_libdir}/wine/advapi32.dll.so
