@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.20
+Version:	0.9.21
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.20-fe.tar.bz2
+Source0:        wine-0.9.21-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -313,7 +313,8 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 %doc ANNOUNCE COPYING.LIB ChangeLog LICENSE LICENSE.OLD
 %doc AUTHORS README-Fedora README VERSION
-%doc documentation/*
+# do not include huge changelogs .OLD .ALPHA (#204302)
+%doc documentation/README.*
 %{_bindir}/msiexec
 %{_bindir}/regedit
 %{_bindir}/regsvr32
@@ -342,6 +343,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winevdm.exe.so
 %{_libdir}/wine/winecfg.exe.so
 %{_libdir}/wine/uninstaller.exe.so
+%dir %{_datadir}/wine
 %{_datadir}/applications/fedora-wine.desktop
 %{_datadir}/applications/fedora-wine-regedit.desktop
 %{_datadir}/applications/fedora-wine-uninstaller.desktop
@@ -435,6 +437,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/keyboard.drv16
 %{_libdir}/wine/krnl386.exe16
+%{_libdir}/wine/localspl.dll.so
 %{_libdir}/wine/lz32.dll.so
 %{_libdir}/wine/lzexpand.dll16
 %{_libdir}/wine/mapi32.dll.so
@@ -525,6 +528,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/sti.dll.so
 %{_libdir}/wine/storage.dll16
 %{_libdir}/wine/stress.dll16
+%{_libdir}/wine/svrapi.dll.so
 %{_libdir}/wine/system.drv16
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/toolhelp.dll16
@@ -595,7 +599,6 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 %{_bindir}/notepad
 %{_bindir}/progman
-%{_bindir}/wcmd
 %{_bindir}/winedbg
 %{_bindir}/winedump
 %{_bindir}/winefile
@@ -605,10 +608,10 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/winhelp
 %{_libdir}/wine/explorer.exe.so
 %{_libdir}/wine/control.exe.so
+%{_libdir}/wine/cmd.exe.so
 %{_libdir}/wine/notepad.exe.so
 %{_libdir}/wine/progman.exe.so
 %{_libdir}/wine/taskmgr.exe.so
-%{_libdir}/wine/wcmd.exe.so
 %{_libdir}/wine/winedbg.exe.so
 %{_libdir}/wine/winefile.exe.so
 %{_libdir}/wine/winemine.exe.so
@@ -683,6 +686,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Sep 17 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.21-1
+- version upgrade
+- own datadir/wine (#206403)
+- do not include huge changelogs (#204302)
+
 * Mon Aug 28 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.20-1
 - version upgrade

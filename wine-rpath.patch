@@ -1,6 +1,16 @@
---- configure.orig	2006-08-28 06:44:28.000000000 +0200
-+++ configure	2006-08-28 06:46:41.000000000 +0200
-@@ -15903,7 +15903,7 @@
+--- configure.orig	2006-09-17 14:55:39.000000000 +0200
++++ configure	2006-09-17 14:57:19.000000000 +0200
+@@ -15903,14 +15903,14 @@
+ fi
+ 
+ 
+-      as_ac_var=`echo "ac_cv_cflags_-fPIC -Wl,--rpath,\$ORIGIN/../lib" | $as_tr_sh`
+-{ echo "$as_me:$LINENO: checking whether the compiler supports -fPIC -Wl,--rpath,\$ORIGIN/../lib" >&5
+-echo $ECHO_N "checking whether the compiler supports -fPIC -Wl,--rpath,\$ORIGIN/../lib... $ECHO_C" >&6; }
++      as_ac_var=`echo "ac_cv_cflags_-fPIC" | $as_tr_sh`
++{ echo "$as_me:$LINENO: checking whether the compiler supports -fPIC" >&5
++echo $ECHO_N "checking whether the compiler supports -fPIC$ECHO_C" >&6; }
+ if { as_var=$as_ac_var; eval "test \"\${$as_var+set}\" = set"; }; then
    echo $ECHO_N "(cached) $ECHO_C" >&6
  else
    ac_wine_try_cflags_saved=$CFLAGS
@@ -9,29 +19,24 @@
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -15969,7 +15969,7 @@
- echo "${ECHO_T}$ac_cv_ld_rpath" >&6; }
-       if test "$ac_cv_ld_rpath" = "yes"
-       then
--        LDEXERPATH="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
-+        LDEXERPATH=""
+@@ -15976,7 +15976,7 @@
+ 	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+ echo "${ECHO_T}$ac_res" >&6; }
+ if test `eval echo '${'$as_ac_var'}'` = yes; then
+-  LIBWINE_LDFLAGS="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
++  LIBWINE_LDFLAGS=""
+ fi
  
-       fi
  
---- configure.ac.orig	2006-08-28 06:43:35.000000000 +0200
-+++ configure.ac	2006-08-28 06:44:22.000000000 +0200
-@@ -1121,14 +1121,6 @@
-         AC_SUBST(LDEXECFLAGS,["-Wl,--export-dynamic"])
-       fi
+--- configure.ac.orig	2006-09-17 14:57:25.000000000 +0200
++++ configure.ac	2006-09-17 14:58:03.000000000 +0200
+@@ -1058,9 +1058,6 @@
+       WINE_TRY_CFLAGS([-fPIC -Wl,--export-dynamic],
+                       [AC_SUBST(LDEXECFLAGS,["-Wl,--export-dynamic"])])
  
--      AC_CACHE_CHECK([whether the linker accepts --rpath], ac_cv_ld_rpath,
--        [WINE_TRY_CFLAGS([-fPIC -Wl,--rpath,\$ORIGIN/../lib],
--                         ac_cv_ld_rpath="yes",ac_cv_ld_rpath="no")])
--      if test "$ac_cv_ld_rpath" = "yes"
--      then
--        AC_SUBST(LDEXERPATH,["-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"])
--      fi
+-      WINE_TRY_CFLAGS([-fPIC -Wl,--rpath,\$ORIGIN/../lib],
+-                      [LIBWINE_LDFLAGS="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"])
 -
        case $host_cpu in
          *i[[3456789]]86* | x86_64)
-           AC_CACHE_CHECK([whether we can relocate the executable to 0x7bf00000], ac_cv_ld_reloc_exec,
+           WINE_TRY_CFLAGS([-Wl,--section-start,.interp=0x7bf00400],
