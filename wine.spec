@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.21
+Version:	0.9.22
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.21-fe.tar.bz2
+Source0:        wine-0.9.22-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -371,6 +371,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/cards.dll.so
 %{_libdir}/wine/cfgmgr32.dll.so
 %{_libdir}/wine/clock.exe.so
+%{_libdir}/wine/clusapi.dll.so
 %{_libdir}/wine/comcat.dll.so
 %{_libdir}/wine/comctl32.dll.so
 %{_libdir}/wine/comdlg32.dll.so
@@ -475,6 +476,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msvideo.dll16
 %{_libdir}/wine/mswsock.dll.so
 %{_libdir}/wine/msxml3.dll.so
+%{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/newdev.dll.so
 %{_libdir}/wine/ntdll.dll.so
@@ -686,6 +688,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Sep 30 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.22-1
+- version upgrade
+
 * Sun Sep 17 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.21-1
 - version upgrade
