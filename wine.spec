@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.23
+Version:	0.9.24
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.23-fe.tar.bz2
+Source0:        wine-0.9.24-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -51,6 +51,7 @@ BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
 BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
+BuildRequires:  libXinerama-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  giflib-devel
 BuildRequires:  cups-devel
@@ -690,6 +691,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Oct 28 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.24-1
+- version upgrade
+
 * Tue Oct 17 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.23-1
 - version upgrade
