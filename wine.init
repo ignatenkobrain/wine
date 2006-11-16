@@ -11,10 +11,15 @@
 RETVAL=0
 
 start() {
-	echo -n $"Registering binary handler for Windows applications"
-	/sbin/modprobe binfmt_misc &>/dev/null
-	echo ':windows:M::MZ::/usr/bin/wine:' >/proc/sys/fs/binfmt_misc/register || :
-	echo ':windowsPE:M::PE::/usr/bin/wine:' >/proc/sys/fs/binfmt_misc/register || :
+# fix bug on changing runlevels #213230
+	if [ -e /proc/sys/fs/binfmt_misc/windows ]; then
+	    echo -n $"Binary handler for Windows applications already registered"
+	else	
+	    echo -n $"Registering binary handler for Windows applications"
+	    /sbin/modprobe binfmt_misc &>/dev/null
+	    echo ':windows:M::MZ::/usr/bin/wine:' >/proc/sys/fs/binfmt_misc/register || :
+	    echo ':windowsPE:M::PE::/usr/bin/wine:' >/proc/sys/fs/binfmt_misc/register || :
+	fi
 }
 
 stop() {
