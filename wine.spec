@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.25
+Version:	0.9.27
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,10 +9,11 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.25-fe.tar.bz2
+Source0:        wine-0.9.27-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
+# desktop stuff
 Source100:      wine-notepad.desktop
 Source101:      wine-regedit.desktop
 Source102:      wine-uninstaller.desktop
@@ -20,6 +21,9 @@ Source103:      wine-winecfg.desktop
 Source104:      wine-winefile.desktop
 Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
+# desktop dir
+Source200:      wine.menu
+Source201:      wine.directory
 Patch0:         wine-prefixfonts.patch
 Patch1:         wine-rpath.patch
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -46,6 +50,9 @@ BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  fontforge
+BuildRequires:  gphoto2 gphoto2-devel
+#217338
+BuildRequires:  isdn4k-utils-devel
 # modular x
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
@@ -205,8 +212,18 @@ mkdir -p %{buildroot}%{_sysconfdir}/wine
 
 # Allow users to launch Windows programs by just clicking on the .exe file...
 mkdir -p %{buildroot}%{_initrddir}
-install -p -c -m 755 %SOURCE1 %{buildroot}%{_initrddir}/wine
+install -p -c -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/wine
 
+# add wine dir to desktop
+mkdir -p %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged
+install -p -m 644 %{SOURCE200} \
+%{buildroot}%{_sysconfdir}/xdg/menus/applications-merged/wine.menu
+mkdir -p %{buildroot}%{_datadir}/desktop-directories
+install -p -m 644 %{SOURCE201} \
+%{buildroot}%{_datadir}/desktop-directories/wine.directory
+
+
+# install desktop files
 desktop-file-install \
   --vendor=fedora \
   --dir=$RPM_BUILD_ROOT%{_datadir}/applications \
@@ -349,6 +366,8 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/applications/fedora-wine-regedit.desktop
 %{_datadir}/applications/fedora-wine-uninstaller.desktop
 %{_datadir}/applications/fedora-wine-winecfg.desktop
+%{_datadir}/desktop-directories/wine.directory
+%{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_mandir}/man1/wine.1.gz
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
@@ -520,6 +539,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/serialui.dll.so
 %{_libdir}/wine/setupapi.dll.so
 %{_libdir}/wine/setupx.dll16
+%{_libdir}/wine/shdoclc.dll.so
 %{_libdir}/wine/shdocvw.dll.so
 %{_libdir}/wine/shell.dll16
 %{_libdir}/wine/shell32.dll.so
@@ -592,7 +612,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/d3d9.dll.so
 %{_libdir}/wine/d3dx8.dll.so
 %{_libdir}/wine/glu32.dll.so
-%{_libdir}/wine/glut32.dll.so
 %{_libdir}/wine/opengl32.dll.so
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
@@ -691,6 +710,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Dec 18 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.27-1
+- version upgrade (#220130)
+- fix submenus (#216076)
+- fix BR (#217338)
+
 * Thu Nov 16 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.25-1
 - version upgrade
