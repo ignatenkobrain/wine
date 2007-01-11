@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.27
+Version:	0.9.29
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -9,7 +9,7 @@ Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.27-fe.tar.bz2
+Source0:        wine-0.9.29-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -413,6 +413,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dciman32.dll.so
 %{_libdir}/wine/ddeml.dll16
 %{_libdir}/wine/ddraw.dll.so
+%{_libdir}/wine/ddrawex.dll.so
 %{_libdir}/wine/devenum.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
@@ -454,7 +455,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/inseng.dll.so
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itss.dll.so
-%{_libdir}/wine/joystick.drv.so
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/keyboard.drv16
 %{_libdir}/wine/krnl386.exe16
@@ -584,6 +584,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/wineoss.drv.so
 %{_libdir}/wine/winecoreaudio.drv.so
+%{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing.dll16
 %{_libdir}/wine/wininet.dll.so
@@ -710,6 +711,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Jan 11 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.29-1
+- version upgrade
+
 * Mon Dec 18 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.27-1
 - version upgrade (#220130)
