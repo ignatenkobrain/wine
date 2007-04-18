@@ -1,15 +1,26 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.32
+Version:	0.9.35
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPL
 URL:		http://www.winehq.org/
-# special fedora tarball without winemp3 stuff
-Source0:        wine-0.9.32-fe.tar.bz2
+# special fedora tarball without winemp3 stuff build doing
+# rm -fr dlls/winemp3.acm
+# and removing the following from the source tree (as of 0.9.35):
+#
+# configure:ac_config_files="$ac_config_files dlls/winemp3.acm/Makefile"
+# configure:    "dlls/winemp3.acm/Makefile") CONFIG_FILES="$CONFIG_FILES dlls/winemp3.acm/Makefile" ;;
+# configure.ac:AC_CONFIG_FILES([dlls/winemp3.acm/Makefile])
+# dlls/Makefile.in:	winemp3.acm \
+# Makefile.in:	dlls/winemp3.acm/Makefile \
+# Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
+# programs/winecfg/libraries.c:    "winemp3.acm",
+
+Source0:        wine-0.9.35-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -33,7 +44,6 @@ ExclusiveArch:  %{ix86}
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:  alsa-lib-devel
-BuildRequires:  arts-devel
 BuildRequires:  audiofile-devel
 BuildRequires:  esound-devel
 BuildRequires:  freeglut-devel
@@ -77,7 +87,6 @@ Requires:       wine-nas = %{version}-%{release}
 Requires:       wine-tools = %{version}-%{release}
 Requires:       wine-twain = %{version}-%{release}
 
-
 %description
 While Wine is usually thought of as a Windows(TM) emulator, the Wine
 developers would prefer that users thought of Wine as a Windows
@@ -99,6 +108,7 @@ Requires(post): /usr/bin/update-desktop-database
 Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/ldconfig, /usr/bin/update-desktop-database
 Obsoletes:      wine <= 0.9.15-1%{?dist}
+Obsoletes:      wine-arts < 0.9.34
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -110,14 +120,6 @@ Requires:       wine-core = %{version}-%{release}
 
 %description tools
 Additional wine tools
-
-%package arts
-Summary: Arts sound support for wine
-Group: System Environment/Libraries
-Requires: wine-core = %{version}-%{release}
-
-%description arts
-Arts sound support for wine
 
 %package esd
 Summary: ESD sound support for wine
@@ -196,7 +198,7 @@ export CFLAGS="$RPM_OPT_FLAGS"
 	--x-includes=%{_includedir} --x-libraries=%{_libdir}
 
 %{__make} depend
-%{__make}
+%{__make} %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -299,9 +301,6 @@ fi
 %postun core
 /sbin/ldconfig
 update-desktop-database &>/dev/null || :
-
-%post arts -p /sbin/ldconfig
-%postun arts -p /sbin/ldconfig
 
 %post esd -p /sbin/ldconfig
 %postun esd -p /sbin/ldconfig
@@ -432,6 +431,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dmusic32.dll.so
 %{_libdir}/wine/dplay.dll.so
 %{_libdir}/wine/dplayx.dll.so
+%{_libdir}/wine/dpnaddr.dll.so
 %{_libdir}/wine/dpnet.dll.so
 %{_libdir}/wine/dpnhpast.dll.so
 %{_libdir}/wine/dsound.dll.so
@@ -461,6 +461,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/keyboard.drv16
 %{_libdir}/wine/krnl386.exe16
 %{_libdir}/wine/localspl.dll.so
+%{_libdir}/wine/localui.dll.so
 %{_libdir}/wine/lz32.dll.so
 %{_libdir}/wine/lzexpand.dll16
 %{_libdir}/wine/mapi32.dll.so
@@ -551,6 +552,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/shlwapi.dll.so
 %{_libdir}/wine/snmpapi.dll.so
 %{_libdir}/wine/sound.drv16
+%{_libdir}/wine/spoolsv.exe.so
 %{_libdir}/wine/stdole2.tlb.so
 %{_libdir}/wine/stdole32.tlb.so
 %{_libdir}/wine/sti.dll.so
@@ -622,6 +624,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.exe.so
+%{_libdir}/wine/xcopy.exe.so
 %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 
 %files tools
@@ -652,10 +655,6 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/applications/fedora-wine-winefile.desktop
 %{_datadir}/applications/fedora-wine-winemine.desktop
 %{_datadir}/applications/fedora-wine-winhelp.desktop
-
-%files arts
-%defattr(-,root,root,-)
-%{_libdir}/wine/winearts.drv.so
 
 %files esd
 %defattr(-,root,root,-)
@@ -716,6 +715,21 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Mon Apr 16 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.35-1
+- version upgrade (#234766)
+- sources file comments (#235232)
+- smpflags work again (mentioned by Marcin Zaj¿czkowski)
+- drop arts sound driver package, as it is no longer part of wine
+
+* Sun Apr 01 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.34-1
+- version upgrade
+
+* Sat Mar 17 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.33-1
+- version upgrade
+
 * Sun Mar 04 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.32-1
 - version upgrade
