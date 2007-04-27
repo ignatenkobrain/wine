@@ -736,13 +736,13 @@ update-desktop-database &>/dev/null || :
 0.9.33-1
 - version upgrade
 
-* Tue Feb 27 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-0.9.31-2
-- fix #230131
-
 * Sun Mar 04 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.32-1
 - version upgrade
+
+* Tue Feb 27 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.31-2
+- fix #230131
 
 * Sat Feb 17 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.31-1
