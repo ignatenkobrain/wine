@@ -1,7 +1,7 @@
 %define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
 
 Name:		wine
-Version:	0.9.35
+Version:	0.9.36
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -20,7 +20,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.35-fe.tar.bz2
+Source0:        wine-0.9.36-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -378,6 +378,7 @@ update-desktop-database &>/dev/null || :
 %{_mandir}/man1/wineserver.1*
 %{_libdir}/libwine.so.1*
 %dir %{_libdir}/wine
+%{_libdir}/wine/acledit.dll.so
 %{_libdir}/wine/activeds.dll.so
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
@@ -559,6 +560,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/storage.dll16
 %{_libdir}/wine/stress.dll16
 %{_libdir}/wine/svrapi.dll.so
+%{_libdir}/wine/sxs.dll.so
 %{_libdir}/wine/system.drv16
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/toolhelp.dll16
@@ -715,6 +717,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Apr 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.36-1
+- version upgrade
+
 * Mon Apr 16 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.35-1
 - version upgrade (#234766)
@@ -730,13 +736,13 @@ update-desktop-database &>/dev/null || :
 0.9.33-1
 - version upgrade
 
-* Sun Mar 04 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-0.9.32-1
-- version upgrade
-
 * Tue Feb 27 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.31-2
 - fix #230131
+
+* Sun Mar 04 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.32-1
+- version upgrade
 
 * Sat Feb 17 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.31-1
