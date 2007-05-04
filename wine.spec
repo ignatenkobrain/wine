@@ -2,7 +2,7 @@
 
 Name:		wine
 Version:	0.9.36
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -56,6 +56,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openldap-devel
+BuildRequires:  openssl-devel
 BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
 BuildRequires:  desktop-file-utils
@@ -143,7 +144,7 @@ Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
 %description nas
-JACK sound support for wine
+NAS sound support for wine
 
 %package ldap
 Summary: LDAP support for wine
@@ -154,7 +155,7 @@ Requires: wine-core = %{version}-%{release}
 LDAP support for wine
 
 %package cms
-Summary: Color Managment for wine
+Summary: Color Management for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 
@@ -717,6 +718,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Wed May 02 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.36-2
+- fix BR (#238774)
+- fix some typos
+
 * Sat Apr 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.36-1
 - version upgrade
