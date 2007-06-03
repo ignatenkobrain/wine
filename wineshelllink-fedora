@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for i in $HOME/.config/menus/applications-merged/*menu ; do
+     sed -i -e 's:<Name>wine-wine</Name>:<Name>Wine</Name>:g' \
+	-e ':<Directory>wine-wine</Directory>:<Directory>wine</Directory>:g' "$i"
+done
