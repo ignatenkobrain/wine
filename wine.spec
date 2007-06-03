@@ -1,8 +1,6 @@
-%define __global_cflags -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fno-stack-protector --param=ssp-buffer-size=4 -m32 -march=i386 -mtune=pentium4 -fasynchronous-unwind-tables
-
 Name:		wine
 Version:	0.9.38
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -49,7 +47,7 @@ Patch0:         wine-prefixfonts.patch
 Patch1:         wine-rpath.patch
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch:  %{ix86}
+ExclusiveArch:  i386
 
 BuildRequires:	bison
 BuildRequires:	flex
@@ -747,6 +745,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Jun 03 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.38-2
+- allow full opt flags again
+- set ExclusiveArch to i386 for koji to only build i386
+
 * Sat Jun 02 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.38-1
 - version upgrade (#242087)
