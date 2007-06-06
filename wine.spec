@@ -1,6 +1,6 @@
 Name:		wine
 Version:	0.9.38
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -106,9 +106,9 @@ which allows unmodified Windows 3.x/9x/NT binaries to run on x86 and x86_64
 Unixes. Wine does not require MS Windows, but it can use native system
 .dll files if they are available.
 
-In Fedora Extras wine is actually a meta-package which will install everything
-you need for wine to work smoothly. If you don't want to install everything
-take a look at the wine-* packages.
+In Fedora wine is a meta-package which will install everything needed for wine
+to work smoothly. Smaller setups can be achieved by installing some of the 
+wine-* sub packages.
 
 %package core
 Summary:        Wine core package
@@ -745,6 +745,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Wed Jun 06 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.38-3
+- fix description
+
 * Sun Jun 03 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.38-2
 - allow full opt flags again
