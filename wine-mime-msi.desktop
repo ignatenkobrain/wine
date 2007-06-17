@@ -4,4 +4,4 @@ Name=Windows Installer File
 Encoding=UTF-8
 Exec=wine %f
 MimeType=application/x-ole-storage;text/mspg-legacyinfo
-Hidden=True
+Hidden=true
