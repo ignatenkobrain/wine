@@ -1,6 +1,6 @@
 Name:		wine
-Version:	0.9.38
-Release:	3%{?dist}
+Version:	0.9.39
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.38-fe.tar.bz2
+Source0:        wine-0.9.39-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -551,6 +551,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/olepro32.dll.so
 %{_libdir}/wine/olesvr.dll16
 %{_libdir}/wine/olesvr32.dll.so
+%{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/pstorec.dll.so
@@ -745,6 +746,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Jun 17 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.39-1
+- version upgrade
+- convert to utf8 (#244046)
+- fix mime entry (#243511)
+
 * Wed Jun 06 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.38-3
 - fix description
@@ -782,7 +789,7 @@ update-desktop-database &>/dev/null || :
 0.9.35-1
 - version upgrade (#234766)
 - sources file comments (#235232)
-- smpflags work again (mentioned by Marcin Zaj¿czkowski)
+- smpflags work again (mentioned by Marcin ZajÄ…czkowski)
 - drop arts sound driver package, as it is no longer part of wine
 
 * Sun Apr 01 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
@@ -1024,24 +1031,24 @@ update-desktop-database &>/dev/null || :
 20050524-2
 - fedorarized version
 
-* Mon May 30 2005 Vincent Béron <vberon@mecano.gme.usherb.ca> 20050524-1fc3
+* Mon May 30 2005 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20050524-1fc3
 - Update to 20050524
 - Remove pdf documentation build as it's no more included in the main archive
 - Workaround for generic.ppd installation
 
-* Tue Apr 19 2005 Vincent Béron <vberon@mecano.gme.usherb.ca> 20050419-1fc3
+* Tue Apr 19 2005 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20050419-1fc3
 - Update to 20050419
 
-* Thu Mar 10 2005 Vincent Béron <vberon@mecano.gme.usherb.ca> 20050310-1fc3
+* Thu Mar 10 2005 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20050310-1fc3
 - Update to 20050310
 
-* Sat Feb 12 2005 Vincent Béron <vberon@mecano.gme.usherb.ca> 20050211-1fc3
+* Sat Feb 12 2005 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20050211-1fc3
 - Update to 20050211
 
-* Tue Jan 11 2005 Vincent Béron <vberon@mecano.gme.usherb.ca> 20050111-1fc3
+* Tue Jan 11 2005 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20050111-1fc3
 - Update to 20050111
 
-* Wed Dec 1 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20041201-1fc3
+* Wed Dec 1 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20041201-1fc3
 - Recompile for FC3
 - Update to 20041201
 - Small reorganization:
@@ -1050,97 +1057,97 @@ update-desktop-database &>/dev/null || :
     - use Wine's generated stdole32.tlb file;
     - use Wine's generated fonts.
 
-* Wed Oct 20 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20041019-1fc2
+* Wed Oct 20 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20041019-1fc2
 - Update to 20041019
 
-* Wed Sep 15 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040914-1fc2
+* Wed Sep 15 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040914-1fc2
 - Update to 20040914
 
-* Sat Aug 14 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040813-1fc2
+* Sat Aug 14 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040813-1fc2
 - Update to 20040813
 
-* Sat Jul 17 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040716-1fc2
+* Sat Jul 17 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040716-1fc2
 - Update to 20040716
 
-* Fri Jun 25 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040615-1fc2
+* Fri Jun 25 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040615-1fc2
 - Recompile for FC2
 - Backport from current CVS some fixes to the preloader to prevent
   a segfault on startup
 - Include a currently uncommitted patch from Alexandre Julliard regarding
   further issues with the preloader
 
-* Sun Jun 20 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040615-1fc1
+* Sun Jun 20 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040615-1fc1
 - Update to 20040615
 - Use of wineprefixcreate instead of old RedHat patches
 
-* Wed May 5 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040505-1fc1
+* Wed May 5 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040505-1fc1
 - Update to 20040505
 
-* Fri Apr 9 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040408-1fc1
+* Fri Apr 9 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040408-1fc1
 - Update to 20040408
 - Change the handling of paths to DOS drives in the installation process
 
-* Wed Mar 17 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040309-1fc1
+* Wed Mar 17 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040309-1fc1
 - Update to 20040309
 - Replaced winedefault.reg by wine.inf
 
-* Wed Feb 18 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040213-1fc1
+* Wed Feb 18 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040213-1fc1
 - Update to 20040213
 - Moved Wine dlls back to %{_libdir}/wine rather than %{_libdir}/wine/wine
 
-* Sun Jan 25 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040121-fc1
+* Sun Jan 25 2004 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20040121-fc1
 - Update to 20040121
 
-* Sat Dec 13 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031212-fc1
+* Sat Dec 13 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20031212-fc1
 - Update to 20031212
 
-* Wed Nov 18 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031118-fc1
+* Wed Nov 18 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20031118-fc1
 - Update to 20031118
 
-* Thu Oct 16 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031016-1rh9
+* Thu Oct 16 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20031016-1rh9
 - Update to 20031016
 
-* Tue Sep 11 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030911-1rh9
+* Tue Sep 11 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030911-1rh9
 - Fix of include location
 - Better separation of run-time and development files
 - Update to 20030911
 
-* Wed Aug 13 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030813-1rh9
+* Wed Aug 13 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030813-1rh9
 - Update to 20030813
 
-* Wed Jul 09 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030709-1rh9
+* Wed Jul 09 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030709-1rh9
 - Update to 20030709
 
-* Wed Jun 18 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030618-1rh9
+* Wed Jun 18 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030618-1rh9
 - Change the default C drive to ~/.wine/c, copied from /usr/share/wine
   if non-existant (Thanks to Rudolf Kastl)
 - Updated to 20030618
 
-* Tue May 20 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030508-1rh9
+* Tue May 20 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030508-1rh9
 - Adapted for RH9
 
-* Thu May 08 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030508-1
+* Thu May 08 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030508-1
 - Add libraries definition files to devel package
 - Update to 20030508
 
-* Tue Apr 08 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030408-1
+* Tue Apr 08 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030408-1
 - Update to 20030408
 
-* Tue Mar 18 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030318-1
+* Tue Mar 18 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030318-1
 - Update to 20030318
 
-* Thu Mar 11 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030219-2
+* Thu Mar 11 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030219-2
 - Fix the symlinks in wine-c.
 
-* Wed Feb 19 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030219-1
+* Wed Feb 19 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030219-1
 - Update to 20030129
 - Various fixes in RPM build process
 
-* Fri Jan 17 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030115-1
+* Fri Jan 17 2003 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20030115-1
 - Update to 20030115
 - fix to build problem
 
-* Thu Nov  7 2002 Vincent Béron <vberon@mecano.gme.usherb.ca> 20021031-1
+* Thu Nov  7 2002 Vincent BÃ©ron <vberon@mecano.gme.usherb.ca> 20021031-1
 - Update to 20021031
 - Tweaks here and there
 
