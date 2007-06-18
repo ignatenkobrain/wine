@@ -5,4 +5,4 @@ Exec=wineboot
 Terminal=false
 Type=Application
 Encoding=UTF-8
-Categories=Application;Wine;
+Categories=X-Wine;
