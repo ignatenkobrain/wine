@@ -1,6 +1,6 @@
 Name:		wine
-Version:	0.9.39
-Release:	2%{?dist}
+Version:	0.9.40
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.39-fe.tar.bz2
+Source0:        wine-0.9.40-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -462,6 +462,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dpnhpast.dll.so
 %{_libdir}/wine/dsound.dll.so
 %{_libdir}/wine/dswave.dll.so
+%{_libdir}/wine/dwmapi.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/eject.exe.so
 %{_libdir}/wine/gdi.exe16
@@ -472,6 +473,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/hid.dll.so
 %{_libdir}/wine/hh.exe.so
 %{_libdir}/wine/hlink.dll.so
+%{_libdir}/wine/hnetcfg.dll.so
 %{_libdir}/wine/hhctrl.ocx.so
 %{_libdir}/wine/iccvid.dll.so
 %{_libdir}/wine/icinfo.exe.so
@@ -533,6 +535,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/newdev.dll.so
 %{_libdir}/wine/ntdll.dll.so
 %{_libdir}/wine/ntdsapi.dll.so
+%{_libdir}/wine/ntprint.dll.so
 %{_libdir}/wine/objsel.dll.so
 %{_libdir}/wine/odbc32.dll.so
 %{_libdir}/wine/odbccp32.dll.so
@@ -553,6 +556,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/olesvr32.dll.so
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/powrprof.dll.so
+%{_libdir}/wine/printui.dll.so
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/pstorec.dll.so
 %{_libdir}/wine/qcap.dll.so
@@ -746,6 +750,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Tue Jul 03 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.40-1
+- version upgrade
+
 * Mon Jun 18 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.39-2
 - fix desktop entries
