@@ -1,5 +1,5 @@
 Name:		wine
-Version:	0.9.42
+Version:	0.9.43
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.42-fe.tar.bz2
+Source0:        wine-0.9.43-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -461,11 +461,13 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dpnaddr.dll.so
 %{_libdir}/wine/dpnet.dll.so
 %{_libdir}/wine/dpnhpast.dll.so
+%{_libdir}/wine/dpnlobby.dll.so
 %{_libdir}/wine/dsound.dll.so
 %{_libdir}/wine/dswave.dll.so
 %{_libdir}/wine/dwmapi.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/eject.exe.so
+%{_libdir}/wine/faultrep.dll.so
 %{_libdir}/wine/gdi.exe16
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gdiplus.dll.so
@@ -485,6 +487,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/imm.dll16
 %{_libdir}/wine/imm32.dll.so
 %{_libdir}/wine/infosoft.dll.so
+%{_libdir}/wine/inkobj.dll.so
 %{_libdir}/wine/inseng.dll.so
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itss.dll.so
@@ -517,6 +520,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msftedit.dll.so
 %{_libdir}/wine/msg711.acm.so
 %{_libdir}/wine/mshtml.dll.so
+%{_libdir}/wine/mshtml.tlb.so
 %{_libdir}/wine/msi.dll.so
 %{_libdir}/wine/msimg32.dll.so
 %{_libdir}/wine/msisys.ocx.so
@@ -629,6 +633,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing.dll16
 %{_libdir}/wine/wing32.dll.so
+%{_libdir}/wine/winhttp.dll.so
 %{_libdir}/wine/wininet.dll.so
 %{_libdir}/wine/winmm.dll.so
 %{_libdir}/wine/winnls.dll16
@@ -687,6 +692,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winhelp.exe.so
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.exe.so
+%{_libdir}/wine/write.exe.so
 %{_datadir}/applications/fedora-wine-notepad.desktop
 %{_datadir}/applications/fedora-wine-winefile.desktop
 %{_datadir}/applications/fedora-wine-winemine.desktop
@@ -751,6 +757,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Aug 11 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.43-1
+- version upgrade
+- fix init-script output (#252144)
+- add lsb stuff (#247096)
+
 * Sat Jul 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.42-1
 - version upgrade
