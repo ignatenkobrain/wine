@@ -1,10 +1,10 @@
 Name:		wine
 Version:	0.9.43
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
-License:	LGPL
+License:	LGPLv2+
 URL:		http://www.winehq.org/
 # special fedora tarball without winemp3 stuff build doing
 # rm -fr dlls/winemp3.acm
@@ -757,6 +757,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Aug 18 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.43-2
+- fix license
+- fix #248999
+
 * Sat Aug 11 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.43-1
 - version upgrade
