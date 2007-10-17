@@ -526,6 +526,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msisys.ocx.so
 %{_libdir}/wine/msnet32.dll.so
 %{_libdir}/wine/msrle32.dll.so
+%{_libdir}/wine/msvcirt.dll.so
 %{_libdir}/wine/msvcrt.dll.so
 %{_libdir}/wine/msvcrt20.dll.so
 %{_libdir}/wine/msvcrt40.dll.so
@@ -566,6 +567,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/pstorec.dll.so
 %{_libdir}/wine/qcap.dll.so
+%{_libdir}/wine/qmgr.dll.so
 %{_libdir}/wine/quartz.dll.so
 %{_libdir}/wine/query.dll.so
 %{_libdir}/wine/rasapi16.dll16
