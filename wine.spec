@@ -1,5 +1,5 @@
 Name:		wine
-Version:	0.9.47
+Version:	0.9.48
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.47-fe.tar.bz2
+Source0:        wine-0.9.48-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -522,6 +522,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mshtml.dll.so
 %{_libdir}/wine/mshtml.tlb.so
 %{_libdir}/wine/msi.dll.so
+%{_libdir}/wine/msimtf.dll.so
 %{_libdir}/wine/msimg32.dll.so
 %{_libdir}/wine/msisys.ocx.so
 %{_libdir}/wine/msnet32.dll.so
@@ -760,6 +761,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Oct 26 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.48-1
+- version upgrade
+
 * Sat Oct 13 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.47-1
 - version upgrade
