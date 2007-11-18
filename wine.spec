@@ -1,5 +1,5 @@
 Name:		wine
-Version:	0.9.48
+Version:	0.9.49
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.48-fe.tar.bz2
+Source0:        wine-0.9.49-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -430,6 +430,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/crypt32.dll.so
 %{_libdir}/wine/cryptdll.dll.so
 %{_libdir}/wine/cryptnet.dll.so
+%{_libdir}/wine/ctapi32.dll.so
 %{_libdir}/wine/ctl3d.dll16
 %{_libdir}/wine/ctl3d32.dll.so
 %{_libdir}/wine/ctl3dv2.dll16
@@ -486,6 +487,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/imagehlp.dll.so
 %{_libdir}/wine/imm.dll16
 %{_libdir}/wine/imm32.dll.so
+%{_libdir}/wine/inetcomm.dll.so
 %{_libdir}/wine/infosoft.dll.so
 %{_libdir}/wine/inkobj.dll.so
 %{_libdir}/wine/inseng.dll.so
@@ -515,6 +517,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msacm32.dll.so
 %{_libdir}/wine/msacm32.drv.so
 %{_libdir}/wine/msadp32.acm.so
+%{_libdir}/wine/mscat32.dll.so
 %{_libdir}/wine/mscoree.dll.so
 %{_libdir}/wine/msdmo.dll.so
 %{_libdir}/wine/msftedit.dll.so
@@ -761,6 +764,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Tue Nov 13 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.49-1
+- version upgrade
+
 * Fri Oct 26 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.48-1
 - version upgrade
