@@ -1,6 +1,6 @@
 Name:		wine
 Version:	0.9.49
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -764,6 +764,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Dec 09 2007 Alex Lancaster <alexlan [AT] fedoraproject.org> 
+- 0.9.49-2
+- Rebuild for new openssl/openldap soname bump
+
 * Tue Nov 13 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.49-1
 - version upgrade
