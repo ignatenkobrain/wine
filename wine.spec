@@ -796,10 +796,6 @@ update-desktop-database &>/dev/null || :
 - 0.9.50-1
 - version upgrade
 
-* Sun Dec 09 2007 Alex Lancaster <alexlan [AT] fedoraproject.org> 
-- 0.9.49-2
-- Rebuild for new openssl/openldap soname bump
-
 * Tue Nov 13 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.49-1
 - version upgrade
