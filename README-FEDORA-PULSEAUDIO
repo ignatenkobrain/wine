@@ -1,0 +1,10 @@
+Wine and Pulseaudio Support
+---------------------------
+
+Currently wine does not have native support for pulseaudio. As a workaround to
+make wine work alongside pulseaudio select OSS sound output in winecfg. Wine
+then calls padsp as a wrapper if alsa-plugin-pulseaudio and pulseaudio-utils is
+installed. 
+
+If you think you have found a bug related to this take a look at the bug
+reporting procedure at http://fedoraproject.org/wiki/AndreasBierfert/Wine.
