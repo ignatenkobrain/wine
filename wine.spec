@@ -1,6 +1,6 @@
 Name:		wine
-Version:	0.9.51
-Release:	2%{?dist}
+Version:	0.9.52
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.51-fe.tar.bz2
+Source0:        wine-0.9.52-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -241,7 +241,7 @@ install -p -m 644 %{SOURCE200} \
 %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 mkdir -p %{buildroot}%{_datadir}/desktop-directories
 install -p -m 644 %{SOURCE201} \
-%{buildroot}%{_datadir}/desktop-directories/wine.directory
+%{buildroot}%{_datadir}/desktop-directories/Wine.directory
 
 
 # install desktop files
@@ -405,7 +405,7 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/applications/fedora-wine-uninstaller.desktop
 %{_datadir}/applications/fedora-wine-winecfg.desktop
 %{_datadir}/applications/fedora-wine-wineboot.desktop
-%{_datadir}/desktop-directories/wine.directory
+%{_datadir}/desktop-directories/Wine.directory
 %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_mandir}/man1/wine.1.gz
 %{_datadir}/wine/generic.ppd
@@ -783,6 +783,15 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Dec 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.52-1
+- version upgrade
+
+* Fri Dec 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.51-3
+- add -n Wine to pulseaudio workaround
+- try to fix menu bug #393641
+
 * Fri Dec 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.51-2
 - add fix for #344281 pulseaudio workaround
