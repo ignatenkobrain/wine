@@ -7,7 +7,7 @@
 		<Name>Wine</Name>
 		<Directory>Wine.directory</Directory>
 		<Include>
-			<Category>Wine</Category>
+			<Category>X-Wine</Category>
 		</Include>
 	</Menu>
 </Menu>

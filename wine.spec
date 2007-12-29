@@ -1,6 +1,6 @@
 Name:		wine
 Version:	0.9.52
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -783,6 +783,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Dec 29 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.52-2
+- fix menu bug (#393641)
+
 * Fri Dec 28 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.52-1
 - version upgrade
