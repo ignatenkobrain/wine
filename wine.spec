@@ -1,6 +1,6 @@
 Name:		wine
-Version:	0.9.52
-Release:	2%{?dist}
+Version:	0.9.53
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        wine-0.9.52-fe.tar.bz2
+Source0:        %{name}-%{version}-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -408,6 +408,8 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/desktop-directories/Wine.directory
 %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_mandir}/man1/wine.1.gz
+%{_mandir}/man1/wineserver.1*
+%lang(fr) %{_mandir}/fr.UTF-8/man1/*
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
 %{_bindir}/wine-kthread
@@ -415,7 +417,6 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wine-pthread
 %{_bindir}/winelauncher
 %{_bindir}/wineserver
-%{_mandir}/man1/wineserver.1*
 %{_libdir}/libwine.so.1*
 %dir %{_libdir}/wine
 %{_libdir}/wine/acledit.dll.so
@@ -526,6 +527,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mmdevldr.vxd.so
 %{_libdir}/wine/mmsystem.dll16
 %{_libdir}/wine/monodebg.vxd.so
+%{_libdir}/wine/mountmgr.sys.so
 %{_libdir}/wine/mouse.drv16
 %{_libdir}/wine/mpr.dll.so
 %{_libdir}/wine/mprapi.dll.so
@@ -783,6 +785,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Jan 12 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.53-1
+- version upgrade
+
 * Sat Dec 29 2007 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.52-2
 - fix menu bug (#393641)
