@@ -1,6 +1,6 @@
 Name:		wine
 Version:	0.9.53
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -63,12 +63,14 @@ BuildRequires:  freeglut-devel
 BuildRequires:  lcms-devel
 BuildRequires:  libieee1284-devel
 BuildRequires:  libjpeg-devel
+BuildRequires:  libpng-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  libusb-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openldap-devel
+BuildRequires:  unixODBC-devel
 BuildRequires:  openssl-devel
 BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
@@ -84,6 +86,7 @@ BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
 BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
 BuildRequires:  libXinerama-devel
+BuildRequires:  libXcomposite-devel
 BuildRequires:  fontconfig-devel
 BuildRequires:  giflib-devel
 BuildRequires:  cups-devel
@@ -785,6 +788,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Jan 13 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.53-2
+- add some missing BR
+
 * Sat Jan 12 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.53-1
 - version upgrade
