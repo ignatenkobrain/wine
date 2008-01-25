@@ -1,6 +1,6 @@
 Name:		wine
-Version:	0.9.53
-Release:	2%{?dist}
+Version:	0.9.54
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -43,8 +43,7 @@ Source300:      wine-mime-msi.desktop
 Source400:      wineshelllink-fedora
 Patch400:       wine-wineshelllink.patch
 
-# fix for pulseaudio playback (#344281)
-Source401:      wine-pulseaudio.sh
+# explain how to use wine with pulseaudio
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -309,9 +308,7 @@ install -p -m644 %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 install -p -m755 %{SOURCE400} $RPM_BUILD_ROOT%{_bindir}/wineshelllink-fedora
 
 
-# pulseaudio workaround (#344281)
-mv $RPM_BUILD_ROOT%{_bindir}/{wine,wine_bin}
-install -pm755 %{SOURCE401} $RPM_BUILD_ROOT%{_bindir}/wine
+# deploy pulseaudio readme
 cp %{SOURCE402} .
 
 %clean
@@ -372,7 +369,6 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/regedit
 %{_bindir}/regsvr32
 %{_bindir}/wine
-%{_bindir}/wine_bin
 %{_bindir}/wineboot
 %{_bindir}/winebrowser
 %{_bindir}/wineconsole
@@ -457,6 +453,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/d3d10.dll.so
 %{_libdir}/wine/d3dim.dll.so
 %{_libdir}/wine/d3drm.dll.so
+%{_libdir}/wine/d3dx9_36.dll.so
 %{_libdir}/wine/d3dxof.dll.so
 %{_libdir}/wine/dbghelp.dll.so
 %{_libdir}/wine/dciman32.dll.so
@@ -552,6 +549,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msnet32.dll.so
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/msvcirt.dll.so
+%{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcrt.dll.so
 %{_libdir}/wine/msvcrt20.dll.so
 %{_libdir}/wine/msvcrt40.dll.so
@@ -589,6 +587,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/printui.dll.so
+%{_libdir}/wine/propsys.dll.so
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/pstorec.dll.so
 %{_libdir}/wine/qcap.dll.so
@@ -670,6 +669,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winnls32.dll.so
 %{_libdir}/wine/winsock.dll16
 %{_libdir}/wine/winspool.drv.so
+%{_libdir}/wine/wmi.dll.so
 %{_libdir}/wine/spoolss.dll.so
 %{_libdir}/wine/winscard.dll.so
 %{_libdir}/wine/wintab.dll16
@@ -788,6 +788,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Jan 25 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.54-1
+- version upgrade
+- remove default pulseaudio workaround (#429420,#428745)
+- improve pulseaudio readme
+
 * Sun Jan 13 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.53-2
 - add some missing BR
