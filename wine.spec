@@ -1,5 +1,5 @@
 Name:		wine
-Version:	0.9.57
+Version:	0.9.58
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -384,6 +384,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/net.exe.so
 %{_libdir}/wine/ntoskrnl.exe.so
 %{_libdir}/wine/oleview.exe.so
+%{_libdir}/wine/reg.exe.so
 %{_libdir}/wine/regedit.exe.so
 %{_libdir}/wine/regsvr32.exe.so
 %{_libdir}/wine/rpcss.exe.so
@@ -489,6 +490,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/eject.exe.so
 %{_libdir}/wine/faultrep.dll.so
+%{_libdir}/wine/fusion.dll.so
 %{_libdir}/wine/gdi.exe16
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gdiplus.dll.so
@@ -516,6 +518,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itircl.dll.so
 %{_libdir}/wine/itss.dll.so
+%{_libdir}/wine/jscript.dll.so
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/keyboard.drv16
 %{_libdir}/wine/krnl386.exe16
@@ -801,6 +804,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Mar 22 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.58-1
+- version upgrade
+
 * Tue Mar 11 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.57-1
 - version upgrade
