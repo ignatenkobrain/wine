@@ -1,5 +1,5 @@
 Name:		wine
-Version:	0.9.58
+Version:	0.9.59
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -390,6 +390,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/rpcss.exe.so
 %{_libdir}/wine/rundll32.exe.so
 %{_libdir}/wine/secedit.exe.so
+%{_libdir}/wine/services.exe.so
 %{_libdir}/wine/start.exe.so
 %{_libdir}/wine/wineboot.exe.so
 %{_libdir}/wine/winebrowser.exe.so
@@ -804,6 +805,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Apr 05 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.59-1
+- version upgrade
+
 * Sat Mar 22 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.58-1
 - version upgrade
