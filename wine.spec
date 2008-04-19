@@ -1,5 +1,5 @@
 Name:		wine
-Version:	0.9.59
+Version:	0.9.60
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -417,7 +417,8 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wine-kthread
 %{_bindir}/wine-preloader
 %{_bindir}/wine-pthread
-%{_bindir}/winelauncher
+# < 0.9.60
+#%{_bindir}/winelauncher
 %{_bindir}/wineserver
 %{_libdir}/libwine.so.1*
 %dir %{_libdir}/wine
@@ -450,6 +451,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/cryptdlg.dll.so
 %{_libdir}/wine/cryptdll.dll.so
 %{_libdir}/wine/cryptnet.dll.so
+%{_libdir}/wine/cryptui.dll.so
 %{_libdir}/wine/ctapi32.dll.so
 %{_libdir}/wine/ctl3d.dll16
 %{_libdir}/wine/ctl3d32.dll.so
@@ -805,6 +807,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Apr 18 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 0.9.60-1
+- version upgrade
+
 * Sat Apr 05 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.59-1
 - version upgrade
