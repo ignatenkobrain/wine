@@ -1,6 +1,6 @@
 Name:		wine
-Version:	0.9.61
-Release:	1%{?dist}
+Version:	1.0
+Release:	0.1.rc1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        %{name}-%{version}-fe.tar.bz2
+Source0:        %{name}-%{version}-rc1-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -207,7 +207,7 @@ Header, include files and library definition files for developing applications
 with the Wine Windows(TM) emulation libraries.
 
 %prep
-%setup -q -n %{name}-%{version}-fe
+%setup -q -n %{name}-%{version}-rc1-fe
 %patch0
 %patch1
 %patch400
@@ -807,6 +807,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat May 10 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.0-0.1.rc1
+- version upgrade to rc1
+
 * Mon May 05 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 0.9.61-1
 - version upgrade
