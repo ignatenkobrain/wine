@@ -1,6 +1,6 @@
 Name:		wine
 Version:	1.0
-Release:	0.1.rc1%{?dist}
+Release:	0.2.rc2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        %{name}-%{version}-rc1-fe.tar.bz2
+Source0:        %{name}-%{version}-rc2-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -207,18 +207,26 @@ Header, include files and library definition files for developing applications
 with the Wine Windows(TM) emulation libraries.
 
 %prep
-%setup -q -n %{name}-%{version}-rc1-fe
+%setup -q -n %{name}-%{version}-rc2-fe
 %patch0
 %patch1
 %patch400
 
 %build
+# work around gcc bug see #440139
+# this affects more then just dlls/user32/menu.c
+%if %{?fedora} > 8
+export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
+%else
 export CFLAGS="$RPM_OPT_FLAGS"
+%endif
+
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine --disable-static \
 	--x-includes=%{_includedir} --x-libraries=%{_libdir}
 
 %{__make} depend
+
 %{__make} %{?_smp_mflags}
 
 %install
@@ -380,6 +388,8 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/uninstaller
 %{_initrddir}/wine
 %{_libdir}/wine/expand.exe.so
+%{_libdir}/wine/winhelp.exe16
+%{_libdir}/wine/winhlp32.exe.so
 %{_libdir}/wine/msiexec.exe.so
 %{_libdir}/wine/net.exe.so
 %{_libdir}/wine/ntoskrnl.exe.so
@@ -807,6 +817,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri May 23 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.0-0.2.rc2
+- version upgrade
+- add compile workaround for fedora 9/rawhide (#440139)
+
 * Sat May 10 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.0-0.1.rc1
 - version upgrade to rc1
