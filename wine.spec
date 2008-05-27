@@ -737,7 +737,8 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/winemaker
 %{_bindir}/winemine
 %{_bindir}/winepath
-%{_bindir}/winhelp
+#%{_bindir}/winhelp
+#%{_libdir}/wine/winhelp.exe.so
 %{_libdir}/wine/explorer.exe.so
 %{_libdir}/wine/control.exe.so
 %{_libdir}/wine/cmd.exe.so
@@ -748,7 +749,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winefile.exe.so
 %{_libdir}/wine/winemine.exe.so
 %{_libdir}/wine/winepath.exe.so
-%{_libdir}/wine/winhelp.exe.so
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.exe.so
 %{_libdir}/wine/write.exe.so
