@@ -1,6 +1,6 @@
 Name:		wine
 Version:	1.0
-Release:	0.3.rc3%{?dist}
+Release:	0.4.rc4%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        %{name}-%{version}-rc3-fe.tar.bz2
+Source0:        %{name}-%{version}-rc4-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -207,7 +207,7 @@ Header, include files and library definition files for developing applications
 with the Wine Windows(TM) emulation libraries.
 
 %prep
-%setup -q -n %{name}-%{version}-rc3-fe
+%setup -q -n %{name}-%{version}-rc4-fe
 %patch0
 %patch1
 %patch400
@@ -367,9 +367,9 @@ update-desktop-database &>/dev/null || :
 
 %files core
 %defattr(-,root,root,-)
-%doc ANNOUNCE COPYING.LIB ChangeLog LICENSE LICENSE.OLD
+%doc ANNOUNCE COPYING.LIB LICENSE LICENSE.OLD
 %doc AUTHORS README-Fedora README VERSION
-# do not include huge changelogs .OLD .ALPHA (#204302)
+# do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
 # pulseaudio workaround documentation
 %doc README-FEDORA-PULSEAUDIO
@@ -817,6 +817,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Jun 06 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.0-0.4.rc4
+- version upgrade
+
 * Sun Jun 01 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.0-0.3.rc3
 - version upgrade
