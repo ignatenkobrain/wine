@@ -1,0 +1,9 @@
+--- tools/wine.desktop.orig	2008-06-17 11:21:52.000000000 +0200
++++ tools/wine.desktop	2008-06-17 11:23:16.000000000 +0200
+@@ -8,5 +8,5 @@
+ Name[ru]=Wine Эмулятор Windows
+ Name[fr]=Émulateur Windows Wine
+ Exec=wine start /unix %f
+-MimeType=application/x-ms-dos-executable;application/x-msdos-program;application/x-msdownload;application/exe;application/x-exe;application/dos-exe;vms/exe;application/x-winexe;application/msdos-windows;application/x-zip-compressed;application/x-executable;
++MimeType=application/x-ms-dos-executable;application/x-msdos-program;application/x-msdownload;application/exe;application/x-exe;application/dos-exe;vms/exe;application/x-winexe;application/msdos-windows;application/x-zip-compressed;
+ NoDisplay=true

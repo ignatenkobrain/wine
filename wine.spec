@@ -1,6 +1,6 @@
 Name:		wine
 Version:	1.0
-Release:	0.4.rc4%{?dist}
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -18,7 +18,7 @@ URL:		http://www.winehq.org/
 # Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
 # programs/winecfg/libraries.c:    "winemp3.acm",
 
-Source0:        %{name}-%{version}-rc4-fe.tar.bz2
+Source0:        %{name}-%{version}-fe.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -45,10 +45,13 @@ Patch400:       wine-wineshelllink.patch
 
 # explain how to use wine with pulseaudio
 Source402:      README-FEDORA-PULSEAUDIO
+Patch402:       wine-alsa-pulseaudio.patch
 
 
 Patch0:         wine-prefixfonts.patch
 Patch1:         wine-rpath.patch
+# fix #448338
+Patch2:         wine-desktop-mime.patch
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch:  i386
@@ -98,6 +101,7 @@ BuildRequires: dbus-devel hal-devel
 Requires:       wine-core = %{version}-%{release}
 Requires:       wine-capi = %{version}-%{release}
 Requires:       wine-cms = %{version}-%{release}
+Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-esd = %{version}-%{release}
 Requires:       wine-jack = %{version}-%{release}
 Requires:       wine-ldap = %{version}-%{release}
@@ -121,16 +125,26 @@ wine-* sub packages.
 Summary:        Wine core package
 Group:		Applications/Emulators
 Requires:       %{_bindir}/xmessage
-Requires(post): /sbin/ldconfig, /sbin/chkconfig, /sbin/service,
-Requires(post): desktop-file-utils >= 0.8
-Requires(preun): /sbin/chkconfig, /sbin/service
+Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-Requires(postun): desktop-file-utils >= 0.8
 Obsoletes:      wine <= 0.9.15-1%{?dist}
 Obsoletes:      wine-arts < 0.9.34
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
+
+%package desktop
+Summary:        Desktop integration features for wine
+Group:          Application/Emulators
+Requires(post): /sbin/chkconfig, /sbin/service,
+Requires(post): desktop-file-utils >= 0.8
+Requires(preun): /sbin/chkconfig, /sbin/service
+Requires(postun): desktop-file-utils >= 0.8
+Requires:       wine-core = %{version}-%{release}
+
+%description desktop
+Desktop integration features for wine, including mime-types and a binary format
+handler service.
 
 %package tools
 Summary:        Additional wine tools
@@ -207,10 +221,12 @@ Header, include files and library definition files for developing applications
 with the Wine Windows(TM) emulation libraries.
 
 %prep
-%setup -q -n %{name}-%{version}-rc4-fe
+%setup -q -n %{name}-%{version}-fe
 %patch0
 %patch1
+%patch2
 %patch400
+%patch402 -p1
 
 %build
 # work around gcc bug see #440139
@@ -322,8 +338,10 @@ cp %{SOURCE402} .
 %clean
 rm -rf %{buildroot}
 
-%post core
-/sbin/ldconfig
+%post core -p /sbin/ldconfig
+%postun core -p /sbin/ldconfig
+
+%post desktop
 update-desktop-database &>/dev/null || :
 if [ $1 = 1 ]; then
 /sbin/chkconfig --add wine
@@ -331,14 +349,13 @@ if [ $1 = 1 ]; then
 /sbin/service wine start &>/dev/null || :
 fi
 
-%preun core
+%preun desktop
 if [ $1 = 0 ]; then
 	/sbin/service wine stop >/dev/null 2>&1
 	/sbin/chkconfig --del wine
 fi
 
-%postun core
-/sbin/ldconfig
+%postun desktop
 update-desktop-database &>/dev/null || :
 
 %post esd -p /sbin/ldconfig
@@ -386,7 +403,6 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wineshelllink-fedora
 %{_bindir}/winecfg
 %{_bindir}/uninstaller
-%{_initrddir}/wine
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/winhelp.exe16
 %{_libdir}/wine/winhlp32.exe.so
@@ -411,14 +427,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winedevice.exe.so
 %{_libdir}/wine/uninstaller.exe.so
 %dir %{_datadir}/wine
-%{_datadir}/applications/fedora-wine-mime-msi.desktop
-%{_datadir}/applications/fedora-wine.desktop
-%{_datadir}/applications/fedora-wine-regedit.desktop
-%{_datadir}/applications/fedora-wine-uninstaller.desktop
-%{_datadir}/applications/fedora-wine-winecfg.desktop
-%{_datadir}/applications/fedora-wine-wineboot.desktop
-%{_datadir}/desktop-directories/Wine.directory
-%{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_mandir}/man1/wine.1.gz
 %{_mandir}/man1/wineserver.1*
 %lang(fr) %{_mandir}/fr.UTF-8/man1/*
@@ -737,8 +745,6 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/winemaker
 %{_bindir}/winemine
 %{_bindir}/winepath
-#%{_bindir}/winhelp
-#%{_libdir}/wine/winhelp.exe.so
 %{_libdir}/wine/explorer.exe.so
 %{_libdir}/wine/control.exe.so
 %{_libdir}/wine/cmd.exe.so
@@ -752,10 +758,21 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.exe.so
 %{_libdir}/wine/write.exe.so
+
+%files desktop
 %{_datadir}/applications/fedora-wine-notepad.desktop
 %{_datadir}/applications/fedora-wine-winefile.desktop
 %{_datadir}/applications/fedora-wine-winemine.desktop
 %{_datadir}/applications/fedora-wine-winhelp.desktop
+%{_datadir}/applications/fedora-wine-mime-msi.desktop
+%{_datadir}/applications/fedora-wine.desktop
+%{_datadir}/applications/fedora-wine-regedit.desktop
+%{_datadir}/applications/fedora-wine-uninstaller.desktop
+%{_datadir}/applications/fedora-wine-winecfg.desktop
+%{_datadir}/applications/fedora-wine-wineboot.desktop
+%{_datadir}/desktop-directories/Wine.directory
+%{_sysconfdir}/xdg/menus/applications-merged/wine.menu
+%{_initrddir}/wine
 
 %files esd
 %defattr(-,root,root,-)
@@ -817,6 +834,17 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Tue Jun 17 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.0-1
+- version upgrade (#446311,#417161)
+- fix wine.desktop mime types (#448338)
+- add desktop package including desktop files and binary handler (#441310)
+- pull in some wine alsa/pulseaudio patches (#344281)
+
+* Mon Jun 16 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.0-0.5.rc5
+- version upgrade
+
 * Fri Jun 06 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.0-0.4.rc4
 - version upgrade
