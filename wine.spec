@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.0
+Version:	1.1.2
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -125,6 +125,7 @@ wine-* sub packages.
 Summary:        Wine core package
 Group:		Applications/Emulators
 Requires:       %{_bindir}/xmessage
+Requires:       freetype
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
@@ -222,7 +223,7 @@ with the Wine Windows(TM) emulation libraries.
 
 %prep
 %setup -q -n %{name}-%{version}-fe
-%patch0
+#%patch0
 %patch1
 %patch2
 %patch400
@@ -231,11 +232,11 @@ with the Wine Windows(TM) emulation libraries.
 %build
 # work around gcc bug see #440139
 # this affects more then just dlls/user32/menu.c
-%if %{?fedora} > 8
-export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
-%else
+#%if %{?fedora} > 8
+#export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
+#%else
 export CFLAGS="$RPM_OPT_FLAGS"
-%endif
+#%endif
 
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine --disable-static \
@@ -446,6 +447,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
@@ -504,6 +506,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dpnet.dll.so
 %{_libdir}/wine/dpnhpast.dll.so
 %{_libdir}/wine/dpnlobby.dll.so
+%{_libdir}/wine/dpwsockx.dll.so
 %{_libdir}/wine/dsound.dll.so
 %{_libdir}/wine/dssenh.dll.so
 %{_libdir}/wine/dswave.dll.so
@@ -515,6 +518,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/gdi.exe16
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gdiplus.dll.so
+%{_libdir}/wine/glu32.dll.so
 %{_libdir}/wine/gphoto2.ds.so
 %{_libdir}/wine/gpkcsp.dll.so
 %{_libdir}/wine/hal.dll.so
@@ -532,6 +536,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/imm.dll16
 %{_libdir}/wine/imm32.dll.so
 %{_libdir}/wine/inetcomm.dll.so
+%{_libdir}/wine/inetmib1.dll.so
 %{_libdir}/wine/infosoft.dll.so
 %{_libdir}/wine/initpki.dll.so
 %{_libdir}/wine/inkobj.dll.so
@@ -579,6 +584,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msnet32.dll.so
 %{_libdir}/wine/mssip32.dll.so
 %{_libdir}/wine/msrle32.dll.so
+%{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcrt.dll.so
@@ -727,7 +733,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/d3d8.dll.so
 %{_libdir}/wine/d3d9.dll.so
 %{_libdir}/wine/d3dx8.dll.so
-%{_libdir}/wine/glu32.dll.so
 %{_libdir}/wine/opengl32.dll.so
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
@@ -834,6 +839,16 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Jul 27 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.2-1
+- version upgrade (#455960, #456831)
+- require freetype (#452417)
+- disable wineprefixcreate patch for now
+
+* Fri Jul 11 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.1-1
+- version upgrade
+
 * Tue Jun 17 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.0-1
 - version upgrade (#446311,#417161)
