@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.2
+Version:	1.1.4
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -45,10 +45,8 @@ Patch400:       wine-wineshelllink.patch
 
 # explain how to use wine with pulseaudio
 Source402:      README-FEDORA-PULSEAUDIO
-Patch402:       wine-alsa-pulseaudio.patch
 
 
-Patch0:         wine-prefixfonts.patch
 Patch1:         wine-rpath.patch
 # fix #448338
 Patch2:         wine-desktop-mime.patch
@@ -223,20 +221,18 @@ with the Wine Windows(TM) emulation libraries.
 
 %prep
 %setup -q -n %{name}-%{version}-fe
-#%patch0
 %patch1
 %patch2
 %patch400
-%patch402 -p1
 
 %build
 # work around gcc bug see #440139
 # this affects more then just dlls/user32/menu.c
-#%if %{?fedora} > 8
-#export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
-#%else
+%if %{?fedora} > 8
+export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
+%else
 export CFLAGS="$RPM_OPT_FLAGS"
-#%endif
+%endif
 
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine --disable-static \
@@ -580,6 +576,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msi.dll.so
 %{_libdir}/wine/msimtf.dll.so
 %{_libdir}/wine/msimg32.dll.so
+%{_libdir}/wine/msisip.dll.so
 %{_libdir}/wine/msisys.ocx.so
 %{_libdir}/wine/msnet32.dll.so
 %{_libdir}/wine/mssip32.dll.so
@@ -839,6 +836,15 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Fri Sep 05 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.4-1
+- version upgrade
+- drop wine-prefixfonts.patch (#460745)
+
+* Fri Aug 29 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.3-1
+- version upgrade
+
 * Sun Jul 27 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.2-1
 - version upgrade (#455960, #456831)
