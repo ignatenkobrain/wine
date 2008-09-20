@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.4
+Version:	1.1.5
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -134,7 +134,7 @@ Wine core package includes the basic wine stuff needed by all other packages.
 
 %package desktop
 Summary:        Desktop integration features for wine
-Group:          Application/Emulators
+Group:          Applications/Emulators
 Requires(post): /sbin/chkconfig, /sbin/service,
 Requires(post): desktop-file-utils >= 0.8
 Requires(preun): /sbin/chkconfig, /sbin/service
@@ -836,6 +836,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sat Sep 20 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.5-1
+- version upgrade
+
 * Fri Sep 05 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.4-1
 - version upgrade
