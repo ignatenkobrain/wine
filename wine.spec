@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.5
+Version:	1.1.6
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -95,6 +95,7 @@ BuildRequires:  libXi-devel
 BuildRequires:  libXcursor-devel
 # dbus/hal >= FC5
 BuildRequires: dbus-devel hal-devel
+BuildRequires:   gnutls-devel
 
 Requires:       wine-core = %{version}-%{release}
 Requires:       wine-capi = %{version}-%{release}
@@ -123,7 +124,7 @@ wine-* sub packages.
 Summary:        Wine core package
 Group:		Applications/Emulators
 Requires:       %{_bindir}/xmessage
-Requires:       freetype
+Requires:       freetype%{_isa}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
@@ -165,7 +166,7 @@ ESD sound support for wine
 Summary: JACK sound support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
-Requires: jack-audio-connection-kit
+Requires: jack-audio-connection-kit%{_isa}
 
 %description jack
 JACK sound support for wine
@@ -836,6 +837,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Thu Oct 23 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.6-1
+- version upgrade
+- fix multiarch problems (#466892,#467480)
+
 * Sat Sep 20 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.5-1
 - version upgrade
