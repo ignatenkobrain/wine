@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.6
+Version:	1.1.7
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -509,6 +509,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dswave.dll.so
 %{_libdir}/wine/dwmapi.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
+%{_libdir}/wine/dxgi.dll.so
 %{_libdir}/wine/eject.exe.so
 %{_libdir}/wine/faultrep.dll.so
 %{_libdir}/wine/fusion.dll.so
@@ -837,6 +838,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Oct 26 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.7-1
+- version upgrade
+
 * Thu Oct 23 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.6-1
 - version upgrade
