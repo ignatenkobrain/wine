@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.7
+Version:	1.1.9
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -38,10 +38,6 @@ Source201:      wine.directory
 
 # mime types
 Source300:      wine-mime-msi.desktop
-
-# enhancements
-Source400:      wineshelllink-fedora
-Patch400:       wine-wineshelllink.patch
 
 # explain how to use wine with pulseaudio
 Source402:      README-FEDORA-PULSEAUDIO
@@ -224,7 +220,6 @@ with the Wine Windows(TM) emulation libraries.
 %setup -q -n %{name}-%{version}-fe
 %patch1
 %patch2
-%patch400
 
 %build
 # work around gcc bug see #440139
@@ -327,9 +322,6 @@ cp %{SOURCE3} README-Fedora
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 install -p -m644 %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 
-install -p -m755 %{SOURCE400} $RPM_BUILD_ROOT%{_bindir}/wineshelllink-fedora
-
-
 # deploy pulseaudio readme
 cp %{SOURCE402} .
 
@@ -397,8 +389,6 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wineconsole
 %{_bindir}/wineprefixcreate
 %{_mandir}/man1/wineprefixcreate.1*
-%{_bindir}/wineshelllink
-%{_bindir}/wineshelllink-fedora
 %{_bindir}/winecfg
 %{_bindir}/uninstaller
 %{_libdir}/wine/expand.exe.so
@@ -474,6 +464,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ctl3d32.dll.so
 %{_libdir}/wine/ctl3dv2.dll16
 %{_libdir}/wine/d3d10.dll.so
+%{_libdir}/wine/d3d10core.dll.so
 %{_libdir}/wine/d3dim.dll.so
 %{_libdir}/wine/d3drm.dll.so
 %{_libdir}/wine/d3dx9_*.dll.so
@@ -737,6 +728,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.exe.so
 %{_libdir}/wine/xcopy.exe.so
+%{_libdir}/wine/xinput1_1.dll.so
+%{_libdir}/wine/xinput1_2.dll.so
+%{_libdir}/wine/xinput1_3.dll.so
+%{_libdir}/wine/xinput9_1_0.dll.so
 %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 
 %files tools
@@ -838,6 +833,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %changelog
+* Sun Nov 23 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.9-1
+- version upgrade
+
 * Sun Oct 26 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.7-1
 - version upgrade

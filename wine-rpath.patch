@@ -1,17 +1,17 @@
---- configure.orig	2007-08-18 09:42:40.000000000 +0200
-+++ configure	2007-08-18 09:44:10.000000000 +0200
-@@ -8525,14 +8525,14 @@
+--- configure.orig	2008-11-05 12:25:10.000000000 +0300
++++ configure	2008-11-06 22:22:27.000000000 +0300
+@@ -9306,14 +9306,14 @@
  fi
  
  
--      as_ac_var=`echo "ac_cv_cflags_-fPIC -Wl,--rpath,\$ORIGIN/../lib" | $as_tr_sh`
--{ echo "$as_me:$LINENO: checking whether the compiler supports -fPIC -Wl,--rpath,\$ORIGIN/../lib" >&5
--echo $ECHO_N "checking whether the compiler supports -fPIC -Wl,--rpath,\$ORIGIN/../lib... $ECHO_C" >&6; }
-+      as_ac_var=`echo "ac_cv_cflags_-fPIC" | $as_tr_sh`
-+{ echo "$as_me:$LINENO: checking whether the compiler supports -fPIC" >&5
-+echo $ECHO_N "checking whether the compiler supports -fPIC $ECHO_C" >&6; }
+-      as_ac_var=`$as_echo "ac_cv_cflags_-fPIC -Wl,--rpath,\$ORIGIN/../lib" | $as_tr_sh`
+-{ $as_echo "$as_me:$LINENO: checking whether the compiler supports -fPIC -Wl,--rpath,\$ORIGIN/../lib" >&5
+-$as_echo_n "checking whether the compiler supports -fPIC -Wl,--rpath,\$ORIGIN/../lib... " >&6; }
++      as_ac_var=`$as_echo "ac_cv_cflags_-fPIC" | $as_tr_sh`
++{ $as_echo "$as_me:$LINENO: checking whether the compiler supports -fPIC" >&5
++$as_echo_n "checking whether the compiler supports -fPIC" >&6; }
  if { as_var=$as_ac_var; eval "test \"\${$as_var+set}\" = set"; }; then
-   echo $ECHO_N "(cached) $ECHO_C" >&6
+   $as_echo_n "(cached) " >&6
  else
    ac_wine_try_cflags_saved=$CFLAGS
 -CFLAGS="$CFLAGS -fPIC -Wl,--rpath,\$ORIGIN/../lib"
@@ -19,30 +19,14 @@
  cat >conftest.$ac_ext <<_ACEOF
  /* confdefs.h.  */
  _ACEOF
-@@ -8582,8 +8582,8 @@
- 	       { echo "$as_me:$LINENO: result: $ac_res" >&5
- echo "${ECHO_T}$ac_res" >&6; }
- if test `eval echo '${'$as_ac_var'}'` = yes; then
+@@ -9369,8 +9369,8 @@
+ $as_echo "$ac_res" >&6; }
+ if test `eval 'as_val=${'$as_ac_var'}
+ 		 $as_echo "$as_val"'` = yes; then
 -  LDRPATH_INSTALL="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
 -                       LDRPATH_LOCAL="-Wl,--rpath,\\\$\$ORIGIN/\$(TOPOBJDIR)/libs/wine"
 +  LDRPATH_INSTALL=""
 +  LDRPATH_LOCAL=""
  else
-   as_ac_var=`echo "ac_cv_cflags_-fPIC -Wl,-R,\$ORIGIN/../lib" | $as_tr_sh`
- { echo "$as_me:$LINENO: checking whether the compiler supports -fPIC -Wl,-R,\$ORIGIN/../lib" >&5
---- configure.ac.orig	2007-08-18 09:44:15.000000000 +0200
-+++ configure.ac	2007-08-18 09:44:46.000000000 +0200
-@@ -439,13 +439,6 @@
-       WINE_TRY_CFLAGS([-fPIC -Wl,--export-dynamic],
-                       [AC_SUBST(LDEXECFLAGS,["-Wl,--export-dynamic"])])
- 
--      WINE_TRY_CFLAGS([-fPIC -Wl,--rpath,\$ORIGIN/../lib],
--                      [LDRPATH_INSTALL="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
--                       LDRPATH_LOCAL="-Wl,--rpath,\\\$\$ORIGIN/\$(TOPOBJDIR)/libs/wine"],
--          [WINE_TRY_CFLAGS([-fPIC -Wl,-R,\$ORIGIN/../lib],
--                           [LDRPATH_INSTALL="-Wl,-R,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
--                            LDRPATH_LOCAL="-Wl,-R,\\\$\$ORIGIN/\$(TOPOBJDIR)/libs/wine"])])
--
-       WINE_TRY_CFLAGS([-Wl,--enable-new-dtags],
-                       [LDRPATH_INSTALL="$LDRPATH_INSTALL -Wl,--enable-new-dtags"])
- 
+   as_ac_var=`$as_echo "ac_cv_cflags_-fPIC -Wl,-R,\$ORIGIN/../lib" | $as_tr_sh`
+ { $as_echo "$as_me:$LINENO: checking whether the compiler supports -fPIC -Wl,-R,\$ORIGIN/../lib" >&5
