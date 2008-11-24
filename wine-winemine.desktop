@@ -5,4 +5,4 @@ Exec=winemine
 Terminal=false
 Type=Application
 Encoding=UTF-8
-Categories=Application;Game;
+Categories=Application;Game;LogicGame;
