@@ -1,6 +1,6 @@
 Name:		wine
-Version:	1.1.9
-Release:	2%{?dist}
+Version:	1.1.10
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -40,6 +40,9 @@ Source201:      wine.directory
 Source300:      wine-mime-msi.desktop
 
 # explain how to use wine with pulseaudio
+# see http://bugs.winehq.org/show_bug.cgi?id=10495
+Patch400:       wine-pulseaudio.patch
+Patch401:       wine-pulseaudio-waveout.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -90,8 +93,10 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXi-devel
 BuildRequires:  libXcursor-devel
 # dbus/hal >= FC5
-BuildRequires: dbus-devel hal-devel
-BuildRequires:   gnutls-devel
+BuildRequires:  dbus-devel hal-devel
+BuildRequires:  gnutls-devel
+BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  autoconf
 
 Requires:       wine-core = %{version}-%{release}
 Requires:       wine-capi = %{version}-%{release}
@@ -216,10 +221,22 @@ Requires: wine-core = %{version}-%{release}
 Header, include files and library definition files for developing applications
 with the Wine Windows(TM) emulation libraries.
 
+%package pulseaudio
+Summary: Pulseaudio support for wine
+Group: System Environment/Libraries
+Requires: wine-core = %{version}-%{release}
+
+%description pulseaudio
+This package adds a native pulseaudio driver for wine. This is not an official
+wine audio driver. Please do not report bugs regarding this driver at winehq.org.
+
 %prep
 %setup -q -n %{name}-%{version}-fe
 %patch1
 %patch2
+%patch400 -p1
+%patch401 -p1
+autoconf -f
 
 %build
 # work around gcc bug see #440139
@@ -232,7 +249,8 @@ export CFLAGS="$RPM_OPT_FLAGS"
 
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine --disable-static \
-	--x-includes=%{_includedir} --x-libraries=%{_libdir}
+	--x-includes=%{_includedir} --x-libraries=%{_libdir} \
+	--with-pulse
 
 %{__make} depend
 
@@ -378,8 +396,6 @@ update-desktop-database &>/dev/null || :
 %doc AUTHORS README-Fedora README VERSION
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
-# pulseaudio workaround documentation
-%doc README-FEDORA-PULSEAUDIO
 %{_bindir}/msiexec
 %{_bindir}/regedit
 %{_bindir}/regsvr32
@@ -832,7 +848,18 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.a
 %{_libdir}/wine/*.def
 
+%files pulseaudio
+# pulseaudio workaround documentation
+%doc README-FEDORA-PULSEAUDIO
+%{_libdir}/wine/winepulse.drv.so
+
 %changelog
+* Sat Dec 06 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.10-1
+- version upgrade
+- add native pulseaudio driver from winehq bugzilla (#10495)
+  fixes #474435, #344281
+
 * Mon Nov 24 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.9-2
 - fix #469907

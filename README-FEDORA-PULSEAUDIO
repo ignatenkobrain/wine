@@ -1,15 +1,19 @@
 Wine and Pulseaudio Support
 ---------------------------
-Currently wine does not have native support for pulseaudio. However different
-ways exist to make wine sound work alongside pulseaudio. Different sound
-outputs can be selected via `winecfg` or in the registry of wine.
+Currently wine does not have native support for pulseaudio. However, some
+patches exist to make wine use a native pulseaudio backend
+(see http://bugs.winehq.org/show_bug.cgi?id=10495). These have been included
+into the fedora wine package. If you have problems please do _not_ report them
+to the wine project.
 
+Other ways to get wine working with pulseaudio are described below:
 
 ALSA
 ----
 To achieve sound output via the wine alsa driver you need to add
 a pulseaudio alsa device to the alsa configuration and activate it in wine. See
 http://www.pulseaudio.org/wiki/PerfectSetup#ALSAApplications on how to do this.
+For this alsa-plugins-pulseaudio.i386 should be installed.
 
 
 Esound
