@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.10
+Version:	1.1.12
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -628,6 +628,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/olesvr32.dll.so
 %{_libdir}/wine/olethk32.dll.so
 %{_libdir}/wine/pdh.dll.so
+%{_libdir}/wine/pidgen.dll.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/printui.dll.so
 %{_libdir}/wine/propsys.dll.so
@@ -730,6 +731,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
+%{_libdir}/wine/wuapi.dll.so
 %{_libdir}/wine/security.dll.so
 %{_libdir}/wine/sfc.dll.so
 %{_datadir}/wine/fonts/
@@ -854,6 +856,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Mon Jan 05 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.12-1
+- version upgrade
+
 * Sat Dec 06 2008 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.10-1
 - version upgrade
