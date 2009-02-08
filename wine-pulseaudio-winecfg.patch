@@ -1,0 +1,49 @@
+diff --git a/programs/winecfg/En.rc b/programs/winecfg/En.rc
+index 1a07d71..7f45434 100644
+--- a/programs/winecfg/En.rc
++++ b/programs/winecfg/En.rc
+@@ -276,6 +276,7 @@ BEGIN
+     IDS_DRIVER_NAS              "NAS Driver"
+     IDS_DRIVER_AUDIOIO          "Audio IO (Solaris) Driver"
+     IDS_DRIVER_COREAUDIO        "CoreAudio Driver"
++    IDS_DRIVER_PULSE		"PulseAudio Driver"
+     IDS_OPEN_DRIVER_ERROR       "Couldn't open %s!"
+     IDS_SOUNDDRIVERS            "Sound Drivers"
+     IDS_DEVICES_WAVEOUT         "Wave Out Devices"
+diff --git a/programs/winecfg/audio.c b/programs/winecfg/audio.c
+index 3ce0e25..b716d25 100644
+--- a/programs/winecfg/audio.c
++++ b/programs/winecfg/audio.c
+@@ -95,6 +95,7 @@ static const AUDIO_DRIVER sAudioDrivers[] = {
+   {IDS_DRIVER_NAS,       "nas"},
+   {IDS_DRIVER_ESOUND,    "esd"},
+   {IDS_DRIVER_AUDIOIO,   "audioio"},
++  {IDS_DRIVER_PULSE,     "pulse"},
+   {0, ""}
+ };
+ 
+diff --git a/programs/winecfg/libraries.c b/programs/winecfg/libraries.c
+index 92dd970..42b6e41 100644
+--- a/programs/winecfg/libraries.c
++++ b/programs/winecfg/libraries.c
+@@ -79,6 +79,7 @@ static const char * const builtin_only[] =
+     "wineoss.drv",
+     "wineps",
+     "wineps.drv",
++    "winepulse.drv",
+     "winex11.drv",
+     "winmm",
+     "wintab32",
+diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
+index 2182c29..b8f07fb 100644
+--- a/programs/winecfg/resource.h
++++ b/programs/winecfg/resource.h
+@@ -180,6 +180,7 @@
+ #define IDS_ACCEL_BASIC                 8302
+ #define IDS_ACCEL_EMULATION             8303
+ #define IDS_DRIVER_ALSA                 8304
++#define IDS_DRIVER_PULSE		8305
+ 
+ #define IDS_DRIVER_ESOUND               8306
+ #define IDS_DRIVER_OSS                  8307
+

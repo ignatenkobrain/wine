@@ -1,9 +1,10 @@
---- tools/wine.desktop.orig	2008-07-28 20:36:29.000000000 +0200
-+++ tools/wine.desktop	2008-07-28 20:36:43.000000000 +0200
-@@ -16,5 +16,5 @@
+--- tools/wine.desktop.orig	2009-01-17 09:46:27.000000000 +0100
++++ tools/wine.desktop	2009-01-17 09:46:59.000000000 +0100
+@@ -16,6 +16,6 @@
  Name[nb]=Wine Programlaster for Windowsapplikasjoner
  Name[nn]=Wine Programlaster for Windowsapplikasjoner
  Exec=wine start /unix %f
 -MimeType=application/x-ms-dos-executable;application/x-msdos-program;application/x-msdownload;application/exe;application/x-exe;application/dos-exe;vms/exe;application/x-winexe;application/msdos-windows;application/x-zip-compressed;application/x-executable;application/x-msi;
 +MimeType=application/x-ms-dos-executable;application/x-msdos-program;application/x-msdownload;application/exe;application/x-exe;application/dos-exe;vms/exe;application/x-winexe;application/msdos-windows;application/x-zip-compressed;application/x-msi;
  NoDisplay=true
+ StartupNotify=true

@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.12
+Version:	1.1.14
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -43,6 +43,7 @@ Source300:      wine-mime-msi.desktop
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 Patch400:       wine-pulseaudio.patch
 Patch401:       wine-pulseaudio-waveout.patch
+Patch402:	wine-pulseaudio-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -53,8 +54,13 @@ Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch:  i386
 
+# BR: All builds
 BuildRequires:	bison
 BuildRequires:	flex
+BuildRequires:  autoconf
+BuildRequires:  desktop-file-utils
+
+# x86-32 BR
 BuildRequires:  alsa-lib-devel
 BuildRequires:  audiofile-devel
 BuildRequires:  esound-devel
@@ -73,17 +79,17 @@ BuildRequires:  unixODBC-devel
 BuildRequires:  openssl-devel
 BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
-BuildRequires:  desktop-file-utils
 BuildRequires:  fontforge
-BuildRequires:  gphoto2 gphoto2-devel
+BuildRequires:  libgphoto2-devel
 BuildRequires:  jack-audio-connection-kit-devel
-#217338
+# #217338
 BuildRequires:  isdn4k-utils-devel
 # modular x
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
-BuildRequires:  libXrandr-devel libXrender-devel libXext-devel
+BuildRequires:  libXrandr-devel libXrender-devel
+BuildRequires:  libXext-devel
 BuildRequires:  libXinerama-devel
 BuildRequires:  libXcomposite-devel
 BuildRequires:  fontconfig-devel
@@ -92,11 +98,9 @@ BuildRequires:  cups-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXi-devel
 BuildRequires:  libXcursor-devel
-# dbus/hal >= FC5
 BuildRequires:  dbus-devel hal-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  pulseaudio-libs-devel
-BuildRequires:  autoconf
 
 Requires:       wine-core = %{version}-%{release}
 Requires:       wine-capi = %{version}-%{release}
@@ -108,6 +112,7 @@ Requires:       wine-ldap = %{version}-%{release}
 Requires:       wine-nas = %{version}-%{release}
 Requires:       wine-tools = %{version}-%{release}
 Requires:       wine-twain = %{version}-%{release}
+Requires:       wine-pulseaudio = %{version}-%{release}
 
 %description
 While Wine is usually thought of as a Windows(TM) emulator, the Wine
@@ -236,16 +241,17 @@ wine audio driver. Please do not report bugs regarding this driver at winehq.org
 %patch2
 %patch400 -p1
 %patch401 -p1
+%patch402 -p1
 autoconf -f
 
 %build
 # work around gcc bug see #440139
 # this affects more then just dlls/user32/menu.c
-%if %{?fedora} > 8
-export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
-%else
+#%if %{?fedora} > 8
+#export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
+#%else
 export CFLAGS="$RPM_OPT_FLAGS"
-%endif
+#%endif
 
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine --disable-static \
@@ -407,6 +413,7 @@ update-desktop-database &>/dev/null || :
 %{_mandir}/man1/wineprefixcreate.1*
 %{_bindir}/winecfg
 %{_bindir}/uninstaller
+%{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/winhelp.exe16
 %{_libdir}/wine/winhlp32.exe.so
@@ -445,6 +452,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/libwine.so.1*
 %dir %{_libdir}/wine
 %{_libdir}/wine/acledit.dll.so
+%{_libdir}/wine/aclui.dll.so
 %{_libdir}/wine/activeds.dll.so
 %{_libdir}/wine/actxprxy.dll.so
 %{_libdir}/wine/advapi32.dll.so
@@ -452,6 +460,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/amstream.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
+%{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
 %{_libdir}/wine/avifile.dll16
@@ -527,11 +536,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/gphoto2.ds.so
 %{_libdir}/wine/gpkcsp.dll.so
 %{_libdir}/wine/hal.dll.so
-%{_libdir}/wine/hid.dll.so
 %{_libdir}/wine/hh.exe.so
+%{_libdir}/wine/hhctrl.ocx.so
+%{_libdir}/wine/hid.dll.so
 %{_libdir}/wine/hlink.dll.so
 %{_libdir}/wine/hnetcfg.dll.so
-%{_libdir}/wine/hhctrl.ocx.so
+%{_libdir}/wine/httpapi.dll.so
 %{_libdir}/wine/iccvid.dll.so
 %{_libdir}/wine/icinfo.exe.so
 %{_libdir}/wine/icmp.dll.so
@@ -553,8 +563,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/keyboard.drv16
 %{_libdir}/wine/krnl386.exe16
+%{_libdir}/wine/loadperf.dll.so
 %{_libdir}/wine/localspl.dll.so
 %{_libdir}/wine/localui.dll.so
+%{_libdir}/wine/lodctr.exe.so
 %{_libdir}/wine/lz32.dll.so
 %{_libdir}/wine/lzexpand.dll16
 %{_libdir}/wine/mapi32.dll.so
@@ -577,6 +589,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msadp32.acm.so
 %{_libdir}/wine/mscat32.dll.so
 %{_libdir}/wine/mscoree.dll.so
+%{_libdir}/wine/msctf.dll.so
 %{_libdir}/wine/msdmo.dll.so
 %{_libdir}/wine/msftedit.dll.so
 %{_libdir}/wine/msg711.acm.so
@@ -588,6 +601,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msisip.dll.so
 %{_libdir}/wine/msisys.ocx.so
 %{_libdir}/wine/msnet32.dll.so
+%{_libdir}/wine/mssign32.dll.so
 %{_libdir}/wine/mssip32.dll.so
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/mstask.dll.so
@@ -642,6 +656,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/query.dll.so
 %{_libdir}/wine/rasapi16.dll16
 %{_libdir}/wine/rasapi32.dll.so
+%{_libdir}/wine/rasdlg.dll.so
 %{_libdir}/wine/resutils.dll.so
 %{_libdir}/wine/riched20.dll.so
 %{_libdir}/wine/riched32.dll.so
@@ -679,8 +694,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/system.drv16
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/toolhelp.dll16
+%{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/typelib.dll16
 %{_libdir}/wine/unicows.dll.so
+%{_libdir}/wine/unlodctr.exe.so
+%{_libdir}/wine/updspapi.dll.so
 %{_libdir}/wine/url.dll.so
 %{_libdir}/wine/urlmon.dll.so
 %{_libdir}/wine/user.exe16
@@ -856,6 +874,15 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Sat Jan 31 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.14-1
+- version upgrade
+
+* Sat Jan 17 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.13-1
+- version upgrade
+- fix gcc compile problems (#440139, #461720)
+
 * Mon Jan 05 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.12-1
 - version upgrade
