@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.14
+Version:	1.1.15
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -41,9 +41,10 @@ Source300:      wine-mime-msi.desktop
 
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
-Patch400:       wine-pulseaudio.patch
-Patch401:       wine-pulseaudio-waveout.patch
-Patch402:	wine-pulseaudio-winecfg.patch
+# and http://art.ified.ca/?page_id=40
+Patch400:       http://art.ified.ca/downloads/winepulse-0.17-configure.ac.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.20.patch
+Patch402:	http://art.ified.ca/downloads/adding-pulseaudio-to-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -242,25 +243,19 @@ wine audio driver. Please do not report bugs regarding this driver at winehq.org
 %patch400 -p1
 %patch401 -p1
 %patch402 -p1
-autoconf -f
+autoreconf
 
 %build
-# work around gcc bug see #440139
-# this affects more then just dlls/user32/menu.c
-#%if %{?fedora} > 8
-#export CFLAGS="$RPM_OPT_FLAGS -fno-tree-fre -fno-tree-pre"
-#%else
 export CFLAGS="$RPM_OPT_FLAGS"
-#%endif
 
 %configure \
-	--sysconfdir=%{_sysconfdir}/wine --disable-static \
+	--sysconfdir=%{_sysconfdir}/wine \
 	--x-includes=%{_includedir} --x-libraries=%{_libdir} \
 	--with-pulse
 
 %{__make} depend
 
-%{__make} %{?_smp_mflags}
+%{__make} TARGETFLAGS="" %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -869,11 +864,16 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %files pulseaudio
-# pulseaudio workaround documentation
+# winepulse documentation
 %doc README-FEDORA-PULSEAUDIO
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Sun Feb 15 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.15-1
+- version upgrade
+- new pulse patches
+
 * Sat Jan 31 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.14-1
 - version upgrade

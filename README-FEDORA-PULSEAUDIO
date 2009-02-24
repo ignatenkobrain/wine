@@ -1,10 +1,29 @@
 Wine and Pulseaudio Support
 ---------------------------
 Currently wine does not have native support for pulseaudio. However, some
-patches exist to make wine use a native pulseaudio backend
-(see http://bugs.winehq.org/show_bug.cgi?id=10495). These have been included
-into the fedora wine package. If you have problems please do _not_ report them
-to the wine project.
+patches exist to make wine use a native pulseaudio backend (see [1])
+These have been included into the fedora wine package. If you have problems
+please do _not_ report them to the wine project.
+
+Here are some useful configuration options taken from [1]:
+
+HKCU\Software\Wine\Drivers:Audio
+A string which contains a comma seperated list of audio backends for wine to
+try, in order of preference. For example “pulse,alsa,esd”. Settable through
+winecfg.
+
+HKCU\Software\Wine\Pulse Driver:MonitorDevices
+A string which contains Y or N. If Y, sink monitors will show up as input
+devices. If N, only capture sources will be show up as input devices.
+Default is Y.
+
+HKCU\Software\Wine\DirectSound:HardwareAcceleration
+A string. Also settable in winecfg. When set to “Emulation” WaveOut will be
+used for directsound, which is more likely to work, but will have more latency.
+When set to “Full” the directsound driver is tried for directsound support,
+resulting in less latency, but possibley failure or bad sound.
+
+[1] - http://art.ified.ca/?page_id=40
 
 Other ways to get wine working with pulseaudio are described below:
 
