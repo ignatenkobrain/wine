@@ -1,6 +1,6 @@
 Name:		wine
 Version:	1.1.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -53,7 +53,7 @@ Patch1:         wine-rpath.patch
 Patch2:         wine-desktop-mime.patch
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-ExclusiveArch:  i386
+ExclusiveArch:  %{ix86}
 
 # BR: All builds
 BuildRequires:	bison
@@ -869,6 +869,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Tue Feb 24 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.15-2
+- switch from i386 to ix86
+
 * Sun Feb 15 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.15-1
 - version upgrade
