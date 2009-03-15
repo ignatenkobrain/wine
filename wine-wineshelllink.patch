@@ -1,9 +1,0 @@
---- tools/wineshelllink.orig	2007-06-03 12:56:07.000000000 +0200
-+++ tools/wineshelllink	2007-06-03 12:57:27.000000000 +0200
-@@ -231,4 +231,6 @@
-     desktop_entry > "$desktop_target"
- fi
- 
-+exec /usr/bin/wineshelllink-fedora
-+
- exit 0

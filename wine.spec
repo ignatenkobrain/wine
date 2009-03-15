@@ -1,6 +1,6 @@
 Name:		wine
 Version:	1.1.15
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -869,6 +869,9 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Sun Mar 15 2009 Nicolas Mailhot <nicolas.mailhot at laposte.net> - 1.1.15-3
+— Make sure F11 font packages have been built with F11 fontforge
+
 * Tue Feb 24 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.15-2
 - switch from i386 to ix86
