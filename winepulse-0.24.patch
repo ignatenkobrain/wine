@@ -22,10 +22,10 @@ index 0000000..327f225
 +@DEPENDENCIES@  # everything below this line is overwritten by make depend
 diff --git a/dlls/winepulse.drv/dsoutput.c b/dlls/winepulse.drv/dsoutput.c
 new file mode 100644
-index 0000000..5086917
+index 0000000..b37313a
 --- /dev/null
 +++ b/dlls/winepulse.drv/dsoutput.c
-@@ -0,0 +1,568 @@
+@@ -0,0 +1,576 @@
 +/*
 + * Wine Driver for PulseAudio - DSound Output Functionality
 + * http://pulseaudio.org/
@@ -74,6 +74,22 @@ index 0000000..5086917
 + *                  Low level DSOUND implementation			*
 + *======================================================================*/
 +
++/* A buffer is allocated with a pointer indicating the read position in the
++ * buffer. The pulse write callback reads data from the buffer, updating the
++ * read pointer to the location at the end of the read. Upon reaching the end
++ * or attempting to read past the end of buffer the read pointer wraps around
++ * to the beginning again. DirectSound applications can write anywhere in the
++ * buffer at anytime without locking and can know the location of the read
++ * pointer. The position of the read pointer cannot be changed by the
++ * application and access to it uses a locking scheme. A fake pointer
++ * indicating estimated playback position is also available to the application.
++ * Applications can potentially write to the same area of memory which is also
++ * being read by the pulse thread. However, this is uncommon as directsound
++ * applications know where pulse should be reading from via the pointer
++ * locations and MSDN says that such an operation should be avoided with the
++ * results being undefined.
++ */
++
 +/* Fragment lengths try to be a power of two close to 10ms worth of data. See
 + * dlls/dsound/mixer.c
 + */
@@ -100,24 +116,25 @@ index 0000000..5086917
 +    /* Fraglens are always powers of 2 */
 +    nbytes+= This->fraglen - 1;
 +    nbytes&= ~(This->fraglen - 1);
++
 +    /* If we advance more than 10 fragments at a time it appears that the buffer
 +     * pointer is never advancing because of wrap-around. Evil magic numbers. */
-+    if (nbytes > This->fraglen * 6)
-+	nbytes = This->fraglen * 6;
++    if (nbytes > This->fraglen * 5)
++        nbytes = This->fraglen * 5;
 +
 +    TRACE("Reading %u bytes.\n", nbytes);
 +
-+    if (This->buffer_read_offset + nbytes > This->buffer_length) {
-+	size_t write_length = This->buffer_length - This->buffer_read_offset;
-+	if (nbytes > This->buffer_length)
-+	    nbytes = This->buffer_length;
-+	nbytes -= write_length;
-+	pa_stream_write(s, This->buffer + This->buffer_read_offset, write_length, NULL, 0, PA_SEEK_RELATIVE);
-+	pa_stream_write(s, This->buffer, nbytes, NULL, 0, PA_SEEK_RELATIVE);
-+	This->buffer_read_offset = nbytes;
++    if (This->buffer_read_offset + nbytes <= This->buffer_length) {
++        pa_stream_write(s, This->buffer + This->buffer_read_offset, nbytes, NULL, 0, PA_SEEK_RELATIVE);
++        This->buffer_play_offset = This->buffer_read_offset;
++        This->buffer_read_offset += nbytes;
 +    } else {
-+	pa_stream_write(s, This->buffer + This->buffer_read_offset, nbytes, NULL, 0, PA_SEEK_RELATIVE);
-+	This->buffer_read_offset += nbytes;
++        size_t write_length = This->buffer_length - This->buffer_read_offset;
++        nbytes -= write_length;
++        pa_stream_write(s, This->buffer + This->buffer_read_offset, write_length, NULL, 0, PA_SEEK_RELATIVE);
++        pa_stream_write(s, This->buffer, nbytes, NULL, 0, PA_SEEK_RELATIVE);
++        This->buffer_play_offset = This->buffer_read_offset;
++        This->buffer_read_offset = nbytes;
 +    }
 +
 +    This->buffer_read_offset %= This->buffer_length;
@@ -128,25 +145,31 @@ index 0000000..5086917
 +    WARN("(%p) underrun.\n", userdata);
 +}
 +
-+/* Connects a stream to the server for use in setting the sample format or
-+ * stream creation. Does not update IDsDriverBufferImpl->fraglen */
++/* Connects a stream to the server. Does not update
++ * IDsDriverBufferImpl->fraglen. Does not lock the pulse mainloop or free
++ * objects in case of failure. This should be handled by the calling function.
++ */
 +static HRESULT DSPULSE_ConnectStream(IDsDriverBufferImpl* This) {
 +    pa_buffer_attr ba_request;
 +    const pa_buffer_attr *ba_obtained;
 +    char c[PA_SAMPLE_SPEC_SNPRINT_MAX];
-+    pa_stream_flags_t flags = PA_STREAM_START_CORKED;
++    pa_stream_flags_t stream_flags = PA_STREAM_START_CORKED;
 +
-+#if PA_API_VERSION >= 12
-+    flags |= PA_STREAM_EARLY_REQUESTS;
++#if PA_PROTOCOL_VERSION >= 14
++    /* We are a "fragment wait based" application, so this flag should be
++     * acceptable. */
++    stream_flags |= PA_STREAM_EARLY_REQUESTS;
++#elif PA_PROTOCOL_VERSION >= 13 && PA_API_VERSION >= 12
++    stream_flags |= PA_STREAM_ADJUST_LATENCY;
 +#endif
 +
 +    pa_sample_spec_snprint(c, PA_SAMPLE_SPEC_SNPRINT_MAX, &This->sample_spec);
 +    TRACE("Sample spec %s fragment size %u.\n", c, This->fraglen);
 +
-+    ba_request.tlength = This->fraglen * 4;
-+    ba_request.minreq = This->fraglen / 2;
-+    ba_request.prebuf = (uint32_t) -1; /* same as tlength */
-+    ba_request.maxlength = This->buffer_length;
++    ba_request.tlength = This->fraglen * 4;     //  ~40ms
++    ba_request.minreq = This->fraglen;          //  ~10ms
++    ba_request.prebuf = (uint32_t)-1;           //  same as tlength
++    ba_request.maxlength = This->buffer_length; //  2^x = ~3s
 +
 +    TRACE("Asking for buffer tlength:%u (%llums) minreq:%u (%llums)\n",
 +        ba_request.tlength, pa_bytes_to_usec(ba_request.tlength, &This->sample_spec)/1000,
@@ -160,21 +183,21 @@ index 0000000..5086917
 +    pa_stream_set_underflow_callback(This->stream, DSPULSE_BufferUnderflowCallback, This);
 +
 +    TRACE("Attempting to connect (%p)->stream for playback on %s\n", This, WOutDev[This->drv->wDevID].device_name);
-+    pa_stream_connect_playback(This->stream, WOutDev[This->drv->wDevID].device_name, &ba_request, flags, NULL, NULL);
++    pa_stream_connect_playback(This->stream, WOutDev[This->drv->wDevID].device_name, &ba_request, stream_flags, NULL, NULL);
 +    for (;;) {
 +        pa_context_state_t cstate = pa_context_get_state(PULSE_context);
 +        pa_stream_state_t sstate = pa_stream_get_state(This->stream);
 +
-+	if (cstate == PA_CONTEXT_FAILED || cstate == PA_CONTEXT_TERMINATED ||
-+	    sstate == PA_STREAM_FAILED || sstate == PA_STREAM_TERMINATED) {
-+	    ERR("Failed to connect stream context object: %s\n", pa_strerror(pa_context_errno(PULSE_context)));
-+	    return DSERR_BUFFERLOST;
-+	}
++        if (cstate == PA_CONTEXT_FAILED || cstate == PA_CONTEXT_TERMINATED ||
++            sstate == PA_STREAM_FAILED || sstate == PA_STREAM_TERMINATED) {
++            ERR("Failed to connect stream context object: %s\n", pa_strerror(pa_context_errno(PULSE_context)));
++            return DSERR_BUFFERLOST;
++        }
 +
-+	if (sstate == PA_STREAM_READY)
-+	    break;
++        if (sstate == PA_STREAM_READY)
++            break;
 +
-+	pa_threaded_mainloop_wait(PULSE_ml);
++        pa_threaded_mainloop_wait(PULSE_ml);
 +    }
 +    TRACE("(%p)->stream connected for playback.\n", This);
 +    ba_obtained = pa_stream_get_buffer_attr(This->stream);
@@ -211,20 +234,15 @@ index 0000000..5086917
 +        return refCount;
 +
 +    TRACE("mmap buffer %p destroyed\n", This->buffer);
-+
 +    pa_threaded_mainloop_lock(PULSE_ml);
 +    PULSE_WaitForOperation(pa_stream_cork(This->stream, 1, PULSE_StreamSuccessCallback, This));
 +    pa_stream_disconnect(This->stream);
-+
 +    if (This == This->drv->primary)
 +        This->drv->primary = NULL;
-+
 +    HeapFree(GetProcessHeap(), 0, This->buffer);
 +    This->buffer = NULL;
-+
 +    pa_stream_unref(This->stream);
 +    This->stream = NULL;
-+
 +    HeapFree(GetProcessHeap(), 0, This);
 +    pa_threaded_mainloop_unlock(PULSE_ml);
 +
@@ -255,7 +273,6 @@ index 0000000..5086917
 + * destroy and re-create the stream if the sample spec is different */
 +static HRESULT WINAPI IDsDriverBufferImpl_SetFormat(PIDSDRIVERBUFFER iface, LPWAVEFORMATEX pwfx) {
 +    IDsDriverBufferImpl *This = (IDsDriverBufferImpl *)iface;
-+    HRESULT ret = DS_OK;
 +    pa_sample_spec old_spec;
 +
 +    TRACE("(%p, %p)\n", iface, pwfx);
@@ -265,29 +282,18 @@ index 0000000..5086917
 +    old_spec.channels = This->sample_spec.channels;
 +
 +    if (!PULSE_SetupFormat(pwfx, &This->sample_spec))
-+	return DSERR_BADFORMAT;
++        return DSERR_BADFORMAT;
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
 +    if (old_spec.rate ==    This->sample_spec.rate &&
-+	old_spec.format ==  This->sample_spec.format &&
-+	old_spec.channels == This->sample_spec.channels) {
-+	TRACE("same as original sample spec, exiting.\n");
-+	ret = DS_OK;
-+	goto leave;
++        old_spec.format ==  This->sample_spec.format &&
++        old_spec.channels == This->sample_spec.channels) {
++        TRACE("same as original sample spec, exiting.\n");
++        return DS_OK;
 +    }
 +
-+    This->fraglen = fragment_length(&This->sample_spec);
-+
-+    TRACE("Disconnecting old stream.\n");
-+    pa_stream_disconnect(This->stream);
-+    pa_stream_unref(This->stream);
-+    ret = DSPULSE_ConnectStream(This);
-+
-+leave:
-+    pa_threaded_mainloop_unlock(PULSE_ml);
-+
-+    TRACE("Exiting\n");
-+    return ret;
++    /* If the format doesn't match, return an error and the buffer will be remade */
++    TRACE("Formats don't match, failing causing re-creation.\n");
++    return DSERR_BUFFERLOST;
 +}
 +
 +static HRESULT WINAPI IDsDriverBufferImpl_SetFrequency(PIDSDRIVERBUFFER iface, DWORD dwFreq)
@@ -301,19 +307,19 @@ index 0000000..5086917
 +    IDsDriverBufferImpl *This = (IDsDriverBufferImpl *)iface;
 +
 +    if (This->sample_spec.channels == 2) {
-+	This->volume.channels = 2;
-+	if (pVolPan->lPan < 0) {
-+	    This->volume.values[0] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0 + pVolPan->lPan/10.0);
-+	    This->volume.values[1] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0);
-+	} else {
-+	    This->volume.values[0] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0);
-+	    This->volume.values[1] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0 - pVolPan->lPan/10.0);
-+	}
++        This->volume.channels = 2;
++        if (pVolPan->lPan < 0) {
++            This->volume.values[0] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0 + pVolPan->lPan/10.0);
++            This->volume.values[1] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0);
++        } else {
++            This->volume.values[0] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0);
++            This->volume.values[1] = pa_sw_volume_from_dB(pVolPan->lVolume/-10.0 - pVolPan->lPan/10.0);
++        }
 +    } else {
-+	WARN("Panning non-stereo streams not supported yet!\n");
-+	pa_cvolume_set(&This->volume, This->sample_spec.channels, pa_sw_volume_from_dB(pVolPan->lVolume/-10.0));
-+	/* Would be nice to return DSERR_CONTROLUNAVAIL, but that isn't up to us
-+	 * here */
++        WARN("Panning non-stereo streams not supported yet!\n");
++        pa_cvolume_set(&This->volume, This->sample_spec.channels, pa_sw_volume_from_dB(pVolPan->lVolume/-10.0));
++        /* Would be nice to return DSERR_CONTROLUNAVAIL, but that isn't up to us
++         * here */
 +    }
 +
 +    pa_threaded_mainloop_lock(PULSE_ml);
@@ -342,17 +348,15 @@ index 0000000..5086917
 +    IDsDriverBufferImpl *This = (IDsDriverBufferImpl *)iface;
 +
 +    pa_threaded_mainloop_lock(PULSE_ml);
-+
 +    if (!This->buffer || pa_stream_get_state(This->stream) != PA_STREAM_READY) {
-+	pa_threaded_mainloop_unlock(PULSE_ml);
-+	return DSERR_UNINITIALIZED;
++        pa_threaded_mainloop_unlock(PULSE_ml);
++        return DSERR_UNINITIALIZED;
 +    }
 +
-+    /* These values are fake, and must remain so */
 +    if (lpdwPlay)
-+	*lpdwPlay = (This->buffer_read_offset + This->buffer_length - This->fraglen * 2) % This->buffer_length;
++        *lpdwPlay = This->buffer_play_offset;
 +    if (lpdwWrite)
-+	*lpdwWrite = This->buffer_read_offset;
++        *lpdwWrite = This->buffer_read_offset;
 +    pa_threaded_mainloop_unlock(PULSE_ml);
 +
 +    return DS_OK;
@@ -409,6 +413,7 @@ index 0000000..5086917
 +
 +    TRACE("(%p,%p,%x,%x)\n",iface,pwfx,dwFlags,dwCardAddress);
 +    /* we only support primary buffers */
++    
 +    if (!(dwFlags & DSBCAPS_PRIMARYBUFFER))
 +        return DSERR_UNSUPPORTED;
 +    if (This->primary)
@@ -418,18 +423,20 @@ index 0000000..5086917
 +    *ippdsdb = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(IDsDriverBufferImpl));
 +
 +    if (!*ippdsdb) {
-+	ERR("Out of memory\n");
-+	return DSERR_OUTOFMEMORY;
++        ERR("Out of memory\n");
++        return DSERR_OUTOFMEMORY;
 +    }
 +
 +    That = *ippdsdb;
 +    That->lpVtbl  = &dsdbvt;
 +    That->ref = 1;
++
 +    That->drv = This;
++    TRACE("IdsDriverBufferImpl %p created.\n", That);
 +        
 +    if (!PULSE_SetupFormat(pwfx, &That->sample_spec)) {
-+	WARN("Bad audio format.\n");
-+	ret = DSERR_BADFORMAT;
++        WARN("Bad audio format.\n");
++        ret = DSERR_BADFORMAT;
 +        goto err;
 +    }
 +
@@ -437,15 +444,20 @@ index 0000000..5086917
 +     * dlls/dsound/mixer.c fails to correctly understand buffer wrap around. */
 +    That->fraglen = fragment_length(&That->sample_spec);
 +    That->buffer_length = That->fraglen * 32;
-+    That->buffer = pa_xmalloc0(That->buffer_length);
++    That->buffer = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, That->buffer_length);
++    if (!That->buffer) {
++        ret = DSERR_OUTOFMEMORY;
++        goto err;
++    }
 +    That->buffer_read_offset = 0;
++    That->buffer_play_offset = 0;
 +
 +    pa_threaded_mainloop_lock(PULSE_ml);
 +    ret = DSPULSE_ConnectStream(That);
 +    pa_threaded_mainloop_unlock(PULSE_ml);
 +
 +    if (ret != DS_OK)
-+	goto err;
++        goto err;
 +
 +    *pdwcbBufferSize = That->buffer_length;
 +    *ppbBuffer = That->buffer;
@@ -456,19 +468,15 @@ index 0000000..5086917
 +err:
 +    pa_threaded_mainloop_lock(PULSE_ml);
 +    if (That->stream) {
-+	if (pa_stream_get_state(That->stream) == PA_STREAM_READY)
-+	    pa_stream_disconnect(That->stream);
-+	pa_stream_unref(That->stream);
-+	That->stream = NULL;
++	    if (pa_stream_get_state(That->stream) == PA_STREAM_READY)
++	        pa_stream_disconnect(That->stream);
++	    pa_stream_unref(That->stream);
++	    That->stream = NULL;
 +    }
 +    pa_threaded_mainloop_unlock(PULSE_ml);
-+    if (That->buffer)
-+	HeapFree(GetProcessHeap(), 0, That->buffer);
-+
-+    if (*ippdsdb)
-+	HeapFree(GetProcessHeap(), 0, That);
-+    *ippdsdb = NULL;
-+    TRACE("exiting with failure\n");
++    HeapFree(GetProcessHeap(), 0, That->buffer);
++    HeapFree(GetProcessHeap(), 0, *ippdsdb);
++    WARN("exiting with failure.\n");
 +    return ret;
 +}
 +
@@ -506,7 +514,7 @@ index 0000000..5086917
 +    *pDesc			= WOutDev[This->wDevID].ds_desc;
 +    pDesc->dwFlags		= DSDDESC_DONTNEEDSECONDARYLOCK | DSDDESC_DONTNEEDPRIMARYLOCK;
 +    pDesc->dnDevNode		= 0; /*TODO: Bwah? */
-+    pDesc->wVxdId		= 0;
++    pDesc->wVxdId           = 0;
 +    pDesc->wReserved		= 0;
 +    pDesc->ulDeviceNum		= This->wDevID;
 +    pDesc->dwHeapType		= DSDHEAP_NOHEAP;
@@ -535,8 +543,8 @@ index 0000000..5086917
 +    IDsDriverImpl *This = (IDsDriverImpl *)iface;
 +
 +    if (pa_context_get_state(PULSE_context) != PA_CONTEXT_READY) {
-+	ERR("Context failure.\n");
-+	return DSERR_GENERIC;
++        ERR("Context failure.\n");
++        return DSERR_GENERIC;
 +    }
 +
 +    TRACE("(%p,%p)\n",iface,pCaps);
@@ -570,15 +578,15 @@ index 0000000..5086917
 +    IDsDriverImpl** idrv = (IDsDriverImpl**)drv;
 +
 +    if (pa_context_get_state(PULSE_context) != PA_CONTEXT_READY || pa_context_is_local(PULSE_context) != 1) {
-+         WARN("Connection failure or server is not local, falling back to WaveOut HEL.\n");
-+	 return MMSYSERR_NOTSUPPORTED;
++        WARN("Connection failure or server is not local, falling back to WaveOut HEL.\n");
++        return MMSYSERR_NOTSUPPORTED;
 +    }
 +
 +    *idrv = HeapAlloc(GetProcessHeap(), 0, sizeof(IDsDriverImpl));
 +    if (!*idrv)
-+	return MMSYSERR_NOMEM;
++        return MMSYSERR_NOMEM;
 +    
-+    TRACE("driver created\n");
++    TRACE("IDsDriverImpl %p created.\n", *idrv);
 +
 +    (*idrv)->lpVtbl = &dsdvt;
 +    (*idrv)->ref = 1;
@@ -596,15 +604,15 @@ index 0000000..5086917
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/pulse.c b/dlls/winepulse.drv/pulse.c
 new file mode 100644
-index 0000000..337814d
+index 0000000..aa84c9b
 --- /dev/null
 +++ b/dlls/winepulse.drv/pulse.c
-@@ -0,0 +1,922 @@
+@@ -0,0 +1,861 @@
 +/*
 + * Wine Driver for PulseAudio
 + * http://pulseaudio.org/
 + *
-+ * Copyright	2008 Arthur Taylor <theycallhimart@gmail.com>
++ * Copyright	2009 Arthur Taylor <theycallhimart@gmail.com>
 + *
 + * Contains code from other wine sound drivers.
 + *
@@ -652,11 +660,6 @@ index 0000000..337814d
 +#include <winepulse.h>
 +#include <pulse/pulseaudio.h>
 +WINE_DEFAULT_DEBUG_CHANNEL(wave);
-+
-+/*
-+ * - Need to subscribe to sink/source events and keep the WInDev and WOutDev
-+ *   structures updated
-+ */
 +
 +/* These strings used only for tracing */
 +const char * PULSE_getCmdString(enum win_wm_message msg) {
@@ -868,9 +871,16 @@ index 0000000..337814d
 +
 +    switch (wf->wFormatTag) {
 +	case WAVE_FORMAT_PCM:
-+	if (ss->channels > 2 || ss->channels < 1) return FALSE;
++	/* MSDN says that for WAVE_FORMAT_PCM, nChannels must be 1 or 2 and
++	 * wBitsPerSample must be 8 or 16, yet other values are used by some
++	 * applications in the wild for surround. */
++	if (ss->channels > 6 || ss->channels < 1) return FALSE;
 +	ss->format = wf->wBitsPerSample == 8  ? PA_SAMPLE_U8
 +		   : wf->wBitsPerSample == 16 ? PA_SAMPLE_S16NE
++#if PA_PROTOCOL_VERSION >= 15
++		   : wf->wBitsPerSample == 24 ? PA_SAMPLE_S24NE
++#endif
++		   : wf->wBitsPerSample == 32 ? PA_SAMPLE_S32NE
 +		   : PA_SAMPLE_INVALID;
 +	break;
 +
@@ -1160,6 +1170,7 @@ index 0000000..337814d
 +
 +    switch (pa_context_get_state(c)) {
 +        case PA_CONTEXT_CONNECTING:
++	case PA_CONTEXT_UNCONNECTED:
 +        case PA_CONTEXT_AUTHORIZING:
 +        case PA_CONTEXT_SETTING_NAME:
 +            break;
@@ -1170,217 +1181,141 @@ index 0000000..337814d
 +	    break;
 +
 +	case PA_CONTEXT_FAILED:
-+	default:
 +	    ERR("Context failure: %s\n", pa_strerror(pa_context_errno(c)));
 +	    pa_threaded_mainloop_signal(PULSE_ml, 0);
++	    break;
 +    }
 +}
 +
 +/**************************************************************************
-+ * 		    PULSE_SourceInfoCallback			[internal]
++ * 		    PULSE_AllocateWaveinDevice   		[internal]
 + *
 + * Creates or adds a device to WInDev based on the pa_source_info.
 + */
-+
-+static void PULSE_SourceInfoCallback(pa_context *c, const pa_source_info *i, int eol, void *userdata) {
-+    DWORD *allocated = (DWORD*)userdata;
++static void PULSE_AllocateWaveinDevice(const char *name, const char *device, const char *description, const pa_cvolume *v) {
 +    WINE_WAVEDEV *wdi;
 +
-+    if (eol || !i) {
-+	pa_threaded_mainloop_signal(PULSE_ml, 0);
-+	return;
-+    }
-+
 +    if (WInDev)
-+	wdi = HeapReAlloc(GetProcessHeap(), 0, WInDev, sizeof(WINE_WAVEDEV) * (*allocated + 1));
++	wdi = HeapReAlloc(GetProcessHeap(), 0, WInDev, sizeof(WINE_WAVEDEV) * (PULSE_WidNumDevs + 1));
 +    else
 +	wdi = HeapAlloc(GetProcessHeap(), 0, sizeof(WINE_WAVEDEV));
 +
 +    if (!wdi) return;
 +    
 +    WInDev = wdi;
-+    wdi = &WInDev[(*allocated)++];
++    wdi = &WInDev[PULSE_WidNumDevs++];
 +    memset(wdi, 0, sizeof(WINE_WAVEDEV));
 +    memset(&(wdi->caps.in), 0, sizeof(wdi->caps.in));
-+
-+    wdi->device_name = pa_xstrdup(i->name);
++    snprintf(wdi->interface_name, MAXPNAMELEN * 2, "winepulse: %s", name);
++    wdi->device_name = pa_xstrdup(device);
 +    strcpy(wdi->interface_name, "winepulse: ");
-+    memcpy(wdi->interface_name + strlen(wdi->interface_name),
-+	    i->name, min(strlen(i->name), sizeof(wdi->interface_name) - strlen("winepulse:   ")));
-+    MultiByteToWideChar(CP_ACP, 0, i->description, -1, wdi->caps.in.szPname, sizeof(wdi->caps.in.szPname)/sizeof(WCHAR));
++    MultiByteToWideChar(CP_ACP, 0, description, -1, wdi->caps.in.szPname, sizeof(wdi->caps.in.szPname)/sizeof(WCHAR));
 +    wdi->caps.in.szPname[sizeof(wdi->caps.in.szPname)/sizeof(WCHAR) - 1] = '\0';
 +    wdi->caps.in.wMid = MM_CREATIVE;
 +    wdi->caps.in.wPid = MM_CREATIVE_SBP16_WAVEOUT;
 +    wdi->caps.in.vDriverVersion = 0x0100;
-+    wdi->caps.in.wChannels = i->sample_spec.channels == 1 ? 1 : 2;
++    wdi->caps.in.wChannels = v->channels == 1 ? 1 : 2;
 +    wdi->caps.in.dwFormats = PULSE_ALL_FORMATS;
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    memset(&wdi->ds_desc, 0, sizeof(DSDRIVERDESC));
++    memcpy(wdi->ds_desc.szDesc, description, min(sizeof(wdi->ds_desc.szDesc) - 1, strlen(description)));
++    memcpy(wdi->ds_desc.szDrvname, "winepulse.drv", 14);
++    wdi->ds_caps.dwMinSecondarySampleRate = DSBFREQUENCY_MIN;
++    wdi->ds_caps.dwMaxSecondarySampleRate = DSBFREQUENCY_MAX;
++    wdi->ds_caps.dwPrimaryBuffers = 1;
++    wdi->ds_caps.dwFlags = \
++	DSCAPS_PRIMARYMONO |
++	DSCAPS_PRIMARYSTEREO |
++	DSCAPS_PRIMARY8BIT |
++	DSCAPS_PRIMARY16BIT |
++	DSCAPS_SECONDARYMONO |
++	DSCAPS_SECONDARYSTEREO |
++	DSCAPS_SECONDARY8BIT |
++	DSCAPS_SECONDARY16BIT |
++	DSCCAPS_MULTIPLECAPTURE |
++	DSCAPS_CERTIFIED | /* Useful? */
++	DSCAPS_EMULDRIVER; /* Useful? */
++
 +}
 +
 +/**************************************************************************
-+ * 		    PULSE_SinkInfoCallback			[internal]
++ * 		    PULSE_AllocateWaveoutDevice			[internal]
 + *
 + *  Creates or adds a sink to the WOutDev array.
 + */
-+static void PULSE_SinkInfoCallback(pa_context *c, const pa_sink_info *i, int eol, void *userdata) {
-+    DWORD *allocated = (DWORD*)userdata;
++static void PULSE_AllocateWaveoutDevice(const char *name, const char *device, const char *description, const pa_cvolume *v) {
 +    WINE_WAVEDEV *wdo;
 +    int x;
 +
-+    if (eol || !i) {
-+	pa_threaded_mainloop_signal(PULSE_ml, 0);
-+	return;
-+    }
-+
 +    if (WOutDev)
-+        wdo = HeapReAlloc(GetProcessHeap(), 0, WOutDev, sizeof(WINE_WAVEDEV) * (*allocated + 1));
++        wdo = HeapReAlloc(GetProcessHeap(), 0, WOutDev, sizeof(WINE_WAVEDEV) * (PULSE_WodNumDevs + 1));
 +    else
 +        wdo = HeapAlloc(GetProcessHeap(), 0, sizeof(WINE_WAVEDEV));
 +
 +    if (!wdo) return;
 +
 +    WOutDev = wdo;
-+    wdo = &WOutDev[(*allocated)++];
++    wdo = &WOutDev[PULSE_WodNumDevs++];
 +    memset(wdo, 0, sizeof(WINE_WAVEDEV));
 +
-+    wdo->device_name = pa_xstrdup(i->name);
-+    wdo->volume.channels = i->volume.channels;
-+    for (x = 0; x < i->volume.channels; x++) wdo->volume.values[x] = i->volume.values[x];
-+    strcpy(wdo->interface_name, "winepulse: ");
-+    memcpy(wdo->interface_name + strlen(wdo->interface_name),
-+	i->name, min(strlen(i->name),
-+	sizeof(wdo->interface_name) - strlen("winepulse:   ")));
-+    MultiByteToWideChar(CP_ACP, 0, i->description, -1, wdo->caps.out.szPname, sizeof(wdo->caps.out.szPname)/sizeof(WCHAR));
++    wdo->device_name = pa_xstrdup(device);
++    wdo->volume.channels = v->channels;
++    for (x = 0; x < v->channels; x++) wdo->volume.values[x] = v->values[x];
++    snprintf(wdo->interface_name, MAXPNAMELEN * 2, "winepulse: %s", name);
++    MultiByteToWideChar(CP_ACP, 0, description, -1, wdo->caps.out.szPname, sizeof(wdo->caps.out.szPname)/sizeof(WCHAR));
 +    wdo->caps.out.szPname[sizeof(wdo->caps.out.szPname)/sizeof(WCHAR) - 1] = '\0';
 +    wdo->caps.out.wMid = MM_CREATIVE;
 +    wdo->caps.out.wPid = MM_CREATIVE_SBP16_WAVEOUT;
 +    wdo->caps.out.vDriverVersion = 0x0100;
-+    wdo->caps.out.dwSupport = WAVECAPS_VOLUME | WAVECAPS_SAMPLEACCURATE;
-+    if (i->sample_spec.channels == 2) {
++    wdo->caps.out.dwSupport = WAVECAPS_VOLUME | WAVECAPS_SAMPLEACCURATE | WAVECAPS_DIRECTSOUND;
++    if (v->channels >= 2) {
 +	wdo->caps.out.wChannels = 2;
 +	wdo->caps.out.dwSupport |= WAVECAPS_LRVOLUME;
 +    } else
-+	wdo->caps.out.wChannels = i->sample_spec.channels == 1 ? 1 : 2;
++	wdo->caps.out.wChannels = 1;
 +    wdo->caps.out.dwFormats = PULSE_ALL_FORMATS;
 +    memset(&wdo->ds_desc, 0, sizeof(DSDRIVERDESC));
-+    memcpy(wdo->ds_desc.szDesc, i->description, min(sizeof(wdo->ds_desc.szDesc) - 1, strlen(i->description)));
-+    strcpy(wdo->ds_desc.szDrvname, "winepulse.drv");
++    memcpy(wdo->ds_desc.szDesc, description, min(sizeof(wdo->ds_desc.szDesc) - 1, strlen(description)));
++    memcpy(wdo->ds_desc.szDrvname, "winepulse.drv", 14);
 +    wdo->ds_caps.dwMinSecondarySampleRate = DSBFREQUENCY_MIN;
 +    wdo->ds_caps.dwMaxSecondarySampleRate = DSBFREQUENCY_MAX;
 +    wdo->ds_caps.dwPrimaryBuffers = 1;
++    wdo->ds_caps.dwFlags = \
++	DSCAPS_PRIMARYMONO |
++	DSCAPS_PRIMARYSTEREO |
++	DSCAPS_PRIMARY8BIT |
++	DSCAPS_PRIMARY16BIT |
++	DSCAPS_SECONDARYMONO |
++	DSCAPS_SECONDARYSTEREO |
++	DSCAPS_SECONDARY8BIT |
++	DSCAPS_SECONDARY16BIT |
++	DSCAPS_CERTIFIED;
++}
++
++/**************************************************************************
++ *                              PULSE_SourceInfoCallback        [internal]
++ */
++static void PULSE_SourceInfoCallback(pa_context *c, const pa_source_info *i, int eol, void *userdata) {
++
++    if (!eol && i)
++        PULSE_AllocateWaveinDevice(i->name, i->name, i->description, &i->volume);
 +
 +    pa_threaded_mainloop_signal(PULSE_ml, 0);
 +}
 +
 +/**************************************************************************
-+ * 		    PULSE_UpdateWavedevs			[internal]
-+ *
-+ * Calls PULSE_add_output_device to add the sink to the list of devices
++ *                              PULSE_SinkInfoCallback          [internal]
 + */
-+BOOL PULSE_UpdateWavedevs(int devices) {
-+    WINE_WAVEDEV    *old_devs;
-+    DWORD	    old_numdevs;
-+    DWORD	    rc;
-+    HKEY	    key;
-+    BOOL	    show_monitor_sources = TRUE;
++static void PULSE_SinkInfoCallback(pa_context *c, const pa_sink_info *i, int eol, void *userdata) {
 +
-+    rc = RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Wine\\Pulse Driver", 0, KEY_QUERY_VALUE, &key);
-+    if (rc == ERROR_SUCCESS) {
-+	DWORD type;
-+	DWORD bufsize;
-+	char *bufp;
++    if (!eol && i)
++	PULSE_AllocateWaveoutDevice(i->name, i->name, i->description, &i->volume);
 +
-+	rc = RegQueryValueExA(key, "MonitorDevices", NULL, &type, NULL, &bufsize);
-+	if (rc == ERROR_SUCCESS || type == REG_SZ) {
-+	    bufp = HeapAlloc(GetProcessHeap(), 0, bufsize);
-+	    if (bufp) {
-+		rc = RegQueryValueExA(key, "MonitorDevices", NULL, NULL, (LPBYTE)bufp, &bufsize);
-+		if (rc == ERROR_SUCCESS  && (
-+		    *bufp == 'n' || *bufp == 'N' ||
-+		    *bufp == 'f' || *bufp == 'F' ||
-+		    *bufp == 'd' || *bufp == 'D' ||
-+		    *bufp == '0'))
-+		    show_monitor_sources = FALSE;
-+		HeapFree(GetProcessHeap(), 0, bufp);
-+	    }
-+	}
-+    }
-+    if (key)
-+        RegCloseKey(key);
-+
-+    pa_threaded_mainloop_lock(PULSE_ml);
-+    if (devices & PULSE_OUT_DEVS) {
-+	old_devs = WOutDev;
-+	old_numdevs = PULSE_WodNumDevs;
-+	WOutDev = NULL;
-+	PULSE_WodNumDevs = 0;
-+
-+	/* Ask for all the sinks and create objects in the WOutDev array */
-+	PULSE_WaitForOperation(pa_context_get_sink_info_list(PULSE_context, PULSE_SinkInfoCallback, &PULSE_WodNumDevs));
-+	if (PULSE_WodNumDevs) {
-+	    if (old_devs)
-+		HeapFree(GetProcessHeap(), 0, old_devs);
-+	    TRACE("Allocated %i output device%s.\n", PULSE_WodNumDevs, PULSE_WodNumDevs > 1 ? "s" : "");
-+	} else {
-+	    WARN("Didn't seem to find any waveout devices upon update, not updating!\n");
-+	    if (WOutDev)
-+		HeapFree(GetProcessHeap(), 0, WOutDev);
-+	    WOutDev = old_devs;
-+	    PULSE_WodNumDevs = old_numdevs;
-+	}
-+    }
-+
-+    if (devices & PULSE_IN_DEVS) {
-+	old_devs = WInDev;
-+	old_numdevs = PULSE_WidNumDevs;
-+	WInDev = NULL;
-+	PULSE_WidNumDevs = 0;
-+
-+	/* Ask for all the sources and create objects in the WOutDev array */
-+	PULSE_WaitForOperation(pa_context_get_source_info_list(PULSE_context, PULSE_SourceInfoCallback, &PULSE_WidNumDevs));
-+	if (PULSE_WidNumDevs) {
-+	    if (old_devs)
-+		HeapFree(GetProcessHeap(), 0, old_devs);
-+	    TRACE("Allocated %i input device%s.\n", PULSE_WidNumDevs, PULSE_WidNumDevs > 1 ? "s" : "");
-+	} else {
-+	    WARN("Didn't seem to find any wavein devices upon update, not updating!\n");
-+	    if (WInDev)
-+		HeapFree(GetProcessHeap(), 0, WInDev);
-+	    WInDev = old_devs;
-+	    PULSE_WidNumDevs = old_numdevs;
-+	}
-+
-+	/* Swap around the devices so monitor streams come last. */
-+	{
-+	    int x;
-+	    int count = 0;
-+	    WINE_WAVEDEV tmp[PULSE_WidNumDevs];
-+
-+	    memcpy(tmp, WInDev, sizeof(WINE_WAVEDEV) * PULSE_WidNumDevs);
-+	    for (x = 0; x < PULSE_WidNumDevs; x++) {
-+		if (!strstr(tmp[x].device_name, ".monitor")) {
-+		    memcpy(&WInDev[count++], &tmp[x], sizeof(WINE_WAVEDEV));
-+		}
-+	    }
-+	    if (show_monitor_sources) {
-+		for (x = 0; x < PULSE_WidNumDevs; x++) {
-+		    if (strstr(tmp[x].device_name, ".monitor")) {
-+			memcpy(&WInDev[count++], &tmp[x], sizeof(WINE_WAVEDEV));
-+		    }
-+		}
-+	    }
-+	    if (PULSE_WidNumDevs != count) {
-+		TRACE("Removed monitors sources, now have %u input devices.\n", count);
-+		WInDev = HeapReAlloc(GetProcessHeap(), 0, WInDev, sizeof(WINE_WAVEDEV) * count);
-+		PULSE_WidNumDevs = count;
-+	    }
-+	}
-+    }
-+    pa_threaded_mainloop_unlock(PULSE_ml);
-+
-+    return TRUE;
++    pa_threaded_mainloop_signal(PULSE_ml, 0);
 +}
 +
++/**************************************************************************
++ *                              PULSE_ContextNotifyCallback     [internal]
++ */
 +static void PULSE_ContextNotifyCallback(pa_context *c, void *userdata) {
 +    pa_threaded_mainloop_signal(PULSE_ml, 0);
 +}
@@ -1393,10 +1328,14 @@ index 0000000..337814d
 + */
 +
 +static LONG PULSE_WaveClose(void) {
++    int x;
 +    TRACE("()\n");
-+    if (!PULSE_ml) return 1;
++    if (!PULSE_ml) return DRV_FAILURE;
 +
 +    pa_threaded_mainloop_lock(PULSE_ml);
++    /* device_name is allocated with pa_xstrdup, free with pa_xfree */
++    for (x = 0; x < PULSE_WodNumDevs; x++) pa_xfree(WOutDev[x].device_name);
++    for (x = 0; x < PULSE_WidNumDevs; x++) pa_xfree(WInDev[x].device_name);
 +    HeapFree(GetProcessHeap(), 0, WOutDev);
 +    HeapFree(GetProcessHeap(), 0, WInDev);
 +    if (PULSE_context) {
@@ -1425,7 +1364,8 @@ index 0000000..337814d
 +    char path[PATH_MAX];
 +    char *offset = NULL;
 +    int x = 0;
-+
++    pa_cvolume fake_cvolume;
++    
 +    WOutDev = NULL;
 +    WInDev = NULL;
 +    PULSE_WodNumDevs = 0;
@@ -1443,12 +1383,11 @@ index 0000000..337814d
 +
 +    /* Get binary path, and remove path a-la strrchr */
 +    if (GetModuleFileNameA(NULL, path, PATH_MAX))
-+	for (offset = path; *offset; offset++)
-+	    if (*offset == '\\') x = offset - path + 1;
++	offset = strrchr(path, '\\');
 +
-+    if (offset || path[x]) {
-+        app_name = pa_xmalloc(strlen(path + x) + 8);
-+	snprintf(app_name, strlen(path + x) + 8, "WINE [%s]", path + x);
++    if (offset && ++offset && offset < path + PATH_MAX) {
++        app_name = pa_xmalloc(strlen(offset) + 8);
++	snprintf(app_name, strlen(offset) + 8, "WINE [%s]", offset);
 +    } else
 +	app_name = pa_xstrdup("WINE Application");
 +
@@ -1463,7 +1402,7 @@ index 0000000..337814d
 +       
 +    pa_threaded_mainloop_lock(PULSE_ml);
 +
-+    TRACE("libpulse protocol version: %u.\n", pa_context_get_protocol_version(PULSE_context));
++    TRACE("libpulse protocol version: %u. API Version %u\n", pa_context_get_protocol_version(PULSE_context), PA_API_VERSION);
 +    TRACE("Attempting to connect to pulseaudio server.\n");
 +    if (pa_context_connect(PULSE_context, NULL, 0, NULL) < 0)
 +	goto fail;
@@ -1480,11 +1419,20 @@ index 0000000..337814d
 +    
 +	pa_threaded_mainloop_wait(PULSE_ml);
 +    }
-+    
++
 +    x = pa_context_get_server_protocol_version(PULSE_context);
 +    TRACE("Connected to server %s with protocol version: %i.\n", pa_context_get_server(PULSE_context), x);
 +    if (x < 14)
-+	WARN("Server is old, expect poor latency or bugginess!\n");
++	WARN("Server is old, expect poor latency or buggy-ness!\n");
++
++    fake_cvolume.channels = 2;
++    pa_cvolume_reset(&fake_cvolume, 2);
++    /* FIXME Translations? */
++    PULSE_AllocateWaveoutDevice("default", NULL, "Default", &fake_cvolume);
++    PULSE_AllocateWaveinDevice("default", NULL, "Default", &fake_cvolume);
++    PULSE_WaitForOperation(pa_context_get_sink_info_list(PULSE_context, PULSE_SinkInfoCallback, &PULSE_WodNumDevs));
++    PULSE_WaitForOperation(pa_context_get_source_info_list(PULSE_context, PULSE_SourceInfoCallback, &PULSE_WidNumDevs));
++    TRACE("Found %u output and %u input device(s).\n", PULSE_WodNumDevs - 1, PULSE_WidNumDevs - 1);
 +
 +    pa_threaded_mainloop_unlock(PULSE_ml);
 +
@@ -1506,8 +1454,7 @@ index 0000000..337814d
 +
 +    switch(wMsg) {
 +#ifdef HAVE_PULSEAUDIO
-+    case DRV_LOAD:		PULSE_WaveInit();
-+				return 1;
++    case DRV_LOAD:		return PULSE_WaveInit();
 +    case DRV_FREE:		return PULSE_WaveClose();
 +    case DRV_OPEN:		return 1;
 +    case DRV_CLOSE:		return 1;
@@ -1524,10 +1471,10 @@ index 0000000..337814d
 +}
 diff --git a/dlls/winepulse.drv/wavein.c b/dlls/winepulse.drv/wavein.c
 new file mode 100644
-index 0000000..7024ccd
+index 0000000..1534d6e
 --- /dev/null
 +++ b/dlls/winepulse.drv/wavein.c
-@@ -0,0 +1,555 @@
+@@ -0,0 +1,572 @@
 +/*
 + * Wine Driver for PulseAudio - WaveIn Functionality
 + * http://pulseaudio.org/
@@ -1608,11 +1555,13 @@ index 0000000..7024ccd
 +    size_t size;
 +    while (lpWaveHdr && wwi->state == WINE_WS_PLAYING && wwi->buffer) {
 +        size = min(wwi->buffer_length - wwi->buffer_read_offset, lpWaveHdr->dwBufferLength - lpWaveHdr->dwBytesRecorded);
-+        if (size == 0) { ERR("Size is 0! buffer is full but not freed?\n"); continue; }
++        if (size == 0) ERR("Size is 0! buffer is full but not freed?\n");
 +        memcpy(lpWaveHdr->lpData + lpWaveHdr->dwBytesRecorded, (PBYTE)wwi->buffer + wwi->buffer_read_offset, size);
 +        wwi->buffer_read_offset += size;
 +	if (wwi->buffer_read_offset == wwi->buffer_length) {
++	    pa_threaded_mainloop_lock(PULSE_ml);
 +	    pa_stream_drop(wwi->stream);
++	    pa_threaded_mainloop_unlock(PULSE_ml);
 +	    wwi->buffer = NULL;
 +	    wwi->buffer_length = 0;
 +	    wwi->buffer_read_offset = 0;
@@ -1634,19 +1583,20 @@ index 0000000..7024ccd
 +* Switches the current fragment to the next based upon a message from the
 +* server.
 +*/
-+static void widRecorder_NextFragment(WINE_WAVEINST *wwi, size_t size) {
++static void widRecorder_NextFragment(WINE_WAVEINST *wwi, size_t sizer) {
++    LPWAVEHDR lpWaveHdr = wwi->lpQueuePtr;
++    size_t request = 0;
++
++    for (;lpWaveHdr; lpWaveHdr = lpWaveHdr->lpNext)
++	request += lpWaveHdr->dwBufferLength;
++
++    lpWaveHdr = wwi->lpQueuePtr;
++    pa_threaded_mainloop_lock(PULSE_ml);
++    pa_stream_peek(wwi->stream, &wwi->buffer, &request);
++    wwi->buffer_length = request;
++    pa_threaded_mainloop_unlock(PULSE_ml);
++
 +    widRecorder_CopyData(wwi);
-+    if (wwi->buffer) {
-+	if (wwi->buffer_read_offset != wwi->buffer_length)
-+	    ERR("We didn't read all of the data, there will be gaps. FO:%u, FS: %u\n", wwi->buffer_read_offset, wwi->buffer_length);
-+	pa_stream_drop(wwi->stream);
-+	wwi->buffer = NULL;
-+	wwi->buffer_length = 0;
-+	wwi->buffer_read_offset = 0;
-+    }
-+    pa_stream_peek(wwi->stream, &wwi->buffer, &size);
-+    wwi->buffer_length = size;
-+    wwi->buffer_read_offset = 0;
 +}
 +
 +/**************************************************************************
@@ -1663,101 +1613,104 @@ index 0000000..7024ccd
 +    SetEvent(wwi->hStartUpEvent);
 +
 +    for (;;) {
-+    PULSE_WaitRingMessage(&wwi->msgRing, INFINITE);
-+    while (PULSE_RetrieveRingMessage(&wwi->msgRing, &msg, &param, &ev)) {
-+	TRACE("Received %s %x\n", PULSE_getCmdString(msg), param);
++	PULSE_WaitRingMessage(&wwi->msgRing, INFINITE);
++	while (PULSE_RetrieveRingMessage(&wwi->msgRing, &msg, &param, &ev)) {
++	    TRACE("Received %s %x\n", PULSE_getCmdString(msg), param);
 +	
-+	switch (msg) {
-+	case WINE_WM_FEED:
-+	    SetEvent(ev);
-+	    if (wwi->state == WINE_WS_PLAYING)
-+		 widRecorder_NextFragment(wwi, param);
-+	    else
-+		(pa_stream_drop(wwi->stream));
-+	    break;
-+	case WINE_WM_STARTING:
-+	    wwi->state = WINE_WS_PLAYING;
-+	    PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 0, PULSE_StreamSuccessCallback, NULL));
-+	    SetEvent(ev);
-+	    break;
-+	case WINE_WM_HEADER:
-+	    lpWaveHdr = (LPWAVEHDR)param;
-+	    lpWaveHdr->lpNext = 0;
++	    switch (msg) {
++	    case WINE_WM_FEED:
++		SetEvent(ev);
++		if (wwi->state == WINE_WS_PLAYING)
++		    widRecorder_NextFragment(wwi, param);
++		break;
++	    case WINE_WM_STARTING:
++		wwi->state = WINE_WS_PLAYING;
++		pa_threaded_mainloop_lock(PULSE_ml);
++		PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 0, PULSE_StreamSuccessCallback, NULL));
++		pa_threaded_mainloop_unlock(PULSE_ml);
++		SetEvent(ev);
++		break;
++	    case WINE_WM_HEADER:
++		lpWaveHdr = (LPWAVEHDR)param;
++		lpWaveHdr->lpNext = 0;
 +
-+	    /* insert buffer at the end of queue */
-+	    {
-+	        LPWAVEHDR*	wh;
-+	        for (wh = &(wwi->lpQueuePtr); *wh; wh = &((*wh)->lpNext));
-+	        *wh = lpWaveHdr;
-+	    }
-+	    break;
-+	case WINE_WM_STOPPING:
-+	    if (wwi->state != WINE_WS_STOPPED) {
-+		PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 1, PULSE_StreamSuccessCallback, NULL));
-+		pa_stream_drop(wwi->stream);
++		/* insert buffer at the end of queue */
++		{
++		    LPWAVEHDR*	wh;
++		    for (wh = &(wwi->lpQueuePtr); *wh; wh = &((*wh)->lpNext));
++		    *wh = lpWaveHdr;
++		}
++		break;
++	    case WINE_WM_STOPPING:
++		if (wwi->state != WINE_WS_STOPPED) {
++		    pa_threaded_mainloop_lock(PULSE_ml);
++		    PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 1, PULSE_StreamSuccessCallback, NULL));
++		    pa_stream_drop(wwi->stream);
++		    pa_threaded_mainloop_unlock(PULSE_ml);
 +
-+		/* return current buffer to app */
-+		lpWaveHdr = wwi->lpQueuePtr;
-+		if (lpWaveHdr) {
-+		    LPWAVEHDR	lpNext = lpWaveHdr->lpNext;
-+		    TRACE("stop %p %p\n", lpWaveHdr, lpWaveHdr->lpNext);
++		    /* return current buffer to app */
++		    lpWaveHdr = wwi->lpQueuePtr;
++		    if (lpWaveHdr) {
++			LPWAVEHDR	lpNext = lpWaveHdr->lpNext;
++			TRACE("stop %p %p\n", lpWaveHdr, lpWaveHdr->lpNext);
++			lpWaveHdr->dwFlags &= ~WHDR_INQUEUE;
++			lpWaveHdr->dwFlags |= WHDR_DONE;
++			wwi->lpQueuePtr = lpNext;
++			widNotifyClient(wwi, WIM_DATA, (DWORD)lpWaveHdr, 0);
++		    }
++		}
++		wwi->state = WINE_WS_STOPPED;
++		SetEvent(ev);
++		break;
++	    case WINE_WM_RESETTING:
++		if (wwi->state != WINE_WS_STOPPED) {
++		    pa_threaded_mainloop_lock(PULSE_ml);
++		    pa_stream_drop(wwi->stream);
++		    pa_threaded_mainloop_unlock(PULSE_ml);
++		}
++		wwi->state = WINE_WS_STOPPED;
++
++		/* return all buffers to the app */
++		for (lpWaveHdr = wwi->lpQueuePtr; lpWaveHdr; lpWaveHdr = wwi->lpQueuePtr) {
++		    TRACE("reset %p %p\n", lpWaveHdr, lpWaveHdr->lpNext);
 +		    lpWaveHdr->dwFlags &= ~WHDR_INQUEUE;
 +		    lpWaveHdr->dwFlags |= WHDR_DONE;
-+		    wwi->lpQueuePtr = lpNext;
++		    wwi->lpQueuePtr = lpWaveHdr->lpNext;
 +		    widNotifyClient(wwi, WIM_DATA, (DWORD)lpWaveHdr, 0);
 +		}
-+	    }
-+	    wwi->state = WINE_WS_STOPPED;
-+	    SetEvent(ev);
-+	    break;
-+	case WINE_WM_RESETTING:
-+	    if (wwi->state != WINE_WS_STOPPED)
-+		pa_stream_drop(wwi->stream);
-+	    wwi->state = WINE_WS_STOPPED;
-+
-+	    /* return all buffers to the app */
-+	    for (lpWaveHdr = wwi->lpQueuePtr; lpWaveHdr; lpWaveHdr = lpWaveHdr->lpNext) {
-+		TRACE("reset %p %p\n", lpWaveHdr, lpWaveHdr->lpNext);
-+		lpWaveHdr->dwFlags &= ~WHDR_INQUEUE;
-+		lpWaveHdr->dwFlags |= WHDR_DONE;
-+                wwi->lpQueuePtr = lpWaveHdr->lpNext;
-+		widNotifyClient(wwi, WIM_DATA, (DWORD)lpWaveHdr, 0);
-+	    }
-+
-+	    wwi->lpQueuePtr = NULL;
-+	    SetEvent(ev);
-+	    break;
-+	case WINE_WM_XRUN:
-+	    pa_stream_drop(wwi->stream);
-+	    wwi->buffer_read_offset = 0;
-+	    break;
-+	case WINE_WM_CLOSING:
-+	    wwi->hThread = 0;
-+	    if ((DWORD)param == 1) {
-+		wwi->state = WINE_WS_FAILED;
++		wwi->lpQueuePtr = NULL;
 +		SetEvent(ev);
-+		PULSE_DestroyRingMessage(&wwi->msgRing);
-+		widNotifyClient(wwi, WIM_CLOSE, 0L, 0L);
-+		wwi->lpPlayPtr = wwi->lpQueuePtr = NULL;
++		break;
++	    case WINE_WM_XRUN:
 +		pa_threaded_mainloop_lock(PULSE_ml);
-+		pa_stream_disconnect(wwi->stream);
++		pa_stream_drop(wwi->stream);
 +		pa_threaded_mainloop_unlock(PULSE_ml);
-+		TRACE("Thread exiting because of failure.\n");
-+		ExitThread(1);
++		wwi->buffer_read_offset = 0;
++		break;
++	    case WINE_WM_CLOSING:
++		wwi->hThread = 0;
++		if ((DWORD)param == 1) {
++		    wwi->state = WINE_WS_FAILED;
++		    SetEvent(ev);
++		    PULSE_DestroyRingMessage(&wwi->msgRing);
++		    widNotifyClient(wwi, WIM_CLOSE, 0L, 0L);
++		    wwi->lpPlayPtr = wwi->lpQueuePtr = NULL;
++		    pa_threaded_mainloop_lock(PULSE_ml);
++		    pa_stream_disconnect(wwi->stream);
++		    pa_threaded_mainloop_unlock(PULSE_ml);
++		    TRACE("Thread exiting because of failure.\n");
++		    ExitThread(1);
++		}
++		wwi->state = WINE_WS_CLOSED;
++		SetEvent(ev);
++		ExitThread(0);
++		/* shouldn't go here */
++	    default:
++		FIXME("unknown message %d\n", msg);
++		break;
 +	    }
-+	    wwi->state = WINE_WS_CLOSED;
-+	    SetEvent(ev);
-+	    ExitThread(0);
-+	    /* shouldn't go here */
-+	default:
-+	    FIXME("unknown message %d\n", msg);
-+	    break;
 +	}
-+    }
-+
-+    widRecorder_CopyData(wwi);
-+
-+} /* for (;;) */
++    } /* for (;;) */
 +}
 +
 +/**************************************************************************
@@ -1822,7 +1775,11 @@ index 0000000..7024ccd
 +
 +    pa_threaded_mainloop_lock(PULSE_ml);
 +    TRACE("Asking to open %s for recording.\n", wdi->device_name);
-+    pa_stream_connect_record(wwi->stream, wdi->device_name, NULL, PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING);
++    pa_stream_connect_record(wwi->stream, wdi->device_name, NULL,
++			     PA_STREAM_START_CORKED |
++			     PA_STREAM_AUTO_TIMING_UPDATE |
++			     PA_STREAM_INTERPOLATE_TIMING);
++
 +    for (;;) {
 +	pa_context_state_t cstate = pa_context_get_state(PULSE_context);
 +	pa_stream_state_t sstate = pa_stream_get_state(wwi->stream);
@@ -2006,8 +1963,6 @@ index 0000000..7024ccd
 +static DWORD widGetNumDevs() {
 +    if (pa_context_get_state(PULSE_context) != PA_CONTEXT_READY)
 +	return 0;
-+
-+    PULSE_UpdateWavedevs(PULSE_IN_DEVS);
 +    
 +    return PULSE_WidNumDevs;
 +}
@@ -2038,6 +1993,15 @@ index 0000000..7024ccd
 +}
 +
 +/**************************************************************************
++ *                              widDsDesc                       [internal]
++ */
++DWORD widDsDesc(UINT wDevID, PDSDRIVERDESC desc)
++{
++    *desc = WInDev[wDevID].ds_desc;
++    return MMSYSERR_NOERROR;
++}
++
++/**************************************************************************
 + * 				widMessage (WINEPULSE.@)
 + */
 +DWORD WINAPI PULSE_widMessage(UINT wDevID, UINT wMsg, DWORD dwUser,
@@ -2063,8 +2027,8 @@ index 0000000..7024ccd
 +    case WIDM_STOP: 		return widRecorderMessage((WINE_WAVEINST*)dwUser, WINE_WM_STOPPING);
 +    case DRV_QUERYDEVICEINTERFACESIZE: return widDevInterfaceSize   (wDevID, (LPDWORD)dwParam1);
 +    case DRV_QUERYDEVICEINTERFACE:     return widDevInterface	    (wDevID, (PWCHAR)dwParam1, dwParam2);
-+    case DRV_QUERYDSOUNDIFACE:	return 0;
-+    case DRV_QUERYDSOUNDDESC:	return 0;
++    case DRV_QUERYDSOUNDIFACE:	return MMSYSERR_NOTSUPPORTED; /* Use emulation, as there is no advantage */
++    case DRV_QUERYDSOUNDDESC:	return widDsDesc	(wDevID,    (PDSDRIVERDESC)dwParam1);
 +    default:
 +	FIXME("unknown message %d!\n", wMsg);
 +    }
@@ -2085,10 +2049,10 @@ index 0000000..7024ccd
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/waveout.c b/dlls/winepulse.drv/waveout.c
 new file mode 100644
-index 0000000..968d1bd
+index 0000000..4539103
 --- /dev/null
 +++ b/dlls/winepulse.drv/waveout.c
-@@ -0,0 +1,1098 @@
+@@ -0,0 +1,1092 @@
 +/*
 + * Wine Driver for PulseAudio - WaveOut Functionality
 + * http://pulseaudio.org/
@@ -2327,7 +2291,7 @@ index 0000000..968d1bd
 +	    wwo->buffer_attr.prebuf = (uint32_t) -1;
 +	    wwo->buffer_attr.minreq = (uint32_t) -1;
 +	    wwo->buffer_attr.maxlength = (uint32_t) -1;
-+	    WARN("Asking for new buffer tlength of %u.\n", wwo->buffer_attr.tlength);
++	    WARN("Asking for new buffer tlength of %ums (%u bytes)\n", (unsigned int)(pa_bytes_to_usec(wwo->buffer_attr.tlength, &wwo->sample_spec)/1000), wwo->buffer_attr.tlength);
 +	    pa_stream_set_buffer_attr(wwo->stream, &wwo->buffer_attr, PULSE_StreamSuccessCallback, wwo);
 +	} else {
 +	    /* Fake playback start earlier, introducing latency */
@@ -2702,6 +2666,7 @@ index 0000000..968d1bd
 +    WINE_WAVEDEV *wdo;
 +    WINE_WAVEINST *wwo = NULL;
 +    DWORD ret = MMSYSERR_NOERROR;
++    pa_stream_flags_t stream_flags;
 +
 +    TRACE("(%u, %p, %08X);\n", wDevID, lpDesc, dwFlags);
 +    if (lpDesc == NULL) {
@@ -2760,27 +2725,21 @@ index 0000000..968d1bd
 +    pa_stream_set_moved_callback	(wwo->stream, PULSE_StreamMovedCallback,	wwo);
 +    pa_stream_set_suspended_callback	(wwo->stream, PULSE_StreamSuspendedCallback,	wwo);
 +
++    stream_flags = PA_STREAM_AUTO_TIMING_UPDATE;
++
 +#if PA_API_VERSION >= 12
 +    if (pa_context_get_server_protocol_version(PULSE_context) >= 15) {
 +	pa_stream_set_started_callback(wwo->stream, WAVEOUT_StreamStartedCallback, wwo);
++	stream_flags |= PA_STREAM_ADJUST_LATENCY;
 +    } else
 +#endif
++    {
 +	pa_stream_set_latency_update_callback(wwo->stream, WAVEOUT_StreamTimingInfoUpdateCallback, wwo);
-+
++    }
 +
 +    TRACE("Connecting stream for playback on %s.\n", wdo->device_name);
 +    pa_threaded_mainloop_lock(PULSE_ml);
-+    pa_stream_connect_playback(wwo->stream,
-+    /* Use WAVE_FORMAT_DIRECT to detect if we are being called by the
-+     * wavemapper, in which case don't specify a device so that libpulse
-+     * chooses based upon environment variables, x11 root window info, etc. If
-+     * WAVE_FORMAT_DIRECT is inappropriate, maybe winmm could stop eating
-+     * WAVE_MAPPER? */
-+			       dwFlags & WAVE_FORMAT_DIRECT ? NULL : wdo->device_name,
-+			       NULL,
-+			       PA_STREAM_AUTO_TIMING_UPDATE,
-+			       NULL,
-+			       NULL);
++    pa_stream_connect_playback(wwo->stream, wdo->device_name, NULL, stream_flags, NULL, NULL);
 +
 +    for (;;) {
 +        pa_context_state_t cstate = pa_context_get_state(PULSE_context);
@@ -2978,7 +2937,6 @@ index 0000000..968d1bd
 +    if (!PULSE_ml || !PULSE_context || pa_context_get_state(PULSE_context) != PA_CONTEXT_READY)
 +	return 0;
 +
-+    PULSE_UpdateWavedevs(PULSE_OUT_DEVS);
 +    return PULSE_WodNumDevs;
 +}
 +
@@ -3057,7 +3015,7 @@ index 0000000..968d1bd
 +    } else {
 +	if (value1 != value2) FIXME("Non-stereo streams can't pan!\n");
 +        wwo->volume.channels = wwo->sample_spec.channels;
-+	pa_cvolume_set(&wwo->volume, wwo->volume.channels, pa_sw_volume_from_dB(MAX(value1, value2)));
++	pa_cvolume_set(&wwo->volume, wwo->volume.channels, pa_sw_volume_from_dB(max(value1, value2)));
 +    }
 +
 +    if (TRACE_ON(wave)) {
@@ -3198,13 +3156,13 @@ index 0000000..1b49460
 +@ stdcall -private widMessage(long long long long long long) PULSE_widMessage
 diff --git a/dlls/winepulse.drv/winepulse.h b/dlls/winepulse.drv/winepulse.h
 new file mode 100644
-index 0000000..27690d3
+index 0000000..59fbb38
 --- /dev/null
 +++ b/dlls/winepulse.drv/winepulse.h
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,228 @@
 +/* Definitions for PulseAudio Wine Driver
 + *
-+ * Copyright	2008 Arthur Taylor
++ * Copyright	2009 Arthur Taylor <theycallhimart@gmail.com>
 + *
 + * This library is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU Lesser General Public
@@ -3261,10 +3219,6 @@ index 0000000..27690d3
 +#define WINE_WS_STOPPED         3
 +#define WINE_WS_CLOSED          4
 +#define WINE_WS_FAILED          5
-+
-+#define PULSE_OUT_DEVS	    0x1
-+#define PULSE_IN_DEVS	    0x2
-+#define PULSE_ALL_DEVS	    PULSE_IN_DEVS | PULSE_OUT_DEVS
 +
 +#define PULSE_ALL_FORMATS \
 +        WAVE_FORMAT_1M08 |	/* Mono	    11025Hz 8-bit  */\
@@ -3338,10 +3292,11 @@ index 0000000..27690d3
 +    pa_sample_spec		sample_spec;
 +    pa_cvolume			volume;
 +
-+    PBYTE		buffer;		    /* Pointer to the latest data fragment for recording streams */
-+    size_t		buffer_length;	    /* How large the latest data fragment is */
-+    size_t		buffer_read_offset; /* How far into latest data fragment we last read */
-+    size_t		fraglen;
++    PBYTE		buffer;
++    DWORD		buffer_length;
++    DWORD		buffer_read_offset;
++    DWORD		buffer_play_offset;
++    DWORD		fraglen;
 +};
 +
 +/* Per-playback/record device */
@@ -3388,9 +3343,9 @@ index 0000000..27690d3
 +
 +    /* waveIn */
 +    const void		*buffer;	    /* Pointer to the latest data fragment for recording streams */
-+    size_t		buffer_length;	    /* How large the latest data fragment is */
-+    size_t		buffer_read_offset; /* How far into latest data fragment we last read */
-+    size_t		fraglen;    
++    DWORD		buffer_length;	    /* How large the latest data fragment is */
++    DWORD		buffer_read_offset; /* How far into latest data fragment we last read */
++    DWORD		fraglen;    
 +
 +    /* Thread communication and synchronization stuff */
 +    HANDLE		hStartUpEvent;
@@ -3428,7 +3383,6 @@ index 0000000..27690d3
 +int	PULSE_AddRingMessage(PULSE_MSG_RING* omr, enum win_wm_message msg, DWORD param, BOOL wait);
 +int	PULSE_RetrieveRingMessage(PULSE_MSG_RING* omr, enum win_wm_message *msg, DWORD *param, HANDLE *hEvent);
 +const char * PULSE_getCmdString(enum win_wm_message msg);
-+BOOL	PULSE_UpdateWavedevs(int devices);
 +
 +/* dsoutput.c */
 +DWORD wodDsCreate(UINT wDevID, PIDSDRIVER* drv);
