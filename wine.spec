@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.18
+Version:	1.1.21
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -43,14 +43,12 @@ Source300:      wine-mime-msi.desktop
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
 Patch400:       http://art.ified.ca/downloads/winepulse-0.17-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.24.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.25.patch
 Patch402:	http://art.ified.ca/downloads/adding-pulseaudio-to-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
 Patch1:         wine-rpath.patch
-# fix #448338
-Patch2:         wine-desktop-mime.patch
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 ExclusiveArch:  %{ix86}
@@ -239,7 +237,6 @@ wine audio driver. Please do not report bugs regarding this driver at winehq.org
 %prep
 %setup -q -n %{name}-%{version}-fe
 %patch1
-%patch2
 %patch400 -p1
 %patch401 -p1
 %patch402 -p1
@@ -421,6 +418,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/secedit.exe.so
 %{_libdir}/wine/services.exe.so
 %{_libdir}/wine/start.exe.so
+%{_libdir}/wine/termsv.exe.so
 %{_libdir}/wine/wineboot.exe.so
 %{_libdir}/wine/winebrowser.exe.so
 %{_libdir}/wine/wineconsole.exe.so
@@ -451,6 +449,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
+%{_libdir}/wine/bcrypt.dll.so
 %{_libdir}/wine/browseui.dll.so
 %{_libdir}/wine/cabinet.dll.so
 %{_libdir}/wine/cards.dll.so
@@ -479,7 +478,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/d3dxof.dll.so
 %{_libdir}/wine/dbghelp.dll.so
 %{_libdir}/wine/dciman32.dll.so
-%{_libdir}/wine/ddeml.dll16
 %{_libdir}/wine/ddraw.dll.so
 %{_libdir}/wine/ddrawex.dll.so
 %{_libdir}/wine/devenum.dll.so
@@ -640,7 +638,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/sfc_os.dll.so
 %{_libdir}/wine/shdoclc.dll.so
 %{_libdir}/wine/shdocvw.dll.so
-%{_libdir}/wine/shell.dll16
 %{_libdir}/wine/shell32.dll.so
 %{_libdir}/wine/shfolder.dll.so
 %{_libdir}/wine/shlwapi.dll.so
@@ -723,6 +720,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/xinput1_2.dll.so
 %{_libdir}/wine/xinput1_3.dll.so
 %{_libdir}/wine/xinput9_1_0.dll.so
+%{_libdir}/wine/xmllite.dll.so
 %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 # 16bit
 %{_libdir}/wine/avifile.dll16.so
@@ -730,6 +728,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/compobj.dll16.so
 %{_libdir}/wine/ctl3d.dll16.so
 %{_libdir}/wine/ctl3dv2.dll16.so
+%{_libdir}/wine/ddeml.dll16.so
 %{_libdir}/wine/dispdib.dll16.so
 %{_libdir}/wine/display.drv16.so
 %{_libdir}/wine/imm.dll16.so
@@ -747,6 +746,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/olecli.dll16.so
 %{_libdir}/wine/olesvr.dll16.so
 %{_libdir}/wine/rasapi16.dll16.so
+%{_libdir}/wine/shell.dll16.so
 %{_libdir}/wine/sound.drv16.so
 %{_libdir}/wine/storage.dll16.so
 %{_libdir}/wine/stress.dll16.so
@@ -864,6 +864,14 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Tue May 12 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.21-1
+- version upgrade
+
+* Mon Apr 27 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.20-1
+- version upgrade
+
 * Mon Mar 30 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.18-1
 - version upgrade (#490672, #491321)
