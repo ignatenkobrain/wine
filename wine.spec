@@ -653,6 +653,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/svrapi.dll.so
 %{_libdir}/wine/sxs.dll.so
 %{_libdir}/wine/system.drv16
+%{_libdir}/wine/t2embed.dll.so
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/toolhelp.dll16
 %{_libdir}/wine/traffic.dll.so
@@ -676,6 +677,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vtdapi.vxd.so
 %{_libdir}/wine/vwin32.vxd.so
 %{_libdir}/wine/w32skrnl.dll.so
+%{_libdir}/wine/wbemprox.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/wineoss.drv.so
