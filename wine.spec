@@ -866,6 +866,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Wed May 13 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.21-2
+- fix uninstaller (#500479)
+
 * Tue May 12 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.21-1
 - version upgrade
