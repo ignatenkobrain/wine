@@ -178,18 +178,6 @@ index 830cabf..0ed1dbd 100644
      IDS_DRIVER_ALSA             "Controlador ALSA"
      IDS_DRIVER_ESOUND           "Controlador EsounD"
      IDS_DRIVER_OSS              "Controlador OSS"
-diff --git a/programs/winecfg/Ro.rc b/programs/winecfg/Ro.rc
-index a4b0cad..c065d36 100644
---- a/programs/winecfg/Ro.rc
-+++ b/programs/winecfg/Ro.rc
-@@ -270,6 +270,7 @@ BEGIN
-     IDS_ACCEL_STANDARD          "Standard"
-     IDS_ACCEL_BASIC             "De basă"
-     IDS_ACCEL_EMULATION         "Emulare"
-+    IDS_DRIVER_PULSE             "Driver PulseAudio"
-     IDS_DRIVER_ALSA             "Driver ALSA"
-     IDS_DRIVER_ESOUND           "Driver Esound"
-     IDS_DRIVER_OSS              "Driver OSS"
 diff --git a/programs/winecfg/Ru.rc b/programs/winecfg/Ru.rc
 index 782e1fd..f516399 100644
 --- a/programs/winecfg/Ru.rc
@@ -287,3 +275,15 @@ index a18fe76..1c4a1e7 100644
  #define IDS_DRIVER_ESOUND               8306
  #define IDS_DRIVER_OSS                  8307
  #define IDS_DRIVER_JACK                 8308
+diff --git a/programs/winecfg/Ro.rc b/programs/winecfg/Ro.rc
+index a4b0cad..c065d36 100644
+--- a/programs/winecfg/Ro.rc
++++ b/programs/winecfg/Ro.rc
+@@ -270,6 +270,7 @@
+     IDS_ACCEL_STANDARD          "Standard"
+     IDS_ACCEL_BASIC             "De bază"
+     IDS_ACCEL_EMULATION         "Emulare"
++    IDS_DRIVER_PULSE            "Driver PulseAudio"
+     IDS_DRIVER_ALSA             "Driver ALSA"
+     IDS_DRIVER_ESOUND           "Driver Esound"
+     IDS_DRIVER_OSS              "Driver OSS"

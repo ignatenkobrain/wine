@@ -1,6 +1,6 @@
 Name:		wine
-Version:	1.1.21
-Release:	2%{?dist}
+Version:	1.1.23
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -587,7 +587,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msvcrtd.dll.so
 %{_libdir}/wine/msvfw32.dll.so
 %{_libdir}/wine/msvidc32.dll.so
-%{_libdir}/wine/msvideo.dll16
 %{_libdir}/wine/mswsock.dll.so
 %{_libdir}/wine/msxml3.dll.so
 %{_libdir}/wine/nddeapi.dll.so
@@ -739,6 +738,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mciqtz32.dll.so
 %{_libdir}/wine/mouse.drv16.so
 %{_libdir}/wine/msacm.dll16.so
+%{_libdir}/wine/msvideo.dll16.so
 %{_libdir}/wine/ole2.dll16.so
 %{_libdir}/wine/ole2conv.dll16.so
 %{_libdir}/wine/ole2disp.dll16.so
@@ -866,6 +866,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Wed Jun 10 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.23-1
+- version upgrade (#491321)
+- rediff pulseaudio patch (Michael Cronenworth)
+
 * Wed May 13 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.21-2
 - fix uninstaller (#500479)
