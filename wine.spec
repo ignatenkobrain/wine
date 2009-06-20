@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.23
+Version:	1.1.24
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -43,7 +43,7 @@ Source300:      wine-mime-msi.desktop
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
 Patch400:       http://art.ified.ca/downloads/winepulse-0.17-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.25.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.28.patch
 Patch402:	http://art.ified.ca/downloads/adding-pulseaudio-to-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
@@ -105,8 +105,6 @@ Requires:       wine-core = %{version}-%{release}
 Requires:       wine-capi = %{version}-%{release}
 Requires:       wine-cms = %{version}-%{release}
 Requires:       wine-desktop = %{version}-%{release}
-Requires:       wine-esd = %{version}-%{release}
-Requires:       wine-jack = %{version}-%{release}
 Requires:       wine-ldap = %{version}-%{release}
 Requires:       wine-nas = %{version}-%{release}
 Requires:       wine-tools = %{version}-%{release}
@@ -677,6 +675,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vwin32.vxd.so
 %{_libdir}/wine/w32skrnl.dll.so
 %{_libdir}/wine/wbemprox.dll.so
+%{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/wineoss.drv.so
@@ -866,6 +865,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winepulse.drv.so
 
 %changelog
+* Fri Jun 19 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.24-1
+- version upgrade
+- WinePulse 0.28
+- drop meta package requires for jack and esd
+
 * Wed Jun 10 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.23-1
 - version upgrade (#491321)
