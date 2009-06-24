@@ -1,6 +1,6 @@
 Name:		wine
 Version:	1.1.24
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -31,6 +31,8 @@ Source104:      wine-winefile.desktop
 Source105:      wine-winemine.desktop
 Source106:      wine-winhelp.desktop
 Source107:      wine-wineboot.desktop
+Source108:      wine-wordpad.desktop
+Source109:      wine-oleview.desktop
 
 # desktop dir
 Source200:      wine.menu
@@ -106,7 +108,6 @@ Requires:       wine-capi = %{version}-%{release}
 Requires:       wine-cms = %{version}-%{release}
 Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-ldap = %{version}-%{release}
-Requires:       wine-nas = %{version}-%{release}
 Requires:       wine-tools = %{version}-%{release}
 Requires:       wine-twain = %{version}-%{release}
 Requires:       wine-pulseaudio = %{version}-%{release}
@@ -132,6 +133,8 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
 Obsoletes:      wine-arts < 0.9.34
+# fix dns resolution (#492700)
+Requires:       nss-mdns%{_isa}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -232,6 +235,22 @@ Requires: wine-core = %{version}-%{release}
 This package adds a native pulseaudio driver for wine. This is not an official
 wine audio driver. Please do not report bugs regarding this driver at winehq.org.
 
+%package alsa
+Summary: Alsa support for wine
+Group: System Environment/Libraries
+Requires: wine-core = %{version}-%{release}
+
+%description alsa
+This package adds an alsa driver for wine.
+
+%package oss
+Summary: OSS support for wine
+Group: System Environment/Libraries
+Requires: wine-core = %{version}-%{release}
+
+%description oss
+This package adds an oss driver for wine.
+
 %prep
 %setup -q -n %{name}-%{version}-fe
 %patch1
@@ -321,6 +340,16 @@ desktop-file-install \
 desktop-file-install \
   --vendor=fedora \
   --dir=$RPM_BUILD_ROOT%{_datadir}/applications \
+  %{SOURCE108}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=$RPM_BUILD_ROOT%{_datadir}/applications \
+  %{SOURCE109}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=$RPM_BUILD_ROOT%{_datadir}/applications \
   --delete-original \
   $RPM_BUILD_ROOT%{_datadir}/applications/wine.desktop
 
@@ -383,8 +412,18 @@ update-desktop-database &>/dev/null || :
 %post capi -p /sbin/ldconfig
 %postun capi -p /sbin/ldconfig
 
+%post pulseaudio -p /sbin/ldconfig
+%postun pulseaudio -p /sbin/ldconfig
+
+%post alsa -p /sbin/ldconfig
+%postun alsa -p /sbin/ldconfig
+
+%post oss -p /sbin/ldconfig
+%postun oss -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
+# meta package
 
 %files core
 %defattr(-,root,root,-)
@@ -678,7 +717,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winedos.dll.so
-%{_libdir}/wine/wineoss.drv.so
 %{_libdir}/wine/winecoreaudio.drv.so
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winex11.drv.so
@@ -705,7 +743,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/security.dll.so
 %{_libdir}/wine/sfc.dll.so
 %{_datadir}/wine/fonts/
-%{_libdir}/wine/winealsa.drv.so
 %{_libdir}/wine/wineps.drv.so
 %{_libdir}/wine/wineps16.drv16
 %{_libdir}/wine/d3d8.dll.so
@@ -787,16 +824,19 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/write.exe.so
 
 %files desktop
+%defattr(-,root,root,-)
 %{_datadir}/applications/fedora-wine-notepad.desktop
 %{_datadir}/applications/fedora-wine-winefile.desktop
 %{_datadir}/applications/fedora-wine-winemine.desktop
-%{_datadir}/applications/fedora-wine-winhelp.desktop
 %{_datadir}/applications/fedora-wine-mime-msi.desktop
 %{_datadir}/applications/fedora-wine.desktop
 %{_datadir}/applications/fedora-wine-regedit.desktop
 %{_datadir}/applications/fedora-wine-uninstaller.desktop
 %{_datadir}/applications/fedora-wine-winecfg.desktop
 %{_datadir}/applications/fedora-wine-wineboot.desktop
+%{_datadir}/applications/fedora-wine-winhelp.desktop
+%{_datadir}/applications/fedora-wine-wordpad.desktop
+%{_datadir}/applications/fedora-wine-oleview.desktop
 %{_datadir}/desktop-directories/Wine.directory
 %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_initrddir}/wine
@@ -860,16 +900,35 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %files pulseaudio
+%defattr(-,root,root,-)
 # winepulse documentation
 %doc README-FEDORA-PULSEAUDIO
 %{_libdir}/wine/winepulse.drv.so
 
+%files alsa
+%defattr(-,root,root,-)
+%{_libdir}/wine/winealsa.drv.so
+
+%files oss
+%defattr(-,root,root,-)
+%{_libdir}/wine/wineoss.drv.so
+
 %changelog
+* Sun Jun 21 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.24-2
+- adjust wine-menu to follow wine behavior (wine-wine instead of Wine)
+  (fixes #479649, #495953)
+- fix wine help desktop entry (#495953, #507154)
+- add some more wine application desktop entries (#495953)
+- split alsa/oss support into wine-alsa/wine-oss
+- drop nas require from wine meta package
+- fix dns resolution (#492700)
+
 * Fri Jun 19 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.24-1
 - version upgrade
 - WinePulse 0.28
-- drop meta package requires for jack and esd
+- drop meta package requires for jack and esd (#492983)
 
 * Wed Jun 10 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.23-1

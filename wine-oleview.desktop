@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Regedit
-Comment=Wine registry editor
-Exec=regedit
+Name=Wine OLE View
+Comment=Windows OLE View
+Exec=wine oleview
 Terminal=false
 Type=Application
 Encoding=UTF-8

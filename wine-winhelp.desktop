@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=winhelp
+Name=Wine Help
 Comment=Windows Help Browser
-Exec=winhelp
+Exec=wine winhlp32
 Terminal=false
 Type=Application
 Encoding=UTF-8

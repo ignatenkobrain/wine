@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Regedit
-Comment=Wine registry editor
-Exec=regedit
+Name=Wine Wordpad
+Comment=Text Editor
+Exec=wine wordpad
 Terminal=false
 Type=Application
 Encoding=UTF-8

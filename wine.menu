@@ -4,7 +4,7 @@
 <Menu>
 	<Name>Applications</Name>
 	<Menu>
-		<Name>Wine</Name>
+		<Name>wine-wine</Name>
 		<Directory>Wine.directory</Directory>
 		<Include>
 			<Category>X-Wine</Category>

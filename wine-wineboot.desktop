@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=wineboot
+Name=Wine Boot
 Comment=Simulate restart
 Exec=wineboot
 Terminal=false
