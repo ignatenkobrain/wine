@@ -1,6 +1,6 @@
 Name:		wine
-Version:	1.1.24
-Release:	2%{?dist}
+Version:	1.1.25
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -134,7 +134,8 @@ Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
 Obsoletes:      wine-arts < 0.9.34
 # fix dns resolution (#492700)
-Requires:       nss-mdns%{_isa}
+# require both to be sure 64bit is present as well...
+Requires:       nss-mdns nss-mdns%{_isa}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -536,6 +537,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dpnhpast.dll.so
 %{_libdir}/wine/dpnlobby.dll.so
 %{_libdir}/wine/dpwsockx.dll.so
+%{_libdir}/wine/drmclien.dll.so
 %{_libdir}/wine/dsound.dll.so
 %{_libdir}/wine/dssenh.dll.so
 %{_libdir}/wine/dswave.dll.so
@@ -664,6 +666,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/rpcrt4.dll.so
 %{_libdir}/wine/rsabase.dll.so
 %{_libdir}/wine/rsaenh.dll.so
+%{_libdir}/wine/rtutils.dll.so
 %{_libdir}/wine/sccbase.dll.so
 %{_libdir}/wine/schannel.dll.so
 %{_libdir}/wine/secur32.dll.so
@@ -914,6 +917,14 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineoss.drv.so
 
 %changelog
+* Thu Jul 09 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.25-1
+- version upgrade (#509648)
+
+* Mon Jun 29 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.24-3
+- pull in nss correctly on x86_64
+
 * Sun Jun 21 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.24-2
 - adjust wine-menu to follow wine behavior (wine-wine instead of Wine)
