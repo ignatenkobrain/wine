@@ -1,5 +1,5 @@
 Name:		wine
-Version:	1.1.25
+Version:	1.1.26
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -44,9 +44,9 @@ Source300:      wine-mime-msi.desktop
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse-0.17-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.28.patch
-Patch402:	http://art.ified.ca/downloads/adding-pulseaudio-to-winecfg.patch
+Patch400:       http://art.ified.ca/downloads/winepulse-0.29-configure.ac.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.29.patch
+Patch402:	http://art.ified.ca/downloads/adding-pulseaudio-to-winecfg-0.3.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -136,6 +136,8 @@ Obsoletes:      wine-arts < 0.9.34
 # fix dns resolution (#492700)
 # require both to be sure 64bit is present as well...
 Requires:       nss-mdns nss-mdns%{_isa}
+# require Xrender isa on x86_64 (#510947)
+Requires:       libXrender%{_isa}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -732,6 +734,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winsock.dll16
 %{_libdir}/wine/winspool.drv.so
 %{_libdir}/wine/wmi.dll.so
+%{_libdir}/wine/wmiutils.dll.so
 %{_libdir}/wine/spoolss.dll.so
 %{_libdir}/wine/winscard.dll.so
 %{_libdir}/wine/wintab32.dll.so
@@ -750,7 +753,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineps16.drv16
 %{_libdir}/wine/d3d8.dll.so
 %{_libdir}/wine/d3d9.dll.so
-%{_libdir}/wine/d3dx8.dll.so
 %{_libdir}/wine/opengl32.dll.so
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
@@ -917,6 +919,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineoss.drv.so
 
 %changelog
+* Sat Jul 18 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.26-1
+- version upgrade
+- WinePulse 0.29
+- require Xrender isa for x86_64 (#510947)
+
 * Thu Jul 09 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.25-1
 - version upgrade (#509648)

@@ -21,10 +21,10 @@ index 0000000..c99c1da
 +@DEPENDENCIES@  # everything below this line is overwritten by make depend
 diff --git a/dlls/winepulse.drv/pulse.c b/dlls/winepulse.drv/pulse.c
 new file mode 100644
-index 0000000..392ac0b
+index 0000000..3dcb086
 --- /dev/null
 +++ b/dlls/winepulse.drv/pulse.c
-@@ -0,0 +1,794 @@
+@@ -0,0 +1,788 @@
 +/*
 + * Wine Driver for PulseAudio
 + * http://pulseaudio.org/
@@ -581,10 +581,7 @@ index 0000000..392ac0b
 +        DSCAPS_SECONDARYSTEREO |
 +        DSCAPS_SECONDARY8BIT |
 +        DSCAPS_SECONDARY16BIT |
-+        DSCCAPS_MULTIPLECAPTURE |
-+        DSCAPS_CERTIFIED | /* Useful? */
-+        DSCAPS_EMULDRIVER; /* Useful? */
-+
++        DSCCAPS_MULTIPLECAPTURE;
 +}
 +
 +/**************************************************************************
@@ -616,7 +613,7 @@ index 0000000..392ac0b
 +    wdo->caps.out.wMid = MM_CREATIVE;
 +    wdo->caps.out.wPid = MM_CREATIVE_SBP16_WAVEOUT;
 +    wdo->caps.out.vDriverVersion = 0x0100;
-+    wdo->caps.out.dwSupport = WAVECAPS_VOLUME | WAVECAPS_SAMPLEACCURATE | WAVECAPS_DIRECTSOUND;
++    wdo->caps.out.dwSupport = WAVECAPS_VOLUME | WAVECAPS_SAMPLEACCURATE;// | WAVECAPS_DIRECTSOUND;
 +    if (v->channels >= 2) {
 +        wdo->caps.out.wChannels = 2;
 +        wdo->caps.out.dwSupport |= WAVECAPS_LRVOLUME;
@@ -638,8 +635,7 @@ index 0000000..392ac0b
 +        DSCAPS_SECONDARYSTEREO |
 +        DSCAPS_SECONDARY8BIT |
 +        DSCAPS_SECONDARY16BIT |
-+        DSCAPS_CERTIFIED |
-+        DSCAPS_EMULDRIVER; /* Useful? */
++        DSCAPS_CONTINUOUSRATE;
 +}
 +
 +/**************************************************************************
@@ -713,7 +709,6 @@ index 0000000..392ac0b
 +    char *app_name;
 +    char path[PATH_MAX];
 +    char *offset = NULL;
-+    int x = 0;
 +    pa_cvolume fake_cvolume;
 +
 +    WOutDev = NULL;
@@ -770,10 +765,9 @@ index 0000000..392ac0b
 +        pa_threaded_mainloop_wait(PULSE_ml);
 +    }
 +
-+    x = pa_context_get_server_protocol_version(PULSE_context);
-+    TRACE("Connected to server %s with protocol version: %i.\n", pa_context_get_server(PULSE_context), x);
-+    if (x < 14)
-+        WARN("Server is old, expect poor latency or buggy-ness!\n");
++    TRACE("Connected to server %s with protocol version: %i.\n",
++        pa_context_get_server(PULSE_context),
++        pa_context_get_server_protocol_version(PULSE_context));
 +
 +    fake_cvolume.channels = 2;
 +    pa_cvolume_reset(&fake_cvolume, 2);
@@ -1422,10 +1416,10 @@ index 0000000..7cbc781
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/waveout.c b/dlls/winepulse.drv/waveout.c
 new file mode 100644
-index 0000000..db2c892
+index 0000000..ee92535
 --- /dev/null
 +++ b/dlls/winepulse.drv/waveout.c
-@@ -0,0 +1,1086 @@
+@@ -0,0 +1,1075 @@
 +/*
 + * Wine Driver for PulseAudio - WaveOut Functionality
 + * http://pulseaudio.org/
@@ -1625,6 +1619,10 @@ index 0000000..db2c892
 +    if (wwo->buffer_attr.tlength == -1 && wwo->lpQueuePtr && !wwo->lpPlayPtr && wwo->state == WINE_WS_PLAYING) {
 +        const pa_buffer_attr *returned;
 +
++        /* Try and adjust the buffer attributes so that playback can start.
++         * Because of bugs pa_stream_set_buffer_attr() does not work on started
++         * streams for server version 0.9.11 to 0.9.14 */
++
 +        pa_threaded_mainloop_lock(PULSE_ml);
 +
 +        if (wwo->timing_info->playing) {
@@ -1632,26 +1630,22 @@ index 0000000..db2c892
 +            return;
 +        }
 +
-+        /* Try and adjust the buffer attributes so that playback can start.
-+         * Because of bugs this call does not work on servers 0.9.11 to 0.9.14.
-+         * Once new version of pulseaudio become ubiquitous we will drop
-+         * support for versions before 0.9.15 because they have too many bugs.
-+         */
-+
++	/* Calculate desired buffer length. write_index is the amount of data
++         * written. If there is more than one buffer queued, subtract the
++         * length of one to allow there to be a free buffer for the app. */
 +        wwo->buffer_attr.tlength = wwo->timing_info->write_index;
-+        WARN("Asking for new buffer tlength of %llums (%u bytes)\n",
++        if (wwo->lpQueuePtr->lpNext) wwo->buffer_attr.tlength -= wwo->lpQueuePtr->dwBufferLength;
++
++        WARN("Asking for new buffer target length of %llums (%u bytes)\n",
 +            pa_bytes_to_usec(wwo->buffer_attr.tlength, &wwo->sample_spec) / 1000,
 +            wwo->buffer_attr.tlength);
-+
-+        if (pa_context_get_server_protocol_version(PULSE_context) < 15)
-+            ERR("Might get disconnected because of a bug in this pulseaudio server version.\n");
 +
 +        PULSE_WaitForOperation(pa_stream_set_buffer_attr(wwo->stream, &wwo->buffer_attr, PULSE_StreamSuccessCallback, wwo));
 +
 +        returned = pa_stream_get_buffer_attr(wwo->stream);
 +
 +        if (returned->tlength > wwo->timing_info->write_index) {
-+            WARN("Can't get the buffer size needed. Triggering and hoping for the best.\n");
++            WARN("Couldn't get the buffer size needed. Triggering and hoping for the best.\n");
 +            PULSE_WaitForOperation(pa_stream_trigger(wwo->stream, PULSE_StreamSuccessCallback, wwo));
 +        }
 +
@@ -1837,10 +1831,9 @@ index 0000000..db2c892
 +
 +    if (t->playing) {
 +        time += pa_timeval_age(&t->timestamp);
-+
 +        temp = t->transport_usec + t->configured_sink_usec;
 +        if (temp > wwo->buffer_attr.tlength) temp = wwo->buffer_attr.tlength;
-+        if (temp < time) time -= temp; else time = 0;
++        if (time > temp) time -= temp; else time = 0;
 +    }
 +
 +    /* Make sure we haven't claimed to have played more than we have written */
@@ -2008,11 +2001,10 @@ index 0000000..db2c892
 + * Create a new pa_stream and connect it to a sink while creating a new
 + * WINE_WAVEINST to represent the device to the windows application.
 + */
-+static DWORD wodOpen(WORD wDevID, DWORD_PTR *lpdwUser, LPWAVEOPENDESC lpDesc, DWORD dwFlags) {
++static DWORD wodOpen(WORD wDevID, DWORD_PTR lpdwUser, LPWAVEOPENDESC lpDesc, DWORD dwFlags) {
 +    WINE_WAVEDEV *wdo;
 +    WINE_WAVEINST *wwo = NULL;
 +    DWORD ret = MMSYSERR_NOERROR;
-+    pa_stream_flags_t stream_flags;
 +
 +    TRACE("(%u, %p, %08X);\n", wDevID, lpDesc, dwFlags);
 +    if (lpDesc == NULL) {
@@ -2031,7 +2023,7 @@ index 0000000..db2c892
 +        WARN("Out of memory?!\n");
 +        return MMSYSERR_NOMEM;
 +    }
-+    *lpdwUser = (DWORD_PTR)wwo;
++    *(WINE_WAVEINST**)lpdwUser = wwo;
 +
 +    /* check to see if format is supported and make pa_sample_spec struct */
 +    if (!PULSE_SetupFormat(lpDesc->lpFormat, &wwo->sample_spec)) {
@@ -2075,25 +2067,16 @@ index 0000000..db2c892
 +    pa_stream_set_moved_callback        (wwo->stream, PULSE_StreamMovedCallback,        wwo);
 +    pa_stream_set_suspended_callback    (wwo->stream, PULSE_StreamSuspendedCallback,    wwo);
 +
-+    /* Setup Stream Flags */
-+    stream_flags = PA_STREAM_AUTO_TIMING_UPDATE;
-+#if PA_API_VERSION >= 12
-+    stream_flags |= PA_STREAM_ADJUST_LATENCY;
-+#endif
-+
-+    /* Blank (but don't send) Buffer Attributes
-+     * Note the maxlength bug on old servers */
++    /* Blank (but don't send) Buffer Attributes */
 +    wwo->buffer_attr.prebuf = (uint32_t)-1;
 +    wwo->buffer_attr.tlength = (uint32_t)-1;
 +    wwo->buffer_attr.minreq = (uint32_t)-1;
-+    wwo->buffer_attr.maxlength =
-+        pa_context_get_server_protocol_version(PULSE_context) > 12 ?
-+        (uint32_t)-1 : 1048576; /* 2^20 */
++    wwo->buffer_attr.maxlength = (uint32_t)-1;
 +
 +    /* Try and connect */
 +    TRACE("Connecting stream for playback on %s.\n", wdo->device_name);
 +    pa_threaded_mainloop_lock(PULSE_ml);
-+    pa_stream_connect_playback(wwo->stream, wdo->device_name, NULL, stream_flags, NULL, NULL);
++    pa_stream_connect_playback(wwo->stream, wdo->device_name, NULL, PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_ADJUST_LATENCY, NULL, NULL);
 +
 +    /* Wait for connection */
 +    for (;;) {
@@ -2463,7 +2446,7 @@ index 0000000..db2c892
 +        return 0;
 +
 +    /* WaveOut Playback related functions */
-+    case WODM_OPEN:         return wodOpen          (wDevID, (DWORD_PTR*)dwUser, (LPWAVEOPENDESC)dwParam1, dwParam2);
++    case WODM_OPEN:         return wodOpen          (wDevID, dwUser, (LPWAVEOPENDESC)dwParam1, dwParam2);
 +    case WODM_CLOSE:        return wodClose         ((WINE_WAVEINST*)dwUser);
 +    case WODM_WRITE:        return wodWrite         ((WINE_WAVEINST*)dwUser, (LPWAVEHDR)dwParam1, dwParam2);
 +    case WODM_PAUSE:        return wodPause         ((WINE_WAVEINST*)dwUser);
