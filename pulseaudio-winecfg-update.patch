@@ -1,0 +1,10 @@
+--- programs/winecfg/Ja.rc.orig	2009-08-26 11:55:56.000000000 +0200
++++ programs/winecfg/Ja.rc	2009-08-26 11:56:52.000000000 +0200
+@@ -275,6 +275,7 @@
+     IDS_ACCEL_STANDARD          "標準"
+     IDS_ACCEL_BASIC             "基本"
+     IDS_ACCEL_EMULATION         "エミュレーション"
++    IDS_DRIVER_PULSE            "PulseAudio ドライバ"
+     IDS_DRIVER_ALSA             "ALSA ドライバ"
+     IDS_DRIVER_ESOUND           "EsounD ドライバ"
+     IDS_DRIVER_OSS              "OSS ドライバ"

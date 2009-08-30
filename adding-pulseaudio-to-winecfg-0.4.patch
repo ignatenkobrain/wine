@@ -1,8 +1,8 @@
 diff --git a/programs/winecfg/Bg.rc b/programs/winecfg/Bg.rc
-index 00cfbe8..ce2c8c7 100644
+index fcdf895..e17690e 100644
 --- a/programs/winecfg/Bg.rc
 +++ b/programs/winecfg/Bg.rc
-@@ -277,6 +277,7 @@ BEGIN
+@@ -276,6 +276,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Basic"
      IDS_ACCEL_EMULATION         "Emulation"
@@ -11,10 +11,10 @@ index 00cfbe8..ce2c8c7 100644
      IDS_DRIVER_ESOUND           "EsounD Driver"
      IDS_DRIVER_OSS              "OSS Driver"
 diff --git a/programs/winecfg/Cs.rc b/programs/winecfg/Cs.rc
-index b34dd06..348153c 100644
+index d9c0b28..9bcc033 100644
 --- a/programs/winecfg/Cs.rc
 +++ b/programs/winecfg/Cs.rc
-@@ -277,6 +277,7 @@ BEGIN
+@@ -276,6 +276,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "StandardnÌ"
      IDS_ACCEL_BASIC             "Z·kladnÌ"
      IDS_ACCEL_EMULATION         "Emulace"
@@ -23,10 +23,10 @@ index b34dd06..348153c 100644
      IDS_DRIVER_ESOUND           "OvladaË EsounD"
      IDS_DRIVER_OSS              "OvladaË OSS"
 diff --git a/programs/winecfg/Da.rc b/programs/winecfg/Da.rc
-index 62b781b..a604ea3 100644
+index f53aead..690c7f5 100644
 --- a/programs/winecfg/Da.rc
 +++ b/programs/winecfg/Da.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "GrundlÊggende"
      IDS_ACCEL_EMULATION         "EmulÈring"
@@ -35,10 +35,10 @@ index 62b781b..a604ea3 100644
      IDS_DRIVER_ESOUND           "EsounD-driver"
      IDS_DRIVER_OSS              "OSS-driver"
 diff --git a/programs/winecfg/De.rc b/programs/winecfg/De.rc
-index 53c412c..8f70399 100644
+index e6bed15..d3027bc 100644
 --- a/programs/winecfg/De.rc
 +++ b/programs/winecfg/De.rc
-@@ -273,6 +273,7 @@ BEGIN
+@@ -272,6 +272,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Einfach"
      IDS_ACCEL_EMULATION         "Emulation"
@@ -47,10 +47,10 @@ index 53c412c..8f70399 100644
      IDS_DRIVER_ESOUND           "EsounD-Treiber"
      IDS_DRIVER_OSS              "OSS-Treiber"
 diff --git a/programs/winecfg/En.rc b/programs/winecfg/En.rc
-index a69b4d9..2d3dc5c 100644
+index 049aaa7..cef7c4a 100644
 --- a/programs/winecfg/En.rc
 +++ b/programs/winecfg/En.rc
-@@ -273,6 +273,7 @@ BEGIN
+@@ -272,6 +272,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Basic"
      IDS_ACCEL_EMULATION         "Emulation"
@@ -59,10 +59,10 @@ index a69b4d9..2d3dc5c 100644
      IDS_DRIVER_ESOUND           "EsounD Driver"
      IDS_DRIVER_OSS              "OSS Driver"
 diff --git a/programs/winecfg/Es.rc b/programs/winecfg/Es.rc
-index 2ddce6c..ececfe2 100644
+index 1771b4e..c49f9a3 100644
 --- a/programs/winecfg/Es.rc
 +++ b/programs/winecfg/Es.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Est·ndar"
      IDS_ACCEL_BASIC             "B·sica"
      IDS_ACCEL_EMULATION         "EmulaciÛn"
@@ -71,10 +71,10 @@ index 2ddce6c..ececfe2 100644
      IDS_DRIVER_ESOUND           "Manejador EsounD"
      IDS_DRIVER_OSS              "Manejador OSS"
 diff --git a/programs/winecfg/Fi.rc b/programs/winecfg/Fi.rc
-index f6fb85c..ed24bf6 100644
+index 0dedf3a..097a4d2 100644
 --- a/programs/winecfg/Fi.rc
 +++ b/programs/winecfg/Fi.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Basic"
      IDS_ACCEL_EMULATION         "Emulation"
@@ -83,10 +83,10 @@ index f6fb85c..ed24bf6 100644
      IDS_DRIVER_ESOUND           "EsounD Driver"
      IDS_DRIVER_OSS              "OSS Driver"
 diff --git a/programs/winecfg/Fr.rc b/programs/winecfg/Fr.rc
-index b63adb1..414f440 100644
+index 52c9888..1bd92b1 100644
 --- a/programs/winecfg/Fr.rc
 +++ b/programs/winecfg/Fr.rc
-@@ -275,6 +275,7 @@ BEGIN
+@@ -274,6 +274,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Basique"
      IDS_ACCEL_EMULATION         "√âmulation"
@@ -95,10 +95,10 @@ index b63adb1..414f440 100644
      IDS_DRIVER_ESOUND           "Pilote EsounD"
      IDS_DRIVER_OSS              "Pilote OSS"
 diff --git a/programs/winecfg/Hu.rc b/programs/winecfg/Hu.rc
-index 0445c77..7756d2b 100644
+index dc887fe..3ba696f 100644
 --- a/programs/winecfg/Hu.rc
 +++ b/programs/winecfg/Hu.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Basic"
      IDS_ACCEL_EMULATION         "Emulation"
@@ -106,23 +106,11 @@ index 0445c77..7756d2b 100644
      IDS_DRIVER_ALSA             "ALSA Driver"
      IDS_DRIVER_ESOUND           "EsounD Driver"
      IDS_DRIVER_OSS              "OSS Driver"
-diff --git a/programs/winecfg/Ja.rc b/programs/winecfg/Ja.rc
-index a25a953..d690f7f 100644
---- a/programs/winecfg/Ja.rc
-+++ b/programs/winecfg/Ja.rc
-@@ -276,6 +276,7 @@ BEGIN
-     IDS_ACCEL_STANDARD          "Ê®ôÊ∫ñ"
-     IDS_ACCEL_BASIC             "Âü∫Êú¨"
-     IDS_ACCEL_EMULATION         "„Ç®„Éü„É•„É¨„Éº„Ç∑„Éß„É≥"
-+    IDS_DRIVER_PULSE             "PulseAudio Driver"
-     IDS_DRIVER_ALSA             "ALSA Driver"
-     IDS_DRIVER_ESOUND           "EsounD Driver"
-     IDS_DRIVER_OSS              "OSS Driver"
 diff --git a/programs/winecfg/Ko.rc b/programs/winecfg/Ko.rc
-index c01b841..5c500d5 100644
+index 6f13e0c..d5403da 100644
 --- a/programs/winecfg/Ko.rc
 +++ b/programs/winecfg/Ko.rc
-@@ -275,6 +275,7 @@ BEGIN
+@@ -274,6 +274,7 @@ BEGIN
     IDS_ACCEL_STANDARD          "«•¡ÿ"
     IDS_ACCEL_BASIC             "±‚∫ª"
     IDS_ACCEL_EMULATION         "æ÷πƒ∑π¿Ãº«"
@@ -131,7 +119,7 @@ index c01b841..5c500d5 100644
     IDS_DRIVER_ESOUND           "EsounD µÂ∂Û¿Ãπˆ"
     IDS_DRIVER_OSS              "OSS µÂ∂Û¿Ãπˆ"
 diff --git a/programs/winecfg/Nl.rc b/programs/winecfg/Nl.rc
-index 99062cf..2683a82 100644
+index 4cd45f0..d23f359 100644
 --- a/programs/winecfg/Nl.rc
 +++ b/programs/winecfg/Nl.rc
 @@ -273,6 +273,7 @@ BEGIN
@@ -143,10 +131,10 @@ index 99062cf..2683a82 100644
      IDS_DRIVER_ESOUND           "EsounD Stuurprogramma"
      IDS_DRIVER_OSS              "OSS Stuurprogramma"
 diff --git a/programs/winecfg/No.rc b/programs/winecfg/No.rc
-index 357539e..b2a5eae 100644
+index cc34fad..71876ba 100644
 --- a/programs/winecfg/No.rc
 +++ b/programs/winecfg/No.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Grunnleggende"
      IDS_ACCEL_EMULATION         "Emulering"
@@ -155,10 +143,10 @@ index 357539e..b2a5eae 100644
      IDS_DRIVER_ESOUND           "EsounD-driver"
      IDS_DRIVER_OSS              "OSS-driver"
 diff --git a/programs/winecfg/Pl.rc b/programs/winecfg/Pl.rc
-index 8e1d9a2..bd968de 100644
+index d884881..d6405b1 100644
 --- a/programs/winecfg/Pl.rc
 +++ b/programs/winecfg/Pl.rc
-@@ -274,6 +274,7 @@ BEGIN
+@@ -273,6 +273,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standardowe"
      IDS_ACCEL_BASIC             "Podstawowe"
      IDS_ACCEL_EMULATION         "Emulacja"
@@ -167,10 +155,10 @@ index 8e1d9a2..bd968de 100644
      IDS_DRIVER_ESOUND           "Sterownik EsounD"
      IDS_DRIVER_OSS              "Sterownik OSS"
 diff --git a/programs/winecfg/Pt.rc b/programs/winecfg/Pt.rc
-index e3b02a1..be5acb0 100644
+index 683dc68..be92466 100644
 --- a/programs/winecfg/Pt.rc
 +++ b/programs/winecfg/Pt.rc
-@@ -471,6 +471,7 @@ BEGIN
+@@ -470,6 +470,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Padr√£o"
      IDS_ACCEL_BASIC             "B√°sico"
      IDS_ACCEL_EMULATION         "Emula√ß√£o"
@@ -179,10 +167,10 @@ index e3b02a1..be5acb0 100644
      IDS_DRIVER_ESOUND           "Controlador EsounD"
      IDS_DRIVER_OSS              "Controlador OSS"
 diff --git a/programs/winecfg/Ro.rc b/programs/winecfg/Ro.rc
-index c836d60..50317bf 100644
+index f12949f..2101ea1 100644
 --- a/programs/winecfg/Ro.rc
 +++ b/programs/winecfg/Ro.rc
-@@ -273,6 +273,7 @@ BEGIN
+@@ -272,6 +272,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "De bazƒÉ"
      IDS_ACCEL_EMULATION         "Emulare"
@@ -191,22 +179,22 @@ index c836d60..50317bf 100644
      IDS_DRIVER_ESOUND           "Driver Esound"
      IDS_DRIVER_OSS              "Driver OSS"
 diff --git a/programs/winecfg/Ru.rc b/programs/winecfg/Ru.rc
-index 8d61413..7962c98 100644
+index 7293cbc..fb57527 100644
 --- a/programs/winecfg/Ru.rc
 +++ b/programs/winecfg/Ru.rc
-@@ -275,6 +275,7 @@ BEGIN
-     IDS_ACCEL_STANDARD          "—Ú‡Ì‰‡ÚÌÓÂ"
-     IDS_ACCEL_BASIC             "ÃËÌËÏ‡Î¸ÌÓÂ"
-     IDS_ACCEL_EMULATION         "›ÏÛÎˇˆËˇ"
-+    IDS_DRIVER_PULSE             "PulseAudio ‰‡È‚Â"
-     IDS_DRIVER_ALSA             "ALSA ‰‡È‚Â"
-     IDS_DRIVER_ESOUND           "EsounD ‰‡È‚Â"
-     IDS_DRIVER_OSS              "OSS ‰‡È‚Â"
+@@ -277,6 +277,7 @@ BEGIN
+     IDS_ACCEL_STANDARD          "–°—Ç–∞–Ω–¥–∞—Ä—Ç–Ω–æ–µ"
+     IDS_ACCEL_BASIC             "–ú–∏–Ω–∏–º–∞–ª—å–Ω–æ–µ"
+     IDS_ACCEL_EMULATION         "–≠–º—É–ª—è—Ü–∏—è"
++    IDS_DRIVER_PULSE		"PulseAudio –¥—Ä–∞–π–≤–µ—Ä"
+     IDS_DRIVER_ALSA             "ALSA –¥—Ä–∞–π–≤–µ—Ä"
+     IDS_DRIVER_ESOUND           "EsounD –¥—Ä–∞–π–≤–µ—Ä"
+     IDS_DRIVER_OSS              "OSS –¥—Ä–∞–π–≤–µ—Ä"
 diff --git a/programs/winecfg/Si.rc b/programs/winecfg/Si.rc
-index 87cd239..73544bb 100644
+index feaef36..c26e5cb 100644
 --- a/programs/winecfg/Si.rc
 +++ b/programs/winecfg/Si.rc
-@@ -273,6 +273,7 @@ BEGIN
+@@ -272,6 +272,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standardno"
      IDS_ACCEL_BASIC             "Osnovno"
      IDS_ACCEL_EMULATION         "Emulacija"
@@ -215,10 +203,10 @@ index 87cd239..73544bb 100644
      IDS_DRIVER_ESOUND           "EsounD gonilnik"
      IDS_DRIVER_OSS              "OSS gonilnik"
 diff --git a/programs/winecfg/Sv.rc b/programs/winecfg/Sv.rc
-index 113603c..dde6ed5 100644
+index 7fea5aa..35eb871 100644
 --- a/programs/winecfg/Sv.rc
 +++ b/programs/winecfg/Sv.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standard"
      IDS_ACCEL_BASIC             "Grundl‰ggande"
      IDS_ACCEL_EMULATION         "Emulering"
@@ -227,10 +215,10 @@ index 113603c..dde6ed5 100644
      IDS_DRIVER_ESOUND           "EsounD-drivrutin"
      IDS_DRIVER_OSS              "OSS-drivrutin"
 diff --git a/programs/winecfg/Tr.rc b/programs/winecfg/Tr.rc
-index 883c0f3..4f6ecb3 100644
+index 0fa9778..2a23112 100644
 --- a/programs/winecfg/Tr.rc
 +++ b/programs/winecfg/Tr.rc
-@@ -271,6 +271,7 @@ BEGIN
+@@ -270,6 +270,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Standart"
      IDS_ACCEL_BASIC             "Temel"
      IDS_ACCEL_EMULATION         "Taklit"
@@ -239,10 +227,10 @@ index 883c0f3..4f6ecb3 100644
      IDS_DRIVER_ESOUND           "EsounD S¸r¸c¸s¸"
      IDS_DRIVER_OSS              "OSS S¸r¸c¸s¸"
 diff --git a/programs/winecfg/Zh.rc b/programs/winecfg/Zh.rc
-index b483cfe..8617049 100644
+index fea66b7..bc0aaaf 100644
 --- a/programs/winecfg/Zh.rc
 +++ b/programs/winecfg/Zh.rc
-@@ -274,6 +274,7 @@ BEGIN
+@@ -273,6 +273,7 @@ BEGIN
      IDS_ACCEL_STANDARD          "Ê†áÂáÜ"
      IDS_ACCEL_BASIC             "Âü∫Êú¨"
      IDS_ACCEL_EMULATION         "ËΩØ‰ª∂Ê®°Êãü"
@@ -251,10 +239,10 @@ index b483cfe..8617049 100644
      IDS_DRIVER_ESOUND           "EsounD È©±Âä®"
      IDS_DRIVER_OSS              "OSS È©±Âä®"
 diff --git a/programs/winecfg/audio.c b/programs/winecfg/audio.c
-index 79e62f0..b9a310c 100644
+index 9f8a0a2..0ecb6c3 100644
 --- a/programs/winecfg/audio.c
 +++ b/programs/winecfg/audio.c
-@@ -88,6 +88,7 @@ typedef struct
+@@ -89,6 +89,7 @@ typedef struct
  } AUDIO_DRIVER;
  
  static const AUDIO_DRIVER sAudioDrivers[] = {
@@ -275,10 +263,10 @@ index 37cc12b..7c13fad 100644
      "winmm",
      "wintab32",
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
-index 88c9e64..05a13de 100644
+index 27736b7..f8ba2ee 100644
 --- a/programs/winecfg/resource.h
 +++ b/programs/winecfg/resource.h
-@@ -186,7 +186,7 @@
+@@ -185,7 +185,7 @@
  #define IDS_ACCEL_BASIC                 8302
  #define IDS_ACCEL_EMULATION             8303
  #define IDS_DRIVER_ALSA                 8304

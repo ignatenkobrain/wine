@@ -1416,10 +1416,10 @@ index 0000000..7cbc781
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/waveout.c b/dlls/winepulse.drv/waveout.c
 new file mode 100644
-index 0000000..ee92535
+index 0000000..458a33d
 --- /dev/null
 +++ b/dlls/winepulse.drv/waveout.c
-@@ -0,0 +1,1075 @@
+@@ -0,0 +1,1070 @@
 +/*
 + * Wine Driver for PulseAudio - WaveOut Functionality
 + * http://pulseaudio.org/
@@ -1616,7 +1616,7 @@ index 0000000..ee92535
 + */
 +static void wodPlayer_CheckReleasing(WINE_WAVEINST *wwo) {
 +
-+    if (wwo->buffer_attr.tlength == -1 && wwo->lpQueuePtr && !wwo->lpPlayPtr && wwo->state == WINE_WS_PLAYING) {
++    if (wwo->buffer_attr.tlength == -1 && wwo->lpQueuePtr && !wwo->lpPlayPtr && wwo->state != WINE_WS_STOPPED) {
 +        const pa_buffer_attr *returned;
 +
 +        /* Try and adjust the buffer attributes so that playback can start.
@@ -1625,12 +1625,7 @@ index 0000000..ee92535
 +
 +        pa_threaded_mainloop_lock(PULSE_ml);
 +
-+        if (wwo->timing_info->playing) {
-+            pa_threaded_mainloop_unlock(PULSE_ml);
-+            return;
-+        }
-+
-+	/* Calculate desired buffer length. write_index is the amount of data
++        /* Calculate desired buffer length. write_index is the amount of data
 +         * written. If there is more than one buffer queued, subtract the
 +         * length of one to allow there to be a free buffer for the app. */
 +        wwo->buffer_attr.tlength = wwo->timing_info->write_index;
