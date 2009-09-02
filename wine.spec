@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.28
+Version:	1.1.29
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -523,6 +523,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.exe.so
 %{_libdir}/wine/write.exe.so
+%{_libdir}/wine/dxdiag.exe.so
 
 %ifarch %{ix86}
 %{_bindir}/wine-preloader
@@ -727,6 +728,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/oleacc.dll.so
 %{_libdir}/wine/oleaut32.dll.so
 %{_libdir}/wine/olecli32.dll.so
+%{_libdir}/wine/oledb32.dll.so
 %{_libdir}/wine/oledlg.dll.so
 %{_libdir}/wine/olepro32.dll.so
 %{_libdir}/wine/olesvr32.dll.so
@@ -1023,6 +1025,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineoss.drv.so
 
 %changelog
+* Wed Sep 02 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.29-1
+- version upgrade
+
 * Mon Aug 24 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.28-1
 - version upgrade
