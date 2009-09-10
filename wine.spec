@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.1.29
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -1025,6 +1025,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineoss.drv.so
 
 %changelog
+* Thu Sep 10 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.29-2
+- rebuild for new gcc (#505862)
+
 * Wed Sep 02 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.29-1
 - version upgrade
