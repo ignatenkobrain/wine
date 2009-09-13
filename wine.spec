@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.1.29
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -49,11 +49,16 @@ Source300:      wine-mime-msi.desktop
 # and http://art.ified.ca/?page_id=40
 Patch400:       http://art.ified.ca/downloads/winepulse-0.30-configure.ac.patch
 Patch401:       http://art.ified.ca/downloads/winepulse-0.30.patch
-Patch402:	http://art.ified.ca/downloads/adding-pulseaudio-to-winecfg-0.4.patch
+Patch402:        http://art.ified.ca/downloads/winepulse/winepulse-winecfg-0.6.patch
 Source402:      README-FEDORA-PULSEAUDIO
-Patch403:       pulseaudio-winecfg-update.patch
 
 Patch1:         wine-rpath.patch
+
+# bugfix patches
+# fix steam regression http://bugs.winehq.org/show_bug.cgi?id=19916
+# upstream commit 70241904b9efacab9fb6c7d8701b1cfdb86f49f7
+Patch1000:      steam-regression.patch
+
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if !%{?no64bit}
@@ -301,7 +306,8 @@ This package adds an oss driver for wine.
 %patch400 -p1
 %patch401 -p1
 %patch402 -p1
-%patch403
+
+%patch1000 -p1
 
 autoreconf
 
@@ -1025,6 +1031,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wineoss.drv.so
 
 %changelog
+* Sun Sep 13 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.29-3
+- patch for steam regression (upstream #19916)
+- update winepulse winecfg patch
+
 * Thu Sep 10 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.29-2
 - rebuild for new gcc (#505862)
