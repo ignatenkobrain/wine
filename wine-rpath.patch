@@ -1,6 +1,6 @@
---- configure.orig	2009-08-26 11:47:17.000000000 +0200
-+++ configure	2009-08-26 11:50:07.000000000 +0200
-@@ -6565,14 +6565,14 @@
+--- configure.orig	2009-10-29 18:57:06.000000000 +0100
++++ configure	2009-10-29 18:58:49.000000000 +0100
+@@ -6758,14 +6758,14 @@
  
  fi
  
@@ -18,15 +18,28 @@
 +CFLAGS="$CFLAGS -fPIC"
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
- 
-@@ -6597,8 +6597,8 @@
+ int main(int argc, char *argv) { return 0; }
+@@ -6783,17 +6783,17 @@
  	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
  $as_echo "$ac_res" >&6; }
  if test `eval 'as_val=${'$as_ac_var'};$as_echo "$as_val"'` = yes; then :
 -  LDRPATH_INSTALL="-Wl,--rpath,\\\$\$ORIGIN/\`\$(RELPATH) \$(bindir) \$(libdir)\`"
 -                       LDRPATH_LOCAL="-Wl,--rpath,\\\$\$ORIGIN/\$(TOPOBJDIR)/libs/wine"
 +  LDRPATH_INSTALL=""
-+  LDRPATH_LOCAL=""
++                       LDRPATH_LOCAL=""
  else
-   as_ac_var=`$as_echo "ac_cv_cflags_-fPIC -Wl,-R,\\$ORIGIN/../lib" | $as_tr_sh`
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler supports -fPIC -Wl,-R,\$ORIGIN/../lib" >&5
+-  as_ac_var=`$as_echo "ac_cv_cflags_-fPIC -Wl,-R,\\$ORIGIN/../lib" | $as_tr_sh`
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler supports -fPIC -Wl,-R,\$ORIGIN/../lib" >&5
+-$as_echo_n "checking whether the compiler supports -fPIC -Wl,-R,\$ORIGIN/../lib... " >&6; }
++  as_ac_var=`$as_echo "ac_cv_cflags_-fPIC" | $as_tr_sh`
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler supports -fPIC" >&5
++$as_echo_n "checking whether the compiler supports -fPIC " >&6; }
+ if { as_var=$as_ac_var; eval "test \"\${$as_var+set}\" = set"; }; then :
+   $as_echo_n "(cached) " >&6
+ else
+   ac_wine_try_cflags_saved=$CFLAGS
+-CFLAGS="$CFLAGS -fPIC -Wl,-R,\$ORIGIN/../lib"
++CFLAGS="$CFLAGS -fPIC"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int main(int argc, char *argv) { return 0; }

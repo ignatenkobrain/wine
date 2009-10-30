@@ -1416,10 +1416,10 @@ index 0000000..7cbc781
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/waveout.c b/dlls/winepulse.drv/waveout.c
 new file mode 100644
-index 0000000..458a33d
+index 0000000..334cc72
 --- /dev/null
 +++ b/dlls/winepulse.drv/waveout.c
-@@ -0,0 +1,1070 @@
+@@ -0,0 +1,1049 @@
 +/*
 + * Wine Driver for PulseAudio - WaveOut Functionality
 + * http://pulseaudio.org/
@@ -1615,6 +1615,7 @@ index 0000000..458a33d
 + * the size of the buffer on the pulse server side.
 + */
 +static void wodPlayer_CheckReleasing(WINE_WAVEINST *wwo) {
++    LPWAVEHDR lpWaveHdr;
 +
 +    if (wwo->buffer_attr.tlength == -1 && wwo->lpQueuePtr && !wwo->lpPlayPtr && wwo->state != WINE_WS_STOPPED) {
 +        const pa_buffer_attr *returned;
@@ -1624,12 +1625,11 @@ index 0000000..458a33d
 +         * streams for server version 0.9.11 to 0.9.14 */
 +
 +        pa_threaded_mainloop_lock(PULSE_ml);
-+
-+        /* Calculate desired buffer length. write_index is the amount of data
-+         * written. If there is more than one buffer queued, subtract the
-+         * length of one to allow there to be a free buffer for the app. */
-+        wwo->buffer_attr.tlength = wwo->timing_info->write_index;
-+        if (wwo->lpQueuePtr->lpNext) wwo->buffer_attr.tlength -= wwo->lpQueuePtr->dwBufferLength;
++        
++        /* Calculate how large a buffer the application has made so far */
++        wwo->buffer_attr.tlength = 0;
++        for (lpWaveHdr = wwo->lpQueuePtr; lpWaveHdr; lpWaveHdr = lpWaveHdr->lpNext)
++            wwo->buffer_attr.tlength += lpWaveHdr->dwBufferLength;
 +
 +        WARN("Asking for new buffer target length of %llums (%u bytes)\n",
 +            pa_bytes_to_usec(wwo->buffer_attr.tlength, &wwo->sample_spec) / 1000,
@@ -1672,7 +1672,7 @@ index 0000000..458a33d
 +            /* See if this data has been played, and if not, return when it will have been */
 +            wait = pa_bytes_to_usec(lpWaveHdr->reserved + lpWaveHdr->dwBufferLength, &wwo->sample_spec);
 +            if (wait >= time) {
-+                wait = ((wait - time) + 999) / 1000;
++                wait = ((wait - time) + (pa_usec_t)999) / (pa_usec_t)1000;
 +                return wait ?: 1;
 +            }
 +        }
@@ -1809,7 +1809,7 @@ index 0000000..458a33d
 + * not reset to 0 on Reset() calls. Better than pa_stream_get_time() as it is
 + * more constant.
 + */
-+static pa_usec_t WAVEOUT_GetStreamTime(WINE_WAVEINST *wwo) {
++static pa_usec_t wodPlayer_GetStreamTime(WINE_WAVEINST *wwo) {
 +    pa_usec_t time, temp;
 +    const pa_timing_info *t;
 +
@@ -1909,38 +1909,22 @@ index 0000000..458a33d
 +            break;
 +
 +        case WINE_WM_FEED: /* Sent by the pulse thread */
++	    msgcount--; /* Don't count this message for stall detection */
 +            wodPlayer_Feed(wwo, pa_stream_writable_size(wwo->stream));
 +            SetEvent(ev);
 +            break;
 +
 +        case WINE_WM_XRUN: /* Sent by the pulse thread */
++	    msgcount--; /* Don't count this message for stall detection */
 +            WARN("Trying to recover from underrun.\n");
 +            /* Return all the queued wavehdrs, so the app will send more data */
 +            wodPlayer_NotifyCompletions(wwo, FALSE, (pa_usec_t)-1);
 +
-+            /* Underrun means playback started, so don't allow future setting of the buffer attributes */
-+            if (wwo->buffer_attr.tlength == (uint32_t)-1) wwo->buffer_attr.tlength = 0;
-+
 +            SetEvent(ev);
 +            break;
 +
-+        case WINE_WM_CLOSING: /* If param = 1, close because of a failure */
++        case WINE_WM_CLOSING:
 +            wwo->hThread = NULL;
-+            if ((DWORD)param == 1) {
-+                /* If we are here, the stream has failed */
-+                wwo->state = WINE_WS_FAILED;
-+                SetEvent(ev);
-+                PULSE_DestroyRingMessage(&wwo->msgRing);
-+                wodPlayer_NotifyCompletions(wwo, TRUE, 0);
-+                wodPlayer_NotifyClient(wwo, WOM_CLOSE, 0L, 0L);
-+                wwo->lpPlayPtr = wwo->lpQueuePtr = wwo->lpLoopPtr = NULL;
-+                pa_threaded_mainloop_lock(PULSE_ml);
-+                pa_stream_disconnect(wwo->stream);
-+                pa_threaded_mainloop_unlock(PULSE_ml);
-+                TRACE("Thread exiting because of failure.\n");
-+                ExitThread(1);
-+                /* Stream instance will get dereferenced in wod_Close */
-+            }
 +            wwo->state = WINE_WS_CLOSED;
 +            /* sanity check: this should not happen since the device must have been reset before */
 +            if (wwo->lpQueuePtr || wwo->lpPlayPtr) ERR("out of sync\n");
@@ -1984,10 +1968,12 @@ index 0000000..458a33d
 +
 +        /* If there is audio playing, return headers and get next timeout */
 +        if (wwo->state == WINE_WS_PLAYING) {
-+            dwSleepTime = wodPlayer_NotifyCompletions(wwo, FALSE, WAVEOUT_GetStreamTime(wwo));
++            dwSleepTime = wodPlayer_NotifyCompletions(wwo, FALSE, wodPlayer_GetStreamTime(wwo));
 +        } else
 +            dwSleepTime = INFINITE;
 +    }
++
++    return 0;
 +}
 +
 +/**************************************************************************
@@ -2062,7 +2048,7 @@ index 0000000..458a33d
 +    pa_stream_set_moved_callback        (wwo->stream, PULSE_StreamMovedCallback,        wwo);
 +    pa_stream_set_suspended_callback    (wwo->stream, PULSE_StreamSuspendedCallback,    wwo);
 +
-+    /* Blank (but don't send) Buffer Attributes */
++    /* Blank Buffer Attributes */
 +    wwo->buffer_attr.prebuf = (uint32_t)-1;
 +    wwo->buffer_attr.tlength = (uint32_t)-1;
 +    wwo->buffer_attr.minreq = (uint32_t)-1;
@@ -2224,7 +2210,7 @@ index 0000000..458a33d
 +
 +    if (lpTime == NULL) return MMSYSERR_INVALPARAM;
 +
-+    time = WAVEOUT_GetStreamTime(wwo);
++    time = wodPlayer_GetStreamTime(wwo);
 +
 +    temp = pa_bytes_to_usec(wwo->dwLastReset, &wwo->sample_spec);
 +    if (time > temp) time -= temp; else time = 0;
@@ -2277,7 +2263,7 @@ index 0000000..458a33d
 + *                              wodGetVolume                    [internal]
 + */
 +static DWORD wodGetVolume(WINE_WAVEINST *wwo, LPDWORD lpdwVol) {
-+    float   value1, value2;
++    double   value1, value2;
 +    DWORD   wleft, wright;
 +
 +    if (!wwo || wwo->state == WINE_WS_FAILED) {
@@ -2299,21 +2285,15 @@ index 0000000..458a33d
 +
 +
 +    if (wwo->volume.channels == 2) {
-+        value1 = pa_sw_volume_to_dB(wwo->volume.values[0]);
-+        value2 = pa_sw_volume_to_dB(wwo->volume.values[1]);
++        value1 = pa_sw_volume_to_linear(wwo->volume.values[0]);
++        value2 = pa_sw_volume_to_linear(wwo->volume.values[1]);
 +    } else {
-+        value1 = pa_sw_volume_to_dB(pa_cvolume_avg(&wwo->volume));
++        value1 = pa_sw_volume_to_linear(pa_cvolume_avg(&wwo->volume));
 +        value2 = value1;
 +    }
 +
-+    if (value1 < -60)
-+        wleft = 0;
-+    else
-+
-+    if (value2 < -60)
-+        wright = 0;
-+    else
-+        wright = 0xFFFFl - ((value2 / -60)*(float)0xFFFFl);
++    wleft = 0xFFFFl * value1;
++    wright = 0xFFFFl * value2;
 +
 +    if (wleft > 0xFFFFl)
 +        wleft = 0xFFFFl;
@@ -2337,18 +2317,17 @@ index 0000000..458a33d
 +        return MMSYSERR_INVALHANDLE;
 +    }
 +
-+    /* waveOut volumes are /supposed/ to be logarithmic */
-+    value1 = LOWORD(dwParam1) == 0 ? PA_DECIBEL_MININFTY : ((float)(0xFFFFl - LOWORD(dwParam1))/0xFFFFl) * -60.0;
-+    value2 = HIWORD(dwParam1) == 0 ? PA_DECIBEL_MININFTY : ((float)(0xFFFFl - HIWORD(dwParam1))/0xFFFFl) * -60.0;
++    value1 = (double)LOWORD(dwParam1)/(double)0xFFFFl;
++    value2 = (double)HIWORD(dwParam1)/(double)0xFFFFl;
 +
 +    if (wwo->sample_spec.channels == 2) {
 +        wwo->volume.channels = 2;
-+        wwo->volume.values[0] = pa_sw_volume_from_dB(value1);
-+        wwo->volume.values[1] = pa_sw_volume_from_dB(value2);
++        wwo->volume.values[0] = pa_sw_volume_from_linear(value1);
++        wwo->volume.values[1] = pa_sw_volume_from_linear(value2);
 +    } else {
 +        if (value1 != value2) FIXME("Non-stereo streams can't pan!\n");
 +        wwo->volume.channels = wwo->sample_spec.channels;
-+        pa_cvolume_set(&wwo->volume, wwo->volume.channels, pa_sw_volume_from_dB(max(value1, value2)));
++        pa_cvolume_set(&wwo->volume, wwo->volume.channels, pa_sw_volume_from_linear(value1 > value2 ? value1 : value2));
 +    }
 +
 +    if (TRACE_ON(wave)) {
@@ -2501,7 +2480,7 @@ index 0000000..1b49460
 +@ stdcall -private widMessage(long long long long long long) PULSE_widMessage
 diff --git a/dlls/winepulse.drv/winepulse.h b/dlls/winepulse.drv/winepulse.h
 new file mode 100644
-index 0000000..4a834cd
+index 0000000..0aa7e86
 --- /dev/null
 +++ b/dlls/winepulse.drv/winepulse.h
 @@ -0,0 +1,196 @@
@@ -2636,7 +2615,7 @@ index 0000000..4a834cd
 +
 +/* Per-playback/record instance */
 +struct WINE_WAVEINST {
-+    volatile INT        state;              /* one of the WINE_WS_ manifest constants */
++    INT                 state;              /* one of the WINE_WS_ manifest constants */
 +    WAVEOPENDESC        waveDesc;
 +    WORD                wFlags;
 +

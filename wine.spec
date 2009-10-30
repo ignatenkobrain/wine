@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.29
-Release:	3%{?dist}
+Version:	1.1.32
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -47,17 +47,15 @@ Source300:      wine-mime-msi.desktop
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse-0.30-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.30.patch
-Patch402:        http://art.ified.ca/downloads/winepulse/winepulse-winecfg-0.6.patch
+Patch400:       http://art.ified.ca/downloads/winepulse-0.32-configure.ac.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.32.patch
+Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-0.6.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 Patch1:         wine-rpath.patch
 
 # bugfix patches
-# fix steam regression http://bugs.winehq.org/show_bug.cgi?id=19916
-# upstream commit 70241904b9efacab9fb6c7d8701b1cfdb86f49f7
-Patch1000:      steam-regression.patch
+# none
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -112,6 +110,7 @@ BuildRequires:  dbus-devel hal-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  gsm-devel
+BuildRequires:  openal-soft-devel
 
 # noarch
 Requires:       wine-common = %{version}-%{release}
@@ -299,6 +298,15 @@ Requires: wine-core = %{version}-%{release}
 %description oss
 This package adds an oss driver for wine.
 
+%package openal
+Summary: Openal support for wine
+Group: System Environment/Libraries
+Requires: wine-core = %{version}-%{release}
+
+%description openal
+This package adds an openal driver for wine.
+
+
 %prep
 %setup -q -n %{name}-%{version}-fe
 
@@ -306,8 +314,6 @@ This package adds an oss driver for wine.
 %patch400 -p1
 %patch401 -p1
 %patch402 -p1
-
-%patch1000 -p1
 
 autoreconf
 
@@ -498,6 +504,9 @@ update-desktop-database &>/dev/null || :
 %post oss -p /sbin/ldconfig
 %postun oss -p /sbin/ldconfig
 
+%post openal -p /sbin/ldconfig
+%postun openal -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
 # meta package
@@ -550,6 +559,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/fakedlls/*
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/expand.exe.so
+%{_libdir}/wine/extrac32.exe.so
 %{_libdir}/wine/winhlp32.exe.so
 %{_libdir}/wine/msiexec.exe.so
 %{_libdir}/wine/net.exe.so
@@ -642,6 +652,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dxgi.dll.so
 %{_libdir}/wine/eject.exe.so
 %{_libdir}/wine/faultrep.dll.so
+%{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fusion.dll.so
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gdiplus.dll.so
@@ -817,7 +828,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wintab32.dll.so
 %{_libdir}/wine/wintrust.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
-%{_libdir}/wine/wow32.dll.so
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
@@ -843,13 +853,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winevdm.exe.so
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/mmdevldr.vxd.so
-%{_libdir}/wine/mmsystem.dll16
 %{_libdir}/wine/monodebg.vxd.so
 %{_libdir}/wine/vdhcp.vxd.so
-%{_libdir}/wine/ver.dll16
 %{_libdir}/wine/user.exe16
 %{_libdir}/wine/vmm.vxd.so
-%{_libdir}/wine/wing.dll16
 %{_libdir}/wine/vnbt.vxd.so
 %{_libdir}/wine/vnetbios.vxd.so
 %{_libdir}/wine/vtdapi.vxd.so
@@ -857,12 +864,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/w32skrnl.dll.so
 %{_libdir}/wine/commdlg.dll16
 %{_libdir}/wine/gdi.exe16
-%{_libdir}/wine/setupx.dll16
-%{_libdir}/wine/system.drv16
-%{_libdir}/wine/toolhelp.dll16
-%{_libdir}/wine/winsock.dll16
 %{_libdir}/wine/wprocs.dll16
-%{_libdir}/wine/wineps16.drv16
 
 %{_libdir}/wine/avifile.dll16.so
 %{_libdir}/wine/comm.drv16.so
@@ -876,6 +878,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/krnl386.exe16
 %{_libdir}/wine/keyboard.drv16.so
 %{_libdir}/wine/lzexpand.dll16.so
+%{_libdir}/wine/mmsystem.dll16.so
 %{_libdir}/wine/mouse.drv16.so
 %{_libdir}/wine/msacm.dll16.so
 %{_libdir}/wine/msvideo.dll16.so
@@ -888,21 +891,29 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/olecli.dll16.so
 %{_libdir}/wine/olesvr.dll16.so
 %{_libdir}/wine/rasapi16.dll16.so
+%{_libdir}/wine/setupx.dll16.so
 %{_libdir}/wine/shell.dll16.so
 %{_libdir}/wine/sound.drv16.so
 %{_libdir}/wine/storage.dll16.so
 %{_libdir}/wine/stress.dll16.so
+%{_libdir}/wine/system.drv16.so
+%{_libdir}/wine/toolhelp.dll16.so
 %{_libdir}/wine/twain.dll16.so
 %{_libdir}/wine/typelib.dll16.so
+%{_libdir}/wine/ver.dll16.so
 %{_libdir}/wine/w32sys.dll16.so
 %{_libdir}/wine/win32s16.dll16.so
 %{_libdir}/wine/win87em.dll16.so
 %{_libdir}/wine/winaspi.dll16.so
 %{_libdir}/wine/windebug.dll16.so
+%{_libdir}/wine/wineps16.drv16.so
+%{_libdir}/wine/wing.dll16.so
 %{_libdir}/wine/winhelp.exe16.so
 %{_libdir}/wine/winnls.dll16.so
 %{_libdir}/wine/winoldap.mod16.so
+%{_libdir}/wine/winsock.dll16.so
 %{_libdir}/wine/wintab.dll16.so
+%{_libdir}/wine/wow32.dll.so
 %endif
 
 %files common
@@ -1030,7 +1041,22 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 %{_libdir}/wine/wineoss.drv.so
 
+%files openal
+%defattr(-,root,root,-)
+%{_libdir}/wine/openal32.dll.so
+
 %changelog
+* Tue Oct 27 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.32-1
+- version upgrade (#531358)
+- update winepulse
+
+* Mon Sep 28 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.30-1
+- version upgrade
+- openal support
+- drop steam regression patch
+
 * Sun Sep 13 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.29-3
 - patch for steam regression (upstream #19916)
