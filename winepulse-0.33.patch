@@ -1416,10 +1416,10 @@ index 0000000..7cbc781
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/waveout.c b/dlls/winepulse.drv/waveout.c
 new file mode 100644
-index 0000000..334cc72
+index 0000000..e7454fd
 --- /dev/null
 +++ b/dlls/winepulse.drv/waveout.c
-@@ -0,0 +1,1049 @@
+@@ -0,0 +1,1040 @@
 +/*
 + * Wine Driver for PulseAudio - WaveOut Functionality
 + * http://pulseaudio.org/
@@ -1527,7 +1527,7 @@ index 0000000..334cc72
 + *                  wodPlayer_NotifyClient                      [internal]
 + */
 +static DWORD wodPlayer_NotifyClient(WINE_WAVEINST* wwo, WORD wMsg, DWORD dwParam1, DWORD dwParam2) {
-+    TRACE("wMsg = 0x%04x dwParm1 = %04X dwParam2 = %04X\n", wMsg, dwParam1, dwParam2);
++    /* TRACE("wMsg = 0x%04x dwParm1 = %04X dwParam2 = %04X\n", wMsg, dwParam1, dwParam2); */
 +
 +    switch (wMsg) {
 +    case WOM_OPEN:
@@ -1617,33 +1617,25 @@ index 0000000..334cc72
 +static void wodPlayer_CheckReleasing(WINE_WAVEINST *wwo) {
 +    LPWAVEHDR lpWaveHdr;
 +
-+    if (wwo->buffer_attr.tlength == -1 && wwo->lpQueuePtr && !wwo->lpPlayPtr && wwo->state != WINE_WS_STOPPED) {
-+        const pa_buffer_attr *returned;
-+
-+        /* Try and adjust the buffer attributes so that playback can start.
-+         * Because of bugs pa_stream_set_buffer_attr() does not work on started
-+         * streams for server version 0.9.11 to 0.9.14 */
-+
++    if (wwo->buffer_attr.tlength == -1) {
 +        pa_threaded_mainloop_lock(PULSE_ml);
-+        
-+        /* Calculate how large a buffer the application has made so far */
-+        wwo->buffer_attr.tlength = 0;
-+        for (lpWaveHdr = wwo->lpQueuePtr; lpWaveHdr; lpWaveHdr = lpWaveHdr->lpNext)
-+            wwo->buffer_attr.tlength += lpWaveHdr->dwBufferLength;
++        if (!wwo->timing_info->playing) {
 +
-+        WARN("Asking for new buffer target length of %llums (%u bytes)\n",
-+            pa_bytes_to_usec(wwo->buffer_attr.tlength, &wwo->sample_spec) / 1000,
-+            wwo->buffer_attr.tlength);
++            /* Calculate how large a buffer the application has made so far */
++            wwo->buffer_attr.tlength = 0;
++	    wwo->buffer_attr.minreq = wwo->lpQueuePtr->dwBufferLength;
++            for (lpWaveHdr = wwo->lpQueuePtr; lpWaveHdr; lpWaveHdr = lpWaveHdr->lpNext)
++                wwo->buffer_attr.tlength += lpWaveHdr->dwBufferLength;
 +
-+        PULSE_WaitForOperation(pa_stream_set_buffer_attr(wwo->stream, &wwo->buffer_attr, PULSE_StreamSuccessCallback, wwo));
++            WARN("Asking for new buffer target length of %llums (%u bytes)\n",
++                pa_bytes_to_usec(wwo->buffer_attr.tlength, &wwo->sample_spec) / 1000,
++                wwo->buffer_attr.tlength);
 +
-+        returned = pa_stream_get_buffer_attr(wwo->stream);
-+
-+        if (returned->tlength > wwo->timing_info->write_index) {
-+            WARN("Couldn't get the buffer size needed. Triggering and hoping for the best.\n");
-+            PULSE_WaitForOperation(pa_stream_trigger(wwo->stream, PULSE_StreamSuccessCallback, wwo));
++            /* Try and adjust the buffer attributes so that playback can start.
++             * Because of bugs pa_stream_set_buffer_attr() does not work on started
++             * streams for server version 0.9.11 to 0.9.14 */
++            PULSE_WaitForOperation(pa_stream_set_buffer_attr(wwo->stream, &wwo->buffer_attr, PULSE_StreamSuccessCallback, wwo));
 +        }
-+
 +        pa_threaded_mainloop_unlock(PULSE_ml);
 +    }
 +}
@@ -1676,6 +1668,7 @@ index 0000000..334cc72
 +                return wait ?: 1;
 +            }
 +        }
++	TRACE("Returning %p.[%i]\n", lpWaveHdr, (DWORD)lpWaveHdr->reserved);
 +
 +        /* return the wavehdr */
 +        wwo->lpQueuePtr = lpWaveHdr->lpNext;
@@ -1696,7 +1689,7 @@ index 0000000..334cc72
 + * Write either how much free space or how much data we have, depending on
 + * which is less
 + */
-+static int wodPlayer_WriteMax(WINE_WAVEINST *wwo, size_t *space) {
++static DWORD wodPlayer_WriteMax(WINE_WAVEINST *wwo, size_t *space) {
 +    LPWAVEHDR lpWaveHdr = wwo->lpPlayPtr;
 +    size_t nbytes;
 +
@@ -1724,10 +1717,7 @@ index 0000000..334cc72
 + */
 +static void wodPlayer_Feed(WINE_WAVEINST* wwo, size_t space) {
 +
-+    /* No more room... no need to try to feed */
-+    if (space == 0) return;
-+
-+    if (!wwo->stream || !PULSE_context ||
++    if (!space || !wwo->stream || !PULSE_context ||
 +        pa_context_get_state(PULSE_context) != PA_CONTEXT_READY ||
 +        pa_stream_get_state(wwo->stream) != PA_STREAM_READY)
 +        return;
@@ -1741,8 +1731,9 @@ index 0000000..334cc72
 +    if (wwo->dwPartialOffset == 0 && wwo->lpPlayPtr) {
 +        do {
 +            wwo->lpPlayPtr->reserved = wwo->timing_info->write_index;
-+        } while (wodPlayer_WriteMax(wwo, &space) > 0 && wwo->lpPlayPtr && space > 0);
++        } while (wodPlayer_WriteMax(wwo, &space) && wwo->lpPlayPtr && space > 0);
 +    }
++
 +    pa_threaded_mainloop_unlock(PULSE_ml);
 +}
 +
@@ -1846,15 +1837,14 @@ index 0000000..334cc72
 +/**************************************************************************
 + *                  wodPlayer_ProcessMessages                   [internal]
 + */
-+static DWORD wodPlayer_ProcessMessages(WINE_WAVEINST* wwo) {
++static void wodPlayer_ProcessMessages(WINE_WAVEINST* wwo) {
 +    LPWAVEHDR           lpWaveHdr;
 +    enum win_wm_message msg;
-+    DWORD               param, msgcount = 0;
++    DWORD               param;
 +    HANDLE              ev;
 +
 +    while (PULSE_RetrieveRingMessage(&wwo->msgRing, &msg, &param, &ev)) {
 +        TRACE("Received %s %x\n", PULSE_getCmdString(msg), param);
-+        msgcount++;
 +
 +        switch (msg) {
 +        case WINE_WM_PAUSING:
@@ -1870,8 +1860,8 @@ index 0000000..334cc72
 +                wwo->state = WINE_WS_PLAYING;
 +                pa_threaded_mainloop_lock(PULSE_ml);
 +                PULSE_WaitForOperation(pa_stream_cork(wwo->stream, 0, PULSE_StreamSuccessCallback, wwo));
-+                /* If the serverside buffer was near full before pause, we need to
-+                 * have space to write soon, so force playback start */
++                /* If the serverside buffer was near full before pausing, we
++                 * need to have space to write soon, so force playback start */
 +                PULSE_WaitForOperation(pa_stream_trigger(wwo->stream, PULSE_StreamSuccessCallback, wwo));
 +                pa_threaded_mainloop_unlock(PULSE_ml);
 +            }
@@ -1909,13 +1899,11 @@ index 0000000..334cc72
 +            break;
 +
 +        case WINE_WM_FEED: /* Sent by the pulse thread */
-+	    msgcount--; /* Don't count this message for stall detection */
 +            wodPlayer_Feed(wwo, pa_stream_writable_size(wwo->stream));
 +            SetEvent(ev);
 +            break;
 +
 +        case WINE_WM_XRUN: /* Sent by the pulse thread */
-+	    msgcount--; /* Don't count this message for stall detection */
 +            WARN("Trying to recover from underrun.\n");
 +            /* Return all the queued wavehdrs, so the app will send more data */
 +            wodPlayer_NotifyCompletions(wwo, FALSE, (pa_usec_t)-1);
@@ -1938,8 +1926,6 @@ index 0000000..334cc72
 +            break;
 +        }
 +    }
-+
-+    return msgcount;
 +}
 +
 +/**************************************************************************
@@ -1951,6 +1937,7 @@ index 0000000..334cc72
 +static DWORD CALLBACK wodPlayer(LPVOID lpParam) {
 +    WINE_WAVEINST *wwo = (WINE_WAVEINST*)lpParam;
 +    DWORD         dwSleepTime = INFINITE;
++    int64_t       delta_write;
 +
 +    wwo->state = WINE_WS_STOPPED;
 +    SetEvent(wwo->hStartUpEvent);
@@ -1961,9 +1948,13 @@ index 0000000..334cc72
 +        TRACE("Waiting %u ms\n", dwSleepTime);
 +        PULSE_WaitRingMessage(&wwo->msgRing, dwSleepTime);
 +
-+        /* If no messages were processed during the timeout it might be because
-+         * audio is not flowing yet, so check. */
-+        if (wodPlayer_ProcessMessages(wwo) == 0)
++        delta_write = wwo->timing_info->write_index;
++        wodPlayer_ProcessMessages(wwo);
++
++        /* Check for a stall situaiton */
++        if (delta_write == wwo->timing_info->write_index
++            && wwo->lpQueuePtr && !wwo->lpPlayPtr
++            && wwo->state != WINE_WS_STOPPED)
 +            wodPlayer_CheckReleasing(wwo);
 +
 +        /* If there is audio playing, return headers and get next timeout */
@@ -2252,7 +2243,7 @@ index 0000000..334cc72
 + * Context-sanity check here, as if we respond with 0, WINE will move on
 + * to the next waveout driver.
 + */
-+static DWORD wodGetNumDevs() {
++static DWORD wodGetNumDevs(void) {
 +    if (!PULSE_ml || !PULSE_context || pa_context_get_state(PULSE_context) != PA_CONTEXT_READY)
 +        return 0;
 +

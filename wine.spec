@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.32
+Version:	1.1.35
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -48,14 +48,18 @@ Source300:      wine-mime-msi.desktop
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
 Patch400:       http://art.ified.ca/downloads/winepulse-0.32-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.32.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.33.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-0.6.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 Patch1:         wine-rpath.patch
 
+# upstream bugs
+# currently non
+
 # bugfix patches
-# none
+# #533806
+Patch600:       wine-x86_64-prefix.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -148,7 +152,6 @@ wine-* sub packages.
 Summary:        Wine core package
 Group:		Applications/Emulators
 Requires:       wine-fonts = %{version}-%{release}
-Requires:       %{_bindir}/xmessage
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
@@ -162,10 +165,12 @@ Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
 # require Xrender isa on x86_64 (#510947)
 Requires:       libXrender(x86-32)
+Requires:       gnutls(x86-32)
 %endif
 %ifarch x86_64
 Requires:       nss-mdns(x86-64)
 Requires:       freetype(x86-64)
+Requires:       gnutls(x86-64)
 %endif
 
 %description core
@@ -315,6 +320,10 @@ This package adds an openal driver for wine.
 %patch401 -p1
 %patch402 -p1
 
+%ifarch x86_64
+%patch600
+%endif
+
 autoreconf
 
 %build
@@ -353,7 +362,6 @@ mv %{buildroot}%{_bindir}/wine{,32}
 %ifarch x86_64
 mv %{buildroot}%{_bindir}/wine{,64}
 %endif
-
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
 
@@ -561,6 +569,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
 %{_libdir}/wine/winhlp32.exe.so
+%{_libdir}/wine/mshta.exe.so
 %{_libdir}/wine/msiexec.exe.so
 %{_libdir}/wine/net.exe.so
 %{_libdir}/wine/ntoskrnl.exe.so
@@ -594,6 +603,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
+%{_libdir}/wine/avrt.dll.so
 %{_libdir}/wine/bcrypt.dll.so
 %{_libdir}/wine/browseui.dll.so
 %{_libdir}/wine/cabinet.dll.so
@@ -654,6 +664,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/faultrep.dll.so
 %{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fusion.dll.so
+%{_libdir}/wine/fwpuclnt.dll.so
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gdiplus.dll.so
 %{_libdir}/wine/glu32.dll.so
@@ -695,6 +706,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mciwave.dll.so
 %{_libdir}/wine/midimap.dll.so
 %{_libdir}/wine/mlang.dll.so
+%{_libdir}/wine/mmdevapi.dll.so
 %{_libdir}/wine/mountmgr.sys.so
 %{_libdir}/wine/mpr.dll.so
 %{_libdir}/wine/mprapi.dll.so
@@ -810,10 +822,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/wbemprox.dll.so
+%{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winecoreaudio.drv.so
 %{_libdir}/wine/winejoystick.drv.so
+%{_libdir}/wine/winemapi.dll.so
 %{_libdir}/wine/winex11.drv.so
 %{_libdir}/wine/wing32.dll.so
 %{_libdir}/wine/winhttp.dll.so
@@ -832,6 +846,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
 %{_libdir}/wine/wuapi.dll.so
+%{_libdir}/wine/wuaueng.dll.so
 %{_libdir}/wine/security.dll.so
 %{_libdir}/wine/sfc.dll.so
 %{_libdir}/wine/wineps.drv.so
@@ -862,18 +877,18 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vtdapi.vxd.so
 %{_libdir}/wine/vwin32.vxd.so
 %{_libdir}/wine/w32skrnl.dll.so
-%{_libdir}/wine/commdlg.dll16
-%{_libdir}/wine/gdi.exe16
 %{_libdir}/wine/wprocs.dll16
 
 %{_libdir}/wine/avifile.dll16.so
 %{_libdir}/wine/comm.drv16.so
+%{_libdir}/wine/commdlg.dll16.so
 %{_libdir}/wine/compobj.dll16.so
 %{_libdir}/wine/ctl3d.dll16.so
 %{_libdir}/wine/ctl3dv2.dll16.so
 %{_libdir}/wine/ddeml.dll16.so
 %{_libdir}/wine/dispdib.dll16.so
 %{_libdir}/wine/display.drv16.so
+%{_libdir}/wine/gdi.exe16.so
 %{_libdir}/wine/imm.dll16.so
 %{_libdir}/wine/krnl386.exe16
 %{_libdir}/wine/keyboard.drv16.so
@@ -1046,6 +1061,22 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sat Dec 19 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.35-1
+- version upgrade
+
+* Fri Dec 18 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.34-1
+- version upgrade (#546749)
+
+* Mon Nov 16 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.33-1
+- version upgrade
+- winepulse update (.33)
+- require gnutls (#538694)
+- use separate WINEPREFIX on x86_64 per default (workaround for #533806)
+- drop explicit xmessage require (#537610)
+
 * Tue Oct 27 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.32-1
 - version upgrade (#531358)
