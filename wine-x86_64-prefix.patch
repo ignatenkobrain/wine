@@ -13,3 +13,14 @@
  
  static char *bindir;
  static char *dlldir;
+--- dlls/ntdll/server.c.orig	2010-01-18 23:06:56.000000000 +0100
++++ dlls/ntdll/server.c	2010-01-18 23:07:27.000000000 +0100
+@@ -698,7 +698,7 @@
+ {
+     static int started;  /* we only try once */
+     char *argv[3];
+-    static char wineserver[] = "server/wineserver";
++    static char wineserver[] = "server/wineserver64";
+     static char debug[] = "-d";
+ 
+     if (!started)

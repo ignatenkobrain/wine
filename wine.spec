@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.35
+Version:	1.1.36
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -184,6 +184,7 @@ Requires(post): desktop-file-utils >= 0.8
 Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): desktop-file-utils >= 0.8
 Requires:       wine-core = %{version}-%{release}
+Requires:       wine-common = %{version}-%{release}
 BuildArch:      noarch
 
 %description desktop
@@ -361,6 +362,7 @@ mv %{buildroot}%{_bindir}/wine{,32}
 # if x86_64 rename to wine64
 %ifarch x86_64
 mv %{buildroot}%{_bindir}/wine{,64}
+mv %{buildroot}%{_bindir}/wineserver{,64}
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
@@ -549,16 +551,14 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dxdiag.exe.so
 
 %ifarch %{ix86}
-%{_bindir}/wine-preloader
-%endif
-%{_bindir}/wineserver
-
-%ifarch %{ix86}
-%{_sysconfdir}/ld.so.conf.d/wine-32.conf
 %{_bindir}/wine32
+%{_bindir}/wine-preloader
+%{_bindir}/wineserver
+%{_sysconfdir}/ld.so.conf.d/wine-32.conf
 %endif
 %ifarch x86_64
 %{_bindir}/wine64
+%{_bindir}/wineserver64
 %{_sysconfdir}/ld.so.conf.d/wine-64.conf
 %endif
 
@@ -700,6 +700,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/lodctr.exe.so
 %{_libdir}/wine/lz32.dll.so
 %{_libdir}/wine/mapi32.dll.so
+%{_libdir}/wine/mapistub.dll.so
 %{_libdir}/wine/mciavi32.dll.so
 %{_libdir}/wine/mcicda.dll.so
 %{_libdir}/wine/mciseq.dll.so
@@ -864,20 +865,18 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/xmllite.dll.so
 %ifnarch x86_64
 # 16 bit and other non 64bit stuff
-%{_libdir}/wine/winedos.dll.so
 %{_libdir}/wine/winevdm.exe.so
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/mmdevldr.vxd.so
 %{_libdir}/wine/monodebg.vxd.so
 %{_libdir}/wine/vdhcp.vxd.so
-%{_libdir}/wine/user.exe16
+%{_libdir}/wine/user.exe16.so
 %{_libdir}/wine/vmm.vxd.so
 %{_libdir}/wine/vnbt.vxd.so
 %{_libdir}/wine/vnetbios.vxd.so
 %{_libdir}/wine/vtdapi.vxd.so
 %{_libdir}/wine/vwin32.vxd.so
 %{_libdir}/wine/w32skrnl.dll.so
-%{_libdir}/wine/wprocs.dll16
 
 %{_libdir}/wine/avifile.dll16.so
 %{_libdir}/wine/comm.drv16.so
@@ -890,7 +889,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/display.drv16.so
 %{_libdir}/wine/gdi.exe16.so
 %{_libdir}/wine/imm.dll16.so
-%{_libdir}/wine/krnl386.exe16
+%{_libdir}/wine/krnl386.exe16.so
 %{_libdir}/wine/keyboard.drv16.so
 %{_libdir}/wine/lzexpand.dll16.so
 %{_libdir}/wine/mmsystem.dll16.so
@@ -929,6 +928,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winsock.dll16.so
 %{_libdir}/wine/wintab.dll16.so
 %{_libdir}/wine/wow32.dll.so
+#%{_libdir}/wine/wprocs.dll16.so
 %endif
 
 %files common
@@ -1061,6 +1061,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Mon Jan 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.36-1
+- version upgrade (#554102)
+- require -common in -desktop (#549190)
+
 * Sat Dec 19 2009 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.35-1
 - version upgrade
