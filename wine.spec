@@ -1,23 +1,16 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.36
+Version:	1.1.38
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-# special fedora tarball without winemp3 stuff build doing
-# rm -fr dlls/winemp3.acm
-# and removing the following from the source tree (as of 0.9.35):
-#
-# configure:ac_config_files="$ac_config_files dlls/winemp3.acm/Makefile"
-# configure:    "dlls/winemp3.acm/Makefile") CONFIG_FILES="$CONFIG_FILES dlls/winemp3.acm/Makefile" ;;
-# configure.ac:AC_CONFIG_FILES([dlls/winemp3.acm/Makefile])
-# dlls/Makefile.in:	winemp3.acm \
-# Makefile.in:	dlls/winemp3.acm/Makefile \
-# Makefile.in:dlls/winemp3.acm/Makefile: dlls/winemp3.acm/Makefile.in dlls/Makedll.rules
-# programs/winecfg/libraries.c:    "winemp3.acm",
+# special fedora tarball without winemp3
+# It can be obtained by running rm -fr dlls/winemp3.acm in the winetree
+# and removing the references from configure, configure.ac, Makefile.in,
+# and programs/winecfg/libraries.c wrt. winemp3.
 
 Source0:        %{name}-%{version}-fe.tar.bz2
 Source1:	wine.init
@@ -47,9 +40,9 @@ Source300:      wine-mime-msi.desktop
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse-0.32-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.33.patch
-Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-0.6.patch
+Patch400:       http://art.ified.ca/downloads/winepulse-0.35-configure.ac.patch
+Patch401:       http://art.ified.ca/downloads/winepulse-0.35.patch
+Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.34-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 Patch1:         wine-rpath.patch
@@ -745,6 +738,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msvidc32.dll.so
 %{_libdir}/wine/mswsock.dll.so
 %{_libdir}/wine/msxml3.dll.so
+%{_libdir}/wine/msxml4.dll.so
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/newdev.dll.so
@@ -1061,6 +1055,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Tue Feb 09 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.38-1
+- version upgrade
+- winepulse upgrade (0.35)
+
 * Mon Jan 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.36-1
 - version upgrade (#554102)
