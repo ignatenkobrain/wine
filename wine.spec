@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.38
+Version:	1.1.40
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -1055,6 +1055,14 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sat Mar 06 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.40-1
+- version upgrade
+
+* Sun Feb 21 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.39-1
+- version upgrade
+
 * Tue Feb 09 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.38-1
 - version upgrade
