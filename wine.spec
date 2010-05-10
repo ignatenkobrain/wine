@@ -1,18 +1,13 @@
 %define no64bit 0
 Name:		wine
-Version:	1.1.38
+Version:	1.1.44
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-# special fedora tarball without winemp3
-# It can be obtained by running rm -fr dlls/winemp3.acm in the winetree
-# and removing the references from configure, configure.ac, Makefile.in,
-# and programs/winecfg/libraries.c wrt. winemp3.
-
-Source0:        %{name}-%{version}-fe.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/%{name}-%{version}.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -37,22 +32,22 @@ Source201:      wine.directory
 # mime types
 Source300:      wine-mime-msi.desktop
 
+Patch1:         wine-rpath.patch
+
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse-0.35-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse-0.35.patch
-Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.34-winecfg.patch
+# rebased for .42 see #580073
+Patch400:       winepulse-0.35-configure.ac.patch
+Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.36.patch
+Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.36-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
-Patch1:         wine-rpath.patch
 
-# upstream bugs
-# currently non
 
-# bugfix patches
-# #533806
-Patch600:       wine-x86_64-prefix.patch
+# enhancements
+# add wine-gecko support
+Patch1000:      wine-gecko.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -108,11 +103,15 @@ BuildRequires:  gnutls-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  gsm-devel
 BuildRequires:  openal-soft-devel
+BuildRequires:  libv4l-devel
+BuildRequires:  fontpackages-devel
 
 # noarch
 Requires:       wine-common = %{version}-%{release}
 Requires:       wine-desktop = %{version}-%{release}
-# 32bit
+Requires:       wine-fonts = %{version}-%{release}
+
+# 32bit parts
 Requires:       wine-core(x86-32) = %{version}-%{release}
 Requires:       wine-capi(x86-32) = %{version}-%{release}
 Requires:       wine-cms(x86-32) = %{version}-%{release}
@@ -127,6 +126,13 @@ Requires:       wine-cms(x86-64) = %{version}-%{release}
 Requires:       wine-ldap(x86-64) = %{version}-%{release}
 Requires:       wine-twain(x86-64) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{version}-%{release}
+Requires:       wine-wow(x86-64) = %{version}-%{release}
+Conflicts:      wine-wow(x86-32) = %{version}-%{release}
+%endif
+
+# 32bit only parts
+%ifarch %{ix86}
+Requires:      wine-wow = %{version}-%{release}
 %endif
 
 %description
@@ -144,7 +150,6 @@ wine-* sub packages.
 %package core
 Summary:        Wine core package
 Group:		Applications/Emulators
-Requires:       wine-fonts = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
@@ -166,8 +171,17 @@ Requires:       freetype(x86-64)
 Requires:       gnutls(x86-64)
 %endif
 
+
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
+
+%package wow
+Summary:        Files for wine wow seperation
+Group:          Applications/Emulators
+Requires:       wine-core = %{version}-%{release}
+
+%description wow
+%{summary}
 
 %package desktop
 Summary:        Desktop integration features for wine
@@ -188,8 +202,82 @@ handler service.
 Summary:       Wine font files
 Group:         Applications/Emulators
 BuildArch:     noarch
+Requires:      wine-courier-fonts = %{version}-%{release}
+Requires:      wine-small-fonts = %{version}-%{release}
+Requires:      wine-system-fonts = %{version}-%{release}
+Requires:      wine-marlett-fonts = %{version}-%{release}
+#Requires:      wine-ms-sans-serif-fonts = %{version}-%{release}
+#Requires:      wine-tahoma-fonts = %{version}-%{release}
+Requires:      wine-symbol-fonts = %{version}-%{release}
 
 %description fonts
+%{summary}
+
+%package courier-fonts
+Summary:       Wine Courier font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description courier-fonts
+%{summary}
+
+%package small-fonts
+Summary:       Wine Small font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description small-fonts
+%{summary}
+
+%package system-fonts
+Summary:       Wine System font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description system-fonts
+%{summary}
+
+
+%package marlett-fonts
+Summary:       Wine Marlett font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description marlett-fonts
+%{summary}
+
+
+#%package ms-sans-serif-fonts
+#Summary:       Wine MS Sans Serif font family
+#Group:         User Interface/X
+#BuildArch:     noarch
+#Requires:      fontpackages-filesystem
+
+#%description ms-sans-serif-fonts
+#%{summary}
+
+
+#%package tahoma-fonts
+#Summary:       Wine Tahoma font family
+#Group:         User Interface/X
+#BuildArch:     noarch
+#Requires:      fontpackages-filesystem
+
+#%description tahoma-fonts
+#%{summary}
+
+
+%package symbol-fonts
+Summary:       Wine Symbol font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description symbol-fonts
 %{summary}
 
 %package common
@@ -307,21 +395,19 @@ This package adds an openal driver for wine.
 
 
 %prep
-%setup -q -n %{name}-%{version}-fe
+%setup -q
 
 %patch1
-%patch400 -p1
+%patch400
 %patch401 -p1
 %patch402 -p1
 
-%ifarch x86_64
-%patch600
-%endif
+%patch1000
 
 autoreconf
 
 %build
-export CFLAGS="$RPM_OPT_FLAGS"
+export CFLAGS="$RPM_OPT_FLAGS -Wno-error"
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine \
 	--x-includes=%{_includedir} --x-libraries=%{_libdir} \
@@ -350,12 +436,8 @@ rm -rf %{buildroot}
 %ifarch %{ix86}
 # rename wine to wine32
 mv %{buildroot}%{_bindir}/wine{,32}
-%endif
-
-# if x86_64 rename to wine64
-%ifarch x86_64
-mv %{buildroot}%{_bindir}/wine{,64}
-mv %{buildroot}%{_bindir}/wineserver{,64}
+# create link to wine32 if ix86
+ln -s %{_bindir}/wine32 %{buildroot}%{_bindir}/wine
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
@@ -449,10 +531,33 @@ install -p -m644 %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 install -p -m644 %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/
 %endif
 
-install -p -m755 %{SOURCE6} $RPM_BUILD_ROOT%{_bindir}/wine
-
 # deploy pulseaudio readme
 cp %{SOURCE402} .
+
+# install fonts
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-courier-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/cou* %{buildroot}/%{_datadir}/fonts/wine-courier-fonts/
+
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-system-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/*sys.* %{buildroot}/%{_datadir}/fonts/wine-system-fonts/
+
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-small-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/sma* %{buildroot}/%{_datadir}/fonts/wine-small-fonts/
+
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-marlett-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/marlett.ttf %{buildroot}/%{_datadir}/fonts/wine-marlett-fonts/
+
+#install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts
+#mv %{buildroot}/%{_datadir}/wine/fonts/sse* %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts/
+rm -f %{buildroot}/%{_datadir}/wine/fonts/sse*
+
+#install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
+#mv %{buildroot}/%{_datadir}/wine/fonts/tahoma* %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts/
+rm -f %{buildroot}/%{_datadir}/wine/fonts/tahoma*
+
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/symbol.ttf %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts/
+
 
 %clean
 rm -rf %{buildroot}
@@ -543,21 +648,22 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/write.exe.so
 %{_libdir}/wine/dxdiag.exe.so
 
+%{_bindir}/wine
+
 %ifarch %{ix86}
 %{_bindir}/wine32
 %{_bindir}/wine-preloader
-%{_bindir}/wineserver
 %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 %endif
+
 %ifarch x86_64
-%{_bindir}/wine64
-%{_bindir}/wineserver64
 %{_sysconfdir}/ld.so.conf.d/wine-64.conf
 %endif
 
 %dir %{_libdir}/wine
 %dir %{_libdir}/wine/fakedlls
 %{_libdir}/wine/fakedlls/*
+%{_libdir}/wine/attrib.exe.so
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
@@ -565,8 +671,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mshta.exe.so
 %{_libdir}/wine/msiexec.exe.so
 %{_libdir}/wine/net.exe.so
+%{_libdir}/wine/ngen.exe.so
 %{_libdir}/wine/ntoskrnl.exe.so
 %{_libdir}/wine/oleview.exe.so
+%{_libdir}/wine/ping.exe.so
 %{_libdir}/wine/reg.exe.so
 %{_libdir}/wine/regedit.exe.so
 %{_libdir}/wine/regsvr32.exe.so
@@ -576,7 +684,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/services.exe.so
 %{_libdir}/wine/start.exe.so
 %{_libdir}/wine/termsv.exe.so
-%{_libdir}/wine/wineboot.exe.so
 %{_libdir}/wine/winebrowser.exe.so
 %{_libdir}/wine/wineconsole.exe.so
 %{_libdir}/wine/winemenubuilder.exe.so
@@ -630,6 +737,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/devenum.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
+%{_libdir}/wine/dispex.dll.so
 %{_libdir}/wine/dmband.dll.so
 %{_libdir}/wine/dmcompos.dll.so
 %{_libdir}/wine/dmime.dll.so
@@ -729,7 +837,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
+%{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
+%{_libdir}/wine/msvcr80.dll.so
+%{_libdir}/wine/msvcr90.dll.so
+%{_libdir}/wine/msvcr100.dll.so
 %{_libdir}/wine/msvcrt.dll.so
 %{_libdir}/wine/msvcrt20.dll.so
 %{_libdir}/wine/msvcrt40.dll.so
@@ -779,6 +891,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/rsabase.dll.so
 %{_libdir}/wine/rsaenh.dll.so
 %{_libdir}/wine/rtutils.dll.so
+%{_libdir}/wine/sc.exe.so
 %{_libdir}/wine/sccbase.dll.so
 %{_libdir}/wine/schannel.dll.so
 %{_libdir}/wine/secur32.dll.so
@@ -810,6 +923,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/updspapi.dll.so
 %{_libdir}/wine/url.dll.so
 %{_libdir}/wine/urlmon.dll.so
+%{_libdir}/wine/usbd.sys.so
 %{_libdir}/wine/user32.dll.so
 %{_libdir}/wine/usp10.dll.so
 %{_libdir}/wine/uxtheme.dll.so
@@ -922,12 +1036,15 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winsock.dll16.so
 %{_libdir}/wine/wintab.dll16.so
 %{_libdir}/wine/wow32.dll.so
-#%{_libdir}/wine/wprocs.dll16.so
 %endif
+
+%files wow
+%defattr(-,root,root,-)
+%{_bindir}/wineserver
+%{_libdir}/wine/wineboot.exe.so
 
 %files common
 %defattr(-,root,root,-)
-%{_bindir}/wineprefixcreate
 %{_bindir}/notepad
 %{_bindir}/winedbg
 %{_bindir}/winefile
@@ -937,22 +1054,49 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/msiexec
 %{_bindir}/regedit
 %{_bindir}/regsvr32
-%{_bindir}/wine
 %{_bindir}/wineboot
 %{_bindir}/wineconsole
 %{_bindir}/winecfg
 %dir %{_datadir}/wine
 %{_mandir}/man1/wine.1.gz
 %{_mandir}/man1/wineserver.1*
-%{_mandir}/man1/wineprefixcreate.1*
 %lang(fr) %{_mandir}/fr.UTF-8/man1/*
+%lang(de) %{_mandir}/de.UTF-8/man1/*
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
+%{_datadir}/wine/l_intl.nls
 
 %files fonts
 %defattr(-,root,root,-)
 %{_datadir}/wine/fonts
 
+%files courier-fonts
+%defattr(-,root,root,-)
+%{_datadir}/fonts/wine-courier-fonts
+
+%files system-fonts
+%defattr(-,root,root,-)
+%{_datadir}/fonts/wine-system-fonts
+
+%files small-fonts
+%defattr(-,root,root,-)
+%{_datadir}/fonts/wine-small-fonts
+
+%files marlett-fonts
+%defattr(-,root,root,-)
+%{_datadir}/fonts/wine-marlett-fonts
+
+#%files ms-sans-serif-fonts
+#%defattr(-,root,root,-)
+#%{_datadir}/fonts/wine-ms-sans-serif-fonts
+
+#%files tahoma-fonts
+#%defattr(-,root,root,-)
+#%{_datadir}/fonts/wine-tahoma-fonts
+
+%files symbol-fonts
+%defattr(-,root,root,-)
+%{_datadir}/fonts/wine-symbol-fonts
 
 %files desktop
 %defattr(-,root,root,-)
@@ -1055,6 +1199,41 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sun May 09 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.44-1
+- version upgrade (#580024)
+
+* Sun Apr 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.43-1
+- version upgrade
+
+* Sun Apr 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.42-1
+- version upgrade
+- rework for wow64
+
+* Mon Mar 29 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.41-3
+- add support for mingw32-wine-gecko
+
+* Sun Mar 28 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.41-2
+- convert to font package guidelines
+- add libv4l-devel BR
+
+* Sun Mar 28 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.41-1
+- version upgrade (#577587, #576607)
+- winepulse upgrade (0.36)
+
+* Sat Mar 06 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.40-1
+- version upgrade
+
+* Sun Feb 21 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.39-1
+- version upgrade
+
 * Tue Feb 09 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.38-1
 - version upgrade

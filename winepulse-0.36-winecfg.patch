@@ -287,22 +287,22 @@ index 9f8a0a2..59837ef 100644
    {IDS_DRIVER_OSS,       "oss"},
    {IDS_DRIVER_COREAUDIO, "coreaudio"},
 diff --git a/programs/winecfg/libraries.c b/programs/winecfg/libraries.c
-index 37cc12b..7c13fad 100644
+index 19504d6..b5c84eb 100644
 --- a/programs/winecfg/libraries.c
 +++ b/programs/winecfg/libraries.c
-@@ -81,6 +81,7 @@ static const char * const builtin_only[] =
-     "wineoss.drv",
+@@ -73,6 +73,7 @@ static const char * const builtin_only[] =
+     "winedos",
+     "winemp3.acm",
      "wineps",
-     "wineps.drv",
 +    "winepulse.drv",
-     "winex11.drv",
      "winmm",
      "wintab32",
+     "wnaspi32",
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
-index f006861..57b2a15 100644
+index 15c905b..67616fb 100644
 --- a/programs/winecfg/resource.h
 +++ b/programs/winecfg/resource.h
-@@ -187,7 +187,7 @@
+@@ -188,7 +188,7 @@
  #define IDS_ACCEL_BASIC                 8302
  #define IDS_ACCEL_EMULATION             8303
  #define IDS_DRIVER_ALSA                 8304
