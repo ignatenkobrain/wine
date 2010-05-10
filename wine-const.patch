@@ -1,0 +1,20 @@
+--- dlls/winhttp/net.c.old	2010-04-04 18:11:01.266148279 +0300
++++ dlls/winhttp/net.c		2010-04-04 18:12:52.235163141 +0300
+@@ -91,7 +91,7 @@ 
+ static void *libssl_handle;
+ static void *libcrypto_handle;
+ 
+-static SSL_METHOD *method;
++static const SSL_METHOD *method;
+ static SSL_CTX *ctx;
+ static int hostname_idx;
+ static int error_idx;
+@@ -113,7 +113,7 @@ 
+ static void *OpenSSL_ssl_handle;
+ static void *OpenSSL_crypto_handle;
+ 
+-static SSL_METHOD *meth;
++const static SSL_METHOD *meth;
+ static SSL_CTX *ctx;
+ static int hostname_idx;
+ static int error_idx;
