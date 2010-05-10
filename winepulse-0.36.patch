@@ -1,9 +1,9 @@
 diff --git a/dlls/winepulse.drv/Makefile.in b/dlls/winepulse.drv/Makefile.in
 new file mode 100644
-index 0000000..80a751d
+index 0000000..ed48381
 --- /dev/null
 +++ b/dlls/winepulse.drv/Makefile.in
-@@ -0,0 +1,16 @@
+@@ -0,0 +1,14 @@
 +TOPSRCDIR = @top_srcdir@
 +TOPOBJDIR = ../..
 +SRCDIR    = @srcdir@
@@ -18,8 +18,6 @@ index 0000000..80a751d
 +         pulse.c
 +
 +@MAKE_DLL_RULES@
-+
-+@DEPENDENCIES@  # everything below this line is overwritten by make depend
 diff --git a/dlls/winepulse.drv/pulse.c b/dlls/winepulse.drv/pulse.c
 new file mode 100644
 index 0000000..9dd1f80
