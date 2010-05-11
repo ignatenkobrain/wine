@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.1.44
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -1060,8 +1060,10 @@ update-desktop-database &>/dev/null || :
 %dir %{_datadir}/wine
 %{_mandir}/man1/wine.1.gz
 %{_mandir}/man1/wineserver.1*
-%lang(fr) %{_mandir}/fr.UTF-8/man1/*
-%lang(de) %{_mandir}/de.UTF-8/man1/*
+%lang(fr) %{_mandir}/fr.UTF-8/man1/wine.1*
+%lang(fr) %{_mandir}/fr.UTF-8/man1/wineserver.1*
+%lang(de) %{_mandir}/de.UTF-8/man1/wine.1*
+%lang(de) %{_mandir}/de.UTF-8/man1/wineserver.1*
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/l_intl.nls
@@ -1173,7 +1175,7 @@ update-desktop-database &>/dev/null || :
 %{_mandir}/man1/wrc.1*
 %{_mandir}/man1/winedbg.1*
 %{_mandir}/man1/wineg++.1*
-%lang(de) %{_mandir}/de.UTF-8/man1/wine.1*
+%lang(de) %{_mandir}/de.UTF-8/man1/winemaker.1*
 %attr(0755, root, root) %dir %{_includedir}/wine
 %{_includedir}/wine/*
 %{_libdir}/*.so
@@ -1199,6 +1201,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Tue May 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.44-2
+- fix manpage conflict between -common and -devel
+
 * Sun May 09 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.44-1
 - version upgrade (#580024)
