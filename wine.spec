@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.1.44
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -648,7 +648,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/write.exe.so
 %{_libdir}/wine/dxdiag.exe.so
 
-%{_bindir}/wine
 
 %ifarch %{ix86}
 %{_bindir}/wine32
@@ -657,6 +656,7 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %ifarch x86_64
+%{_bindir}/wine
 %{_sysconfdir}/ld.so.conf.d/wine-64.conf
 %endif
 
@@ -1040,6 +1040,9 @@ update-desktop-database &>/dev/null || :
 
 %files wow
 %defattr(-,root,root,-)
+%ifarch %{ix86}
+%{_bindir}/wine
+%endif
 %{_bindir}/wineserver
 %{_libdir}/wine/wineboot.exe.so
 
@@ -1201,6 +1204,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Wed May 12 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.44-3
+- move wine symlink to -wow for 32bit (#591690)
+
 * Tue May 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.44-2
 - fix manpage conflict between -common and -devel
