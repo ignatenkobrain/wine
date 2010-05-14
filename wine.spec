@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.1.44
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -132,7 +132,7 @@ Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 
 # 32bit only parts
 %ifarch %{ix86}
-Requires:      wine-wow = %{version}-%{release}
+Requires:      wine-wow(x86-32) = %{version}-%{release}
 %endif
 
 %description
@@ -178,7 +178,12 @@ Wine core package includes the basic wine stuff needed by all other packages.
 %package wow
 Summary:        Files for wine wow seperation
 Group:          Applications/Emulators
-Requires:       wine-core = %{version}-%{release}
+%ifarch x86_64
+Requires:       wine-core(x86-64) = %{version}-%{release}
+%else
+Requires:       wine-core(x86-32) = %{version}-%{release}
+%endif
+
 
 %description wow
 %{summary}
@@ -1204,6 +1209,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Thu May 13 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.1.44-4
+- fix install of 32bit only wine on x86_64 via install wine.i686
+
 * Wed May 12 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.1.44-3
 - move wine symlink to -wow for 32bit (#591690)
