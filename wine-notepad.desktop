@@ -2,6 +2,7 @@
 Name=Notepad
 Comment=Text Editor
 Exec=notepad
+Icon=notepad
 Terminal=false
 Type=Application
 Encoding=UTF-8

@@ -2,6 +2,7 @@
 Name=Wine Configuration
 Comment=Interface to set wine parameters
 Exec=winecfg
+Icon=winecfg
 Terminal=false
 Type=Application
 Encoding=UTF-8

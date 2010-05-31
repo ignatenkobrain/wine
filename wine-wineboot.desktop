@@ -2,6 +2,7 @@
 Name=Wine Boot
 Comment=Simulate restart
 Exec=wineboot
+Icon=wine
 Terminal=false
 Type=Application
 Encoding=UTF-8

@@ -2,6 +2,7 @@
 Name=WineMine
 Comment=Wine Minesweeper 
 Exec=winemine
+Icon=winemine
 Terminal=false
 Type=Application
 Encoding=UTF-8
