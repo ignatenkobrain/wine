@@ -2,6 +2,7 @@
 Name=Regedit
 Comment=Wine registry editor
 Exec=regedit
+Icon=regedit
 Terminal=false
 Type=Application
 Encoding=UTF-8

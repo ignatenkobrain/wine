@@ -2,6 +2,7 @@
 Name=Wine Software Uninstaller
 Comment=Interface to uninstall software
 Exec=wine uninstaller
+Icon=wine
 Terminal=false
 Type=Application
 Encoding=UTF-8

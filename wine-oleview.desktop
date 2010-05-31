@@ -2,6 +2,7 @@
 Name=Wine OLE View
 Comment=Windows OLE View
 Exec=wine oleview
+Icon=wine
 Terminal=false
 Type=Application
 Encoding=UTF-8
