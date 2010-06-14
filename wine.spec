@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	0.2.rc2%{?dist}
+Release:	0.3.rc3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc2.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc3.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -47,7 +47,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # rebased for .42 see #580073
 Patch400:       winepulse-0.35-configure.ac.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.36.patch
-Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.36-winecfg.patch
+Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.37-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -409,7 +409,7 @@ This package adds an openal driver for wine.
 
 
 %prep
-%setup -q -n %{name}-1.2-rc2
+%setup -q -n %{name}-1.2-rc3
 
 %patch1
 %patch100
@@ -485,6 +485,10 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE101}
 
+icotool -x --width=32 --height=32 --bit-depth=32 -o programs/msiexec/ \
+ programs/msiexec/msiexec.ico
+install -p -m 644 programs/msiexec/msiexec*png \
+ %{buildroot}%{_datadir}/pixmaps/msiexec.png
 desktop-file-install \
   --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
@@ -1249,6 +1253,10 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sun Jun 13 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-0.2.rc3
+- version upgrade
+
 * Mon May 31 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2-0.2.rc2
 - version upgrade
