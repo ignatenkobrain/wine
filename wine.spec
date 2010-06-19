@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	0.3.rc3%{?dist}
+Release:	0.4.rc4%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc3.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc4.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -114,7 +114,6 @@ BuildRequires:  libv4l-devel
 BuildRequires:  fontpackages-devel
 BuildRequires:  icoutils
 BuildRequires:  ImageMagick-devel
-Requires:       wine-common = %{version}-%{release}
 Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-fonts = %{version}-%{release}
 
@@ -163,6 +162,8 @@ Obsoletes:      wine <= 0.9.15-1%{?dist}
 Obsoletes:      wine-arts < 0.9.34
 Obsoletes:      wine-tools <= 1.1.27
 Provides:       wine-tools = %{version}-%{release}
+# require -common so we get wine.inf (#528335)
+Requires:       wine-common = %{version}-%{release}
 # fix dns resolution (#492700)
 # require both to be sure 64bit is present as well...
 %ifarch %{ix86}
@@ -409,7 +410,7 @@ This package adds an openal driver for wine.
 
 
 %prep
-%setup -q -n %{name}-1.2-rc3
+%setup -q -n %{name}-1.2-rc4
 
 %patch1
 %patch100
@@ -1253,8 +1254,15 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Fri Jun 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-0.4.rc4
+- version upgrade
+- fixes winecfg on 64bit (#541986)
+- require wine-common from -core to ensure man pages and wine.inf are present
+  (#528335)
+
 * Sun Jun 13 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
-- 1.2-0.2.rc3
+- 1.2-0.3.rc3
 - version upgrade
 
 * Mon May 31 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
