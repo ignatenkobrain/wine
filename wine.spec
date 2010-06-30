@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	0.4.rc4%{?dist}
+Release:	0.5.rc5%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc4.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc5.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -47,7 +47,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # rebased for .42 see #580073
 Patch400:       winepulse-0.35-configure.ac.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.36.patch
-Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.37-winecfg.patch
+Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 
@@ -223,7 +223,7 @@ Requires:      wine-marlett-fonts = %{version}-%{release}
 #Requires:      wine-tahoma-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
 # intermediate fix for #593140
-Requires:      liberation-sans-fonts liberation-serif-fonts
+Requires:      liberation-sans-fonts liberation-serif-fonts liberation-narrow-fonts
 
 %description fonts
 %{summary}
@@ -410,7 +410,7 @@ This package adds an openal driver for wine.
 
 
 %prep
-%setup -q -n %{name}-1.2-rc4
+%setup -q -n %{name}-1.2-rc5
 
 %patch1
 %patch100
@@ -418,7 +418,6 @@ This package adds an openal driver for wine.
 %patch400
 %patch401 -p1
 %patch402 -p1
-
 %patch1000
 
 autoreconf
@@ -1254,6 +1253,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sun Jun 27 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-0.5.rc5
+- version upgrade
+- require liberation-narrow-fonts
+
 * Fri Jun 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2-0.4.rc4
 - version upgrade
