@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	0.5.rc5%{?dist}
+Release:	0.6.rc6%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc5.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc6.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -46,7 +46,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # and http://art.ified.ca/?page_id=40
 # rebased for .42 see #580073
 Patch400:       winepulse-0.35-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.36.patch
+Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.38.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
@@ -410,7 +410,7 @@ This package adds an openal driver for wine.
 
 
 %prep
-%setup -q -n %{name}-1.2-rc5
+%setup -q -n %{name}-1.2-rc6
 
 %patch1
 %patch100
@@ -464,8 +464,10 @@ install -p -m 644 %{SOURCE201} \
 
 # install desktop files
 mkdir -p %{buildroot}%{_datadir}/pixmaps
-install -p -m 644 programs/winemenubuilder/wine.xpm \
- %{buildroot}%{_datadir}/pixmaps/wine.xpm
+icotool -x --width=32 --height=32 --bit-depth=32 -o dlls/user32/resources/ \
+ dlls/user32/resources/oic_winlogo.ico
+install -p -m 644 dlls/user32/resources/*png \
+ %{buildroot}%{_datadir}/pixmaps/wine.png
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/notepad/ \
  programs/notepad/notepad.ico
@@ -1116,7 +1118,7 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/l_intl.nls
-%{_datadir}/pixmaps/*xpm
+%{_datadir}/pixmaps/*png
 
 %files fonts
 %defattr(-,root,root,-)
@@ -1253,6 +1255,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sun Jul 04 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-0.6.rc6
+- version upgrade
+- use new winelogo from user32
+- winepulse upgrade
+
 * Sun Jun 27 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2-0.5.rc5
 - version upgrade
