@@ -1,6 +1,8 @@
---- configure.ac.orig	2010-05-10 16:39:57.000000000 +0200
-+++ configure.ac	2010-05-10 16:42:54.000000000 +0200
-@@ -68,6 +68,7 @@
+diff --git a/configure.ac b/configure.ac
+index 61f376e..6fe1261 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -76,6 +76,7 @@ AC_ARG_WITH(png,       AS_HELP_STRING([--without-png],[do not use PNG]),
              [if test "x$withval" = "xno"; then ac_cv_header_png_h=no; fi])
  AC_ARG_WITH(pthread,   AS_HELP_STRING([--without-pthread],[do not use the pthread library]),
              [if test "x$withval" = "xno"; then ac_cv_header_pthread_h=no; fi])
@@ -8,7 +10,7 @@
  AC_ARG_WITH(sane,      AS_HELP_STRING([--without-sane],[do not use SANE (scanner support)]))
  AC_ARG_WITH(tiff,       AS_HELP_STRING([--without-tiff],[do not use TIFF]),
              [if test "x$withval" = "xno"; then ac_cv_header_tiffio_h=no; fi])
-@@ -1361,6 +1362,31 @@
+@@ -1386,6 +1387,31 @@ then
      CFLAGS="$save_CFLAGS"
  fi
  
@@ -40,7 +42,7 @@
  dnl **** Check for ALSA 1.x ****
  AC_SUBST(ALSALIBS,"")
  if test "$ac_cv_header_sys_asoundlib_h" = "yes" -o "$ac_cv_header_alsa_asoundlib_h" = "yes"
-@@ -1528,7 +1554,7 @@
+@@ -1553,7 +1579,7 @@ dnl **** Check for libodbc ****
  WINE_CHECK_SONAME(odbc,SQLConnect,,[AC_DEFINE_UNQUOTED(SONAME_LIBODBC,["libodbc.$LIBEXT"])])
  
  dnl **** Check for any sound system ****
@@ -49,7 +51,7 @@
          "$ac_cv_header_sys_soundcard_h" != "yes" -a \
          "$ac_cv_header_machine_soundcard_h" != "yes" -a \
          "$ac_cv_header_soundcard_h" != "yes" -a \
-@@ -2621,6 +2647,7 @@
+@@ -2648,6 +2674,7 @@ WINE_CONFIG_DLL(winenas.drv)
  WINE_CONFIG_DLL(wineoss.drv)
  WINE_CONFIG_DLL(wineps.drv)
  WINE_CONFIG_DLL(wineps16.drv16,enable_win16)

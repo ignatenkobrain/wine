@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	0.6.rc6%{?dist}
+Release:	0.7.rc7%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc6.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc7.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -44,8 +44,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-# rebased for .42 see #580073
-Patch400:       winepulse-0.35-configure.ac.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-configure.ac.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.38.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
@@ -223,7 +222,10 @@ Requires:      wine-marlett-fonts = %{version}-%{release}
 #Requires:      wine-tahoma-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
 # intermediate fix for #593140
-Requires:      liberation-sans-fonts liberation-serif-fonts liberation-narrow-fonts
+Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
+%if 0%{?fedora} > 12 || 0%{?rhel} > 6
+Requires:      liberation-narrow-fonts
+%endif
 
 %description fonts
 %{summary}
@@ -410,12 +412,12 @@ This package adds an openal driver for wine.
 
 
 %prep
-%setup -q -n %{name}-1.2-rc6
+%setup -q -n %{name}-1.2-rc7
 
 %patch1
 %patch100
 %patch200
-%patch400
+%patch400 -p1
 %patch401 -p1
 %patch402 -p1
 %patch1000
@@ -1126,30 +1128,37 @@ update-desktop-database &>/dev/null || :
 
 %files courier-fonts
 %defattr(-,root,root,-)
+%doc COPYING.LIB
 %{_datadir}/fonts/wine-courier-fonts
 
 %files system-fonts
 %defattr(-,root,root,-)
+%doc COPYING.LIB
 %{_datadir}/fonts/wine-system-fonts
 
 %files small-fonts
 %defattr(-,root,root,-)
+%doc COPYING.LIB
 %{_datadir}/fonts/wine-small-fonts
 
 %files marlett-fonts
+%doc COPYING.LIB
 %defattr(-,root,root,-)
 %{_datadir}/fonts/wine-marlett-fonts
 
 #%files ms-sans-serif-fonts
 #%defattr(-,root,root,-)
+#%doc COPYING.LIB
 #%{_datadir}/fonts/wine-ms-sans-serif-fonts
 
 #%files tahoma-fonts
 #%defattr(-,root,root,-)
+#%doc COPYING.LIB
 #%{_datadir}/fonts/wine-tahoma-fonts
 
 %files symbol-fonts
 %defattr(-,root,root,-)
+%doc COPYING.LIB
 %{_datadir}/fonts/wine-symbol-fonts
 
 %files desktop
@@ -1255,6 +1264,12 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/openal32.dll.so
 
 %changelog
+* Sun Jul 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-0.7.rc7
+- version upgrade
+- make sure font packages include the license file in case they are installed
+  standalone
+
 * Sun Jul 04 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2-0.6.rc6
 - version upgrade
