@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	0.7.rc7%{?dist}
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2-rc7.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -108,11 +108,16 @@ BuildRequires:  dbus-devel hal-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  gsm-devel
-BuildRequires:  openal-soft-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  fontpackages-devel
-BuildRequires:  icoutils
 BuildRequires:  ImageMagick-devel
+
+%if 0%{?fedora} > 9
+BuildRequires:  icoutils
+BuildRequires:  openal-soft-devel
+%endif
+
+
 Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-fonts = %{version}-%{release}
 
@@ -402,6 +407,7 @@ Requires: wine-core = %{version}-%{release}
 %description oss
 This package adds an oss driver for wine.
 
+%if 0%{?fedora} > 9
 %package openal
 Summary: Openal support for wine
 Group: System Environment/Libraries
@@ -409,10 +415,10 @@ Requires: wine-core = %{version}-%{release}
 
 %description openal
 This package adds an openal driver for wine.
-
+%endif
 
 %prep
-%setup -q -n %{name}-1.2-rc7
+%setup -q -n %{name}-1.2
 
 %patch1
 %patch100
@@ -464,7 +470,8 @@ install -p -m 644 %{SOURCE201} \
 %{buildroot}%{_datadir}/desktop-directories/Wine.directory
 
 
-# install desktop files
+# extract and install icons
+%if 0%{?fedora} > 9
 mkdir -p %{buildroot}%{_datadir}/pixmaps
 icotool -x --width=32 --height=32 --bit-depth=32 -o dlls/user32/resources/ \
  dlls/user32/resources/oic_winlogo.ico
@@ -475,60 +482,74 @@ icotool -x --width=32 --height=32 --bit-depth=32 -o programs/notepad/ \
  programs/notepad/notepad.ico
 install -p -m 644 programs/notepad/notepad*png \
  %{buildroot}%{_datadir}/pixmaps/notepad.png
-desktop-file-install \
-  --vendor=fedora \
-  --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE100}
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/regedit/ \
  programs/regedit/regedit.ico
 install -p -m 644 programs/regedit/regedit*png \
  %{buildroot}%{_datadir}/pixmaps/regedit.png
-desktop-file-install \
-  --vendor=fedora \
-  --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE101}
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/msiexec/ \
  programs/msiexec/msiexec.ico
 install -p -m 644 programs/msiexec/msiexec*png \
  %{buildroot}%{_datadir}/pixmaps/msiexec.png
-desktop-file-install \
-  --vendor=fedora \
-  --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE102}
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winecfg/ \
  programs/winecfg/winecfg.ico
 install -p -m 644 programs/winecfg/winecfg*png \
  %{buildroot}%{_datadir}/pixmaps/winecfg.png
-desktop-file-install \
-  --vendor=fedora \
-  --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE103}
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winefile/ \
  programs/winefile/winefile.ico
 install -p -m 644 programs/winefile/winefile*png \
  %{buildroot}%{_datadir}/pixmaps/winefile.png
-desktop-file-install \
-  --vendor=fedora \
-  --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE104}
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winemine/ \
  programs/winemine/winemine.ico
 install -p -m 644 programs/winemine/winemine*png \
  %{buildroot}%{_datadir}/pixmaps/winemine.png
-desktop-file-install \
-  --vendor=fedora \
-  --dir=%{buildroot}%{_datadir}/applications \
-  %{SOURCE105}
 
 icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winhlp32/ \
  programs/winhlp32/winhelp.ico
 install -p -m 644 programs/winhlp32/winhelp*png \
  %{buildroot}%{_datadir}/pixmaps/winhelp.png
+
+icotool -x --width=32 --height=32 --bit-depth=32 -o programs/wordpad/ \
+ programs/wordpad/wordpad.ico
+install -p -m 644 programs/wordpad/wordpad*png \
+ %{buildroot}%{_datadir}/pixmaps/wordpad.png
+%endif
+
+# install desktop files
+desktop-file-install \
+  --vendor=fedora \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE100}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE101}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE102}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE103}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE104}
+
+desktop-file-install \
+  --vendor=fedora \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE105}
+
 desktop-file-install \
   --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
@@ -539,10 +560,6 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE107}
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/wordpad/ \
- programs/wordpad/wordpad.ico
-install -p -m 644 programs/wordpad/wordpad*png \
- %{buildroot}%{_datadir}/pixmaps/wordpad.png
 desktop-file-install \
   --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
@@ -661,8 +678,10 @@ update-desktop-database &>/dev/null || :
 %post oss -p /sbin/ldconfig
 %postun oss -p /sbin/ldconfig
 
+%if 0%{?fedora} > 9
 %post openal -p /sbin/ldconfig
 %postun openal -p /sbin/ldconfig
+%endif
 
 %files
 %defattr(-,root,root,-)
@@ -1120,7 +1139,6 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/l_intl.nls
-%{_datadir}/pixmaps/*png
 
 %files fonts
 %defattr(-,root,root,-)
@@ -1178,7 +1196,10 @@ update-desktop-database &>/dev/null || :
 %{_datadir}/desktop-directories/Wine.directory
 %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_initrddir}/wine
+
+%if 0%{?fedora} > 9
 %{_datadir}/pixmaps/*png
+%endif
 
 # esd subpackage
 %files esd
@@ -1259,11 +1280,21 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 %{_libdir}/wine/wineoss.drv.so
 
+%if 0%{?fedora} > 9
 %files openal
 %defattr(-,root,root,-)
 %{_libdir}/wine/openal32.dll.so
+%endif
 
 %changelog
+* Fri Jul 16 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-1
+- final release
+
+* Fri Jul 16 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2-0.8.rc7
+- improve font patch
+
 * Sun Jul 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2-0.7.rc7
 - version upgrade
