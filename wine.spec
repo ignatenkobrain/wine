@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -37,7 +37,8 @@ Patch1:         wine-rpath.patch
 # bugfixes
 # fix for #593140
 Patch100:       wine-fonts.patch
-
+# fix for #617968
+Patch101:       wine-preloader-segfault.patch
 # 
 Patch200:       wine-imagemagick-6.5.patch
 
@@ -112,9 +113,12 @@ BuildRequires:  libv4l-devel
 BuildRequires:  fontpackages-devel
 BuildRequires:  ImageMagick-devel
 
-%if 0%{?fedora} > 9
-BuildRequires:  icoutils
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
+%endif
+
+%if 0%{?fedora} >= 10
+BuildRequires:  icoutils
 %endif
 
 
@@ -228,7 +232,7 @@ Requires:      wine-marlett-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
-%if 0%{?fedora} > 12 || 0%{?rhel} > 6
+%if 0%{?fedora} > 12
 Requires:      liberation-narrow-fonts
 %endif
 
@@ -407,7 +411,7 @@ Requires: wine-core = %{version}-%{release}
 %description oss
 This package adds an oss driver for wine.
 
-%if 0%{?fedora} > 9
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %package openal
 Summary: Openal support for wine
 Group: System Environment/Libraries
@@ -422,6 +426,7 @@ This package adds an openal driver for wine.
 
 %patch1
 %patch100
+%patch101 -p1
 %patch200
 %patch400 -p1
 %patch401 -p1
@@ -471,7 +476,7 @@ install -p -m 644 %{SOURCE201} \
 
 
 # extract and install icons
-%if 0%{?fedora} > 9
+%if 0%{?fedora} > 10
 mkdir -p %{buildroot}%{_datadir}/pixmaps
 icotool -x --width=32 --height=32 --bit-depth=32 -o dlls/user32/resources/ \
  dlls/user32/resources/oic_winlogo.ico
@@ -678,7 +683,7 @@ update-desktop-database &>/dev/null || :
 %post oss -p /sbin/ldconfig
 %postun oss -p /sbin/ldconfig
 
-%if 0%{?fedora} > 9
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %post openal -p /sbin/ldconfig
 %postun openal -p /sbin/ldconfig
 %endif
@@ -1197,7 +1202,7 @@ update-desktop-database &>/dev/null || :
 %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %{_initrddir}/wine
 
-%if 0%{?fedora} > 9
+%if 0%{?fedora} >= 10
 %{_datadir}/pixmaps/*png
 %endif
 
@@ -1280,13 +1285,18 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 %{_libdir}/wine/wineoss.drv.so
 
-%if 0%{?fedora} > 9
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %files openal
 %defattr(-,root,root,-)
 %{_libdir}/wine/openal32.dll.so
 %endif
 
 %changelog
+* Wed Jul 28 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.2.0-2
+- fix segfault (#617968)
+- enable openal-soft on el6
+
 * Fri Jul 16 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2-1
 - final release
