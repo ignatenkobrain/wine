@@ -1050,6 +1050,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/mmdevldr.vxd.so
 %{_libdir}/wine/monodebg.vxd.so
+%{_libdir}/wine/rundll.exe16.so
 %{_libdir}/wine/vdhcp.vxd.so
 %{_libdir}/wine/user.exe16.so
 %{_libdir}/wine/vmm.vxd.so
