@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
-Version:	1.2.0
-Release:	2%{?dist}
+Version:	1.3.0
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.2.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.3.0.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -37,8 +37,6 @@ Patch1:         wine-rpath.patch
 # bugfixes
 # fix for #593140
 Patch100:       wine-fonts.patch
-# fix for #617968
-Patch101:       wine-preloader-segfault.patch
 # 
 Patch200:       wine-imagemagick-6.5.patch
 
@@ -422,11 +420,10 @@ This package adds an openal driver for wine.
 %endif
 
 %prep
-%setup -q -n %{name}-1.2
+%setup -q
 
 %patch1
 %patch100
-%patch101 -p1
 %patch200
 %patch400 -p1
 %patch401 -p1
@@ -762,6 +759,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winemenubuilder.exe.so
 %{_libdir}/wine/winecfg.exe.so
 %{_libdir}/wine/winedevice.exe.so
+%{_libdir}/wine/wscript.exe.so
 %{_libdir}/wine/uninstaller.exe.so
 %{_libdir}/libwine.so.1*
 %{_libdir}/wine/acledit.dll.so
@@ -839,6 +837,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fusion.dll.so
 %{_libdir}/wine/fwpuclnt.dll.so
+%{_libdir}/wine/gameux.dll.so
 %{_libdir}/wine/gdi32.dll.so
 %{_libdir}/wine/gdiplus.dll.so
 %{_libdir}/wine/glu32.dll.so
@@ -910,6 +909,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
+%{_libdir}/wine/msvcp90.dll.so
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcr80.dll.so
@@ -1051,6 +1051,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/mmdevldr.vxd.so
 %{_libdir}/wine/monodebg.vxd.so
+%{_libdir}/wine/rundll.exe16.so
 %{_libdir}/wine/vdhcp.vxd.so
 %{_libdir}/wine/user.exe16.so
 %{_libdir}/wine/vmm.vxd.so
@@ -1292,6 +1293,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sat Jul 31 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.0-1
+- version upgrade
+
 * Wed Jul 28 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.2.0-2
 - fix segfault (#617968)
