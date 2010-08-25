@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.0
+Version:	1.3.1
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.3.0.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.3.1.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -737,6 +737,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
+%{_libdir}/wine/ipconfig.exe.so
 %{_libdir}/wine/winhlp32.exe.so
 %{_libdir}/wine/mshta.exe.so
 %{_libdir}/wine/msiexec.exe.so
@@ -797,9 +798,11 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ctl3d32.dll.so
 %{_libdir}/wine/d3d10.dll.so
 %{_libdir}/wine/d3d10core.dll.so
+%{_libdir}/wine/d3dcompiler_*.dll.so
 %{_libdir}/wine/d3dim.dll.so
 %{_libdir}/wine/d3drm.dll.so
 %{_libdir}/wine/d3dx9_*.dll.so
+%{_libdir}/wine/d3dx10_*.dll.so
 %{_libdir}/wine/d3dxof.dll.so
 %{_libdir}/wine/dbghelp.dll.so
 %{_libdir}/wine/dciman32.dll.so
@@ -833,6 +836,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/dxgi.dll.so
 %{_libdir}/wine/eject.exe.so
+%{_libdir}/wine/explorerframe.dll.so
 %{_libdir}/wine/faultrep.dll.so
 %{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fusion.dll.so
@@ -1293,6 +1297,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sat Aug 21 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.1-1
+- version ugprade
+
 * Sat Jul 31 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.0-1
 - version upgrade
