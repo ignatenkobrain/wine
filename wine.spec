@@ -1,13 +1,13 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.1
+Version:	1.3.3
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
 License:	LGPLv2+
 URL:		http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-1.3.1.tar.bz2
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}.tar.bz2
 Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
@@ -424,11 +424,11 @@ This package adds an openal driver for wine.
 
 %patch1
 %patch100
-%patch200
+#%patch200
 %patch400 -p1
 %patch401 -p1
 %patch402 -p1
-%patch1000
+#%patch1000
 
 autoreconf
 
@@ -913,6 +913,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
+%{_libdir}/wine/msvcp80.dll.so
 %{_libdir}/wine/msvcp90.dll.so
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
@@ -928,6 +929,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mswsock.dll.so
 %{_libdir}/wine/msxml3.dll.so
 %{_libdir}/wine/msxml4.dll.so
+%{_libdir]/wine/msxml6.dll.so
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/newdev.dll.so
@@ -967,6 +969,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/rpcrt4.dll.so
 %{_libdir}/wine/rsabase.dll.so
 %{_libdir}/wine/rsaenh.dll.so
+%{_libdir}/wine/rstrtmgr.dll.so
 %{_libdir}/wine/rtutils.dll.so
 %{_libdir}/wine/samlib.dll.so
 %{_libdir}/wine/sc.exe.so
@@ -1009,6 +1012,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/wbemprox.dll.so
+%{_libdir}/wine/wer.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
@@ -1297,6 +1301,14 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Mon Sep 20 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.3-1
+- version upgrade
+
+* Wed Sep 08 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.2-1
+- version upgrade
+
 * Sat Aug 21 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.1-1
 - version ugprade
