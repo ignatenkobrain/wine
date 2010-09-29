@@ -1,17 +1,13 @@
 diff --git a/dlls/winepulse.drv/Makefile.in b/dlls/winepulse.drv/Makefile.in
 new file mode 100644
-index 0000000..ed48381
+index 0000000..a6fdbf8
 --- /dev/null
 +++ b/dlls/winepulse.drv/Makefile.in
-@@ -0,0 +1,14 @@
-+TOPSRCDIR = @top_srcdir@
-+TOPOBJDIR = ../..
-+SRCDIR    = @srcdir@
-+VPATH     = @srcdir@
+@@ -0,0 +1,10 @@
 +MODULE    = winepulse.drv
 +IMPORTS   = winmm user32 kernel32
 +EXTRALIBS = @PULSELIBS@
-+EXTRACFLAGS = @PULSEINCL@
++EXTRAINCL = @PULSEINCL@
 +
 +C_SRCS = waveout.c \
 +         wavein.c \
