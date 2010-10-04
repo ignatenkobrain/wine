@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.3
+Version:	1.3.4
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -43,8 +43,8 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-configure.ac.patch
-Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.38.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-0.39-configure.ac.patch
+Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
@@ -424,7 +424,7 @@ This package adds an openal driver for wine.
 
 %patch1
 %patch100
-#%patch200
+%patch200
 %patch400 -p1
 %patch401 -p1
 %patch402 -p1
@@ -689,6 +689,14 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 # meta package
 
+%files wow
+%defattr(-,root,root,-)
+%ifarch %{ix86}
+%{_bindir}/wine
+%endif
+%{_bindir}/wineserver
+%{_libdir}/wine/wineboot.exe.so
+
 %files core
 %defattr(-,root,root,-)
 %doc ANNOUNCE
@@ -701,7 +709,6 @@ update-desktop-database &>/dev/null || :
 %doc VERSION
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
-
 %{_bindir}/winedump
 %{_libdir}/wine/explorer.exe.so
 %{_libdir}/wine/control.exe.so
@@ -717,7 +724,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wordpad.exe.so
 %{_libdir}/wine/write.exe.so
 %{_libdir}/wine/dxdiag.exe.so
-
 
 %ifarch %{ix86}
 %{_bindir}/wine
@@ -861,6 +867,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/imagehlp.dll.so
 %{_libdir}/wine/imm32.dll.so
 %{_libdir}/wine/inetcomm.dll.so
+%{_libdir}/wine/inetcpl.cpl.so
 %{_libdir}/wine/inetmib1.dll.so
 %{_libdir}/wine/infosoft.dll.so
 %{_libdir}/wine/initpki.dll.so
@@ -871,6 +878,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/itss.dll.so
 %{_libdir}/wine/jscript.dll.so
 %{_libdir}/wine/kernel32.dll.so
+%{_libdir}/wine/ktmw32.dll.so
 %{_libdir}/wine/loadperf.dll.so
 %{_libdir}/wine/localspl.dll.so
 %{_libdir}/wine/localui.dll.so
@@ -885,6 +893,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/midimap.dll.so
 %{_libdir}/wine/mlang.dll.so
 %{_libdir}/wine/mmdevapi.dll.so
+%{_libdir}/wine/mofcomp.exe.so
 %{_libdir}/wine/mountmgr.sys.so
 %{_libdir}/wine/mpr.dll.so
 %{_libdir}/wine/mprapi.dll.so
@@ -929,7 +938,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/mswsock.dll.so
 %{_libdir}/wine/msxml3.dll.so
 %{_libdir}/wine/msxml4.dll.so
-%{_libdir]/wine/msxml6.dll.so
+%{_libdir}/wine/msxml6.dll.so
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/newdev.dll.so
@@ -998,6 +1007,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/sxs.dll.so
 %{_libdir}/wine/t2embed.dll.so
 %{_libdir}/wine/tapi32.dll.so
+%{_libdir}/wine/taskkill.exe.so
 %{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/unicows.dll.so
 %{_libdir}/wine/unlodctr.exe.so
@@ -1053,8 +1063,9 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/xinput1_3.dll.so
 %{_libdir}/wine/xinput9_1_0.dll.so
 %{_libdir}/wine/xmllite.dll.so
-%ifnarch x86_64
+
 # 16 bit and other non 64bit stuff
+%ifnarch x86_64
 %{_libdir}/wine/winevdm.exe.so
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/mmdevldr.vxd.so
@@ -1068,7 +1079,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/vtdapi.vxd.so
 %{_libdir}/wine/vwin32.vxd.so
 %{_libdir}/wine/w32skrnl.dll.so
-
 %{_libdir}/wine/avifile.dll16.so
 %{_libdir}/wine/comm.drv16.so
 %{_libdir}/wine/commdlg.dll16.so
@@ -1120,14 +1130,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wintab.dll16.so
 %{_libdir}/wine/wow32.dll.so
 %endif
-
-%files wow
-%defattr(-,root,root,-)
-%ifarch %{ix86}
-%{_bindir}/wine
-%endif
-%{_bindir}/wineserver
-%{_libdir}/wine/wineboot.exe.so
 
 %files common
 %defattr(-,root,root,-)
@@ -1301,6 +1303,14 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sun Oct 03 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.4-1
+- version upgrade
+
+* Wed Sep 29 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.3-2
+- winepulse upgrade (0.39)
+
 * Mon Sep 20 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.3-1
 - version upgrade
