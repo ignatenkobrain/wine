@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.4
+Version:	1.3.5
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -444,7 +444,6 @@ export CFLAGS="$RPM_OPT_FLAGS -Wno-error"
 %endif
         --enable-maintainer-mode \
 	--disable-tests
-
 %{__make} TARGETFLAGS="" %{?_smp_mflags}
 
 %install
@@ -740,6 +739,7 @@ update-desktop-database &>/dev/null || :
 %dir %{_libdir}/wine/fakedlls
 %{_libdir}/wine/fakedlls/*
 %{_libdir}/wine/attrib.exe.so
+%{_libdir}/wine/aspnet_regiis.exe.so
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
@@ -1303,6 +1303,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Mon Oct 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.5-1
+- version upgrade
+
 * Sun Oct 03 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.4-1
 - version upgrade
