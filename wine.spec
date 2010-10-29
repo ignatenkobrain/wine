@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.5
+Version:	1.3.6
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -110,6 +110,8 @@ BuildRequires:  gsm-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  fontpackages-devel
 BuildRequires:  ImageMagick-devel
+BuildRequires:  gstreamer-devel
+BuildRequires:  libtiff-devel
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
@@ -425,7 +427,7 @@ This package adds an openal driver for wine.
 %patch1
 %patch100
 %patch200
-%patch400 -p1
+%patch400
 %patch401 -p1
 %patch402 -p1
 #%patch1000
@@ -444,6 +446,7 @@ export CFLAGS="$RPM_OPT_FLAGS -Wno-error"
 %endif
         --enable-maintainer-mode \
 	--disable-tests
+
 %{__make} TARGETFLAGS="" %{?_smp_mflags}
 
 %install
@@ -1027,6 +1030,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winecoreaudio.drv.so
+%{_libdir}/wine/winegstreamer.dll.so
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winemapi.dll.so
 %{_libdir}/wine/winex11.drv.so
@@ -1042,6 +1046,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winscard.dll.so
 %{_libdir}/wine/wintab32.dll.so
 %{_libdir}/wine/wintrust.dll.so
+%{_libdir}/wine/wlanapi.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wsock32.dll.so
@@ -1303,6 +1308,13 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Fri Oct 29 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.6-1
+- version upgrade
+- rebase winepulse configure patch
+- add gstreamer BR for new gstreamer support
+- add libtiff BR for new tiff support
+
 * Mon Oct 18 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.5-1
 - version upgrade

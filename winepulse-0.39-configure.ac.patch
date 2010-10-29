@@ -1,8 +1,6 @@
-diff --git a/configure.ac b/configure.ac
-index 341ba181..998e063 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -78,6 +78,7 @@ AC_ARG_WITH(png,       AS_HELP_STRING([--without-png],[do not use PNG]),
+--- configure.ac.orig	2010-10-29 21:01:38.000000000 +0200
++++ configure.ac	2010-10-29 21:05:28.000000000 +0200
+@@ -79,6 +79,7 @@
              [if test "x$withval" = "xno"; then ac_cv_header_png_h=no; fi])
  AC_ARG_WITH(pthread,   AS_HELP_STRING([--without-pthread],[do not use the pthread library]),
              [if test "x$withval" = "xno"; then ac_cv_header_pthread_h=no; fi])
@@ -10,9 +8,9 @@ index 341ba181..998e063 100644
  AC_ARG_WITH(sane,      AS_HELP_STRING([--without-sane],[do not use SANE (scanner support)]))
  AC_ARG_WITH(tiff,       AS_HELP_STRING([--without-tiff],[do not use TIFF]),
              [if test "x$withval" = "xno"; then ac_cv_header_tiffio_h=no; fi])
-@@ -1402,6 +1403,30 @@ then
-     CFLAGS="$save_CFLAGS"
- fi
+@@ -1431,6 +1432,30 @@
+                  [gstreamer-0.10 ${notice_platform}development files not found, gstreamer support disabled])
+ test "x$ac_cv_lib_gstapp_0_10_gst_app_buffer_new" = xyes || enable_winegstreamer=${enable_winegstreamer:-no}
  
 +dnl **** Check for PulseAudio ****
 +AC_SUBST(PULSELIBS,"")
@@ -41,7 +39,7 @@ index 341ba181..998e063 100644
  dnl **** Check for ALSA 1.x ****
  AC_SUBST(ALSALIBS,"")
  if test "$ac_cv_header_sys_asoundlib_h" = "yes" -o "$ac_cv_header_alsa_asoundlib_h" = "yes"
-@@ -1580,7 +1605,7 @@ dnl **** Check for libodbc ****
+@@ -1609,7 +1634,7 @@
  WINE_CHECK_SONAME(odbc,SQLConnect,,[AC_DEFINE_UNQUOTED(SONAME_LIBODBC,["libodbc.$LIBEXT"])])
  
  dnl **** Check for any sound system ****
@@ -50,7 +48,7 @@ index 341ba181..998e063 100644
          "$ac_cv_header_sys_soundcard_h" != "yes" -a \
          "$ac_cv_header_machine_soundcard_h" != "yes" -a \
          "$ac_cv_header_soundcard_h" != "yes" -a \
-@@ -2724,6 +2749,7 @@ WINE_CONFIG_DLL(winenas.drv)
+@@ -2760,6 +2785,7 @@
  WINE_CONFIG_DLL(wineoss.drv)
  WINE_CONFIG_DLL(wineps.drv)
  WINE_CONFIG_DLL(wineps16.drv16,enable_win16)
