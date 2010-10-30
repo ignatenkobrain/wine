@@ -110,8 +110,9 @@ BuildRequires:  gsm-devel
 BuildRequires:  libv4l-devel
 BuildRequires:  fontpackages-devel
 BuildRequires:  ImageMagick-devel
-BuildRequires:  gstreamer-devel
+BuildRequires:  gstreamer-devel gstreamer-plugins-base-devel
 BuildRequires:  libtiff-devel
+BuildRequires:  prelink
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
