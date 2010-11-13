@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.6
+Version:	1.3.7
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -193,7 +193,7 @@ Requires:       gnutls(x86-64)
 Wine core package includes the basic wine stuff needed by all other packages.
 
 %package wow
-Summary:        Files for wine wow seperation
+Summary:        Files for wine wow separation
 Group:          Applications/Emulators
 %ifarch x86_64
 Requires:       wine-core(x86-64) = %{version}-%{release}
@@ -436,7 +436,10 @@ This package adds an openal driver for wine.
 autoreconf
 
 %build
-export CFLAGS="$RPM_OPT_FLAGS -Wno-error"
+# disable fortify as it breaks wine
+# http://bugs.winehq.org/show_bug.cgi?id=24606
+# http://bugs.winehq.org/show_bug.cgi?id=25073
+export CFLAGS="$RPM_OPT_FLAGS -Wno-error -D_FORTIFY_SOURCE=0"
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine \
 	--x-includes=%{_includedir} --x-libraries=%{_libdir} \
@@ -758,6 +761,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/ping.exe.so
 %{_libdir}/wine/reg.exe.so
 %{_libdir}/wine/regedit.exe.so
+%{_libdir}/wine/regsvcs.exe.so
 %{_libdir}/wine/regsvr32.exe.so
 %{_libdir}/wine/rpcss.exe.so
 %{_libdir}/wine/rundll32.exe.so
@@ -1063,6 +1067,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wined3d.dll.so
 %{_libdir}/wine/dnsapi.dll.so
 %{_libdir}/wine/iexplore.exe.so
+%{_libdir}/wine/xapofx1_1.dll.so
 %{_libdir}/wine/xcopy.exe.so
 %{_libdir}/wine/xinput1_1.dll.so
 %{_libdir}/wine/xinput1_2.dll.so
@@ -1309,6 +1314,12 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sat Nov 13 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.7-1
+- version upgrade
+- fix package description (#652718)
+- compile with D_FORTIFY_SOURCE=0 for now as it breaks wine (#650875)
+
 * Fri Oct 29 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.6-1
 - version upgrade
