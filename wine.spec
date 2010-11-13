@@ -1318,7 +1318,7 @@ update-desktop-database &>/dev/null || :
 - 1.3.7-1
 - version upgrade
 - fix package description (#652718)
-- compile with D_FORTIFY_SOURCE=0 for now as it breaks wine (#650875)
+- compile with D_FORTIFY_SOURCE=0 for now to avoid breaking wine (#650875)
 
 * Fri Oct 29 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.6-1
