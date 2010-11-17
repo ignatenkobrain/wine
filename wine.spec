@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.3.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -439,7 +439,7 @@ autoreconf
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="$RPM_OPT_FLAGS -Wno-error -D_FORTIFY_SOURCE=0"
+export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 %configure \
 	--sysconfdir=%{_sysconfdir}/wine \
 	--x-includes=%{_includedir} --x-libraries=%{_libdir} \
@@ -1314,6 +1314,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Tue Nov 16 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.7-2
+- cleanup cflags a bit
+
 * Sat Nov 13 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.7-1
 - version upgrade
