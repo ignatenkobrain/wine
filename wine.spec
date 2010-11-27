@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.7
-Release:	2%{?dist}
+Version:	1.3.8
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -133,6 +133,10 @@ Requires:       wine-cms(x86-32) = %{version}-%{release}
 Requires:       wine-ldap(x86-32) = %{version}-%{release}
 Requires:       wine-twain(x86-32) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
+Requires:       wine-openal(x86-32) = %{version}-%{release}
+%endif
+
 # 64bit
 %ifarch x86_64
 Requires:       wine-core(x86-64) = %{version}-%{release}
@@ -141,6 +145,9 @@ Requires:       wine-cms(x86-64) = %{version}-%{release}
 Requires:       wine-ldap(x86-64) = %{version}-%{release}
 Requires:       wine-twain(x86-64) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{version}-%{release}
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
+Requires:       wine-openal(x86-64) = %{version}-%{release}
+%endif
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 %endif
@@ -180,12 +187,16 @@ Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
 # require Xrender isa on x86_64 (#510947)
 Requires:       libXrender(x86-32)
+# requireXcursor (#655255)
+Requires:       libXcursor(x86-32)
 Requires:       gnutls(x86-32)
 %endif
 %ifarch x86_64
 Requires:       nss-mdns(x86-64)
 Requires:       freetype(x86-64)
 Requires:       gnutls(x86-64)
+Requires:       libXrender(x86-64)
+Requires:       libXcursor(x86-64)
 %endif
 
 
@@ -766,6 +777,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/rpcss.exe.so
 %{_libdir}/wine/rundll32.exe.so
 %{_libdir}/wine/secedit.exe.so
+%{_libdir}/wine/servicemodelreg.exe.so
 %{_libdir}/wine/services.exe.so
 %{_libdir}/wine/start.exe.so
 %{_libdir}/wine/termsv.exe.so
@@ -818,6 +830,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/d3dx9_*.dll.so
 %{_libdir}/wine/d3dx10_*.dll.so
 %{_libdir}/wine/d3dxof.dll.so
+%{_libdir}/wine/dbgeng.dll.so
 %{_libdir}/wine/dbghelp.dll.so
 %{_libdir}/wine/dciman32.dll.so
 %{_libdir}/wine/ddraw.dll.so
@@ -1157,8 +1170,18 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wineconsole
 %{_bindir}/winecfg
 %dir %{_datadir}/wine
-%{_mandir}/man1/wine.1.gz
+%{_mandir}/man1/wine.1*
 %{_mandir}/man1/wineserver.1*
+%{_mandir}/man1/msiexec.1*
+%{_mandir}/man1/notepad.1*
+%{_mandir}/man1/regedit.1*
+%{_mandir}/man1/regsvr32.1*
+%{_mandir}/man1/wineboot.1*
+%{_mandir}/man1/winecfg.1*
+%{_mandir}/man1/wineconsole.1*
+%{_mandir}/man1/winefile.1*
+%{_mandir}/man1/winemine.1*
+%{_mandir}/man1/winepath.1*
 %lang(fr) %{_mandir}/fr.UTF-8/man1/wine.1*
 %lang(fr) %{_mandir}/fr.UTF-8/man1/wineserver.1*
 %lang(de) %{_mandir}/de.UTF-8/man1/wine.1*
@@ -1278,6 +1301,7 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wrc
 %{_mandir}/man1/widl.1*
 %{_mandir}/man1/winebuild.1*
+%{_mandir}/man1/winecpp.1*
 %{_mandir}/man1/winedump.1*
 %{_mandir}/man1/winegcc.1*
 %{_mandir}/man1/winemaker.1*
@@ -1314,6 +1338,12 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sat Nov 27 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.8-1
+- version upgrade
+- require libXcursor (#655255)
+- require wine-openal in wine meta package (#657144)
+
 * Tue Nov 16 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.7-2
 - cleanup cflags a bit
