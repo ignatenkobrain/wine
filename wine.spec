@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.8
+Version:	1.3.9
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -43,12 +43,10 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-0.39-configure.ac.patch
+Patch400:       winepulse-0.39-configure.ac.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
-
-
 
 # enhancements
 # add wine-gecko support
@@ -439,10 +437,9 @@ This package adds an openal driver for wine.
 %patch1
 %patch100
 %patch200
-%patch400
-%patch401 -p1
-%patch402 -p1
-#%patch1000
+%patch400 -b .winepulse
+%patch401 -p1 -b .winepulse
+%patch402 -p1 -b .winepulse
 
 autoreconf
 
@@ -962,7 +959,9 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msxml6.dll.so
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
+%{_libdir}/wine/netsh.exe.so
 %{_libdir}/wine/newdev.dll.so
+%{_libdir}/wine/npmshtml.dll.so
 %{_libdir}/wine/ntdll.dll.so
 %{_libdir}/wine/ntdsapi.dll.so
 %{_libdir}/wine/ntprint.dll.so
@@ -1059,6 +1058,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/winnls32.dll.so
 %{_libdir}/wine/winspool.drv.so
 %{_libdir}/wine/wmi.dll.so
+%{_libdir}/wine/wmic.exe.so
 %{_libdir}/wine/wmiutils.dll.so
 %{_libdir}/wine/spoolss.dll.so
 %{_libdir}/wine/winscard.dll.so
@@ -1338,6 +1338,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sat Dec 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.9-1
+- version upgrade
+
 * Sat Nov 27 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.8-1
 - version upgrade

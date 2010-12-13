@@ -1,6 +1,6 @@
---- configure.ac.orig	2010-10-29 21:01:38.000000000 +0200
-+++ configure.ac	2010-10-29 21:05:28.000000000 +0200
-@@ -79,6 +79,7 @@
+--- configure.ac.orig	2010-12-13 10:58:43.000000000 +0100
++++ configure.ac	2010-12-13 11:01:06.000000000 +0100
+@@ -81,6 +81,7 @@
              [if test "x$withval" = "xno"; then ac_cv_header_png_h=no; fi])
  AC_ARG_WITH(pthread,   AS_HELP_STRING([--without-pthread],[do not use the pthread library]),
              [if test "x$withval" = "xno"; then ac_cv_header_pthread_h=no; fi])
@@ -8,7 +8,7 @@
  AC_ARG_WITH(sane,      AS_HELP_STRING([--without-sane],[do not use SANE (scanner support)]))
  AC_ARG_WITH(tiff,       AS_HELP_STRING([--without-tiff],[do not use TIFF]),
              [if test "x$withval" = "xno"; then ac_cv_header_tiffio_h=no; fi])
-@@ -1431,6 +1432,30 @@
+@@ -1464,6 +1465,30 @@
                   [gstreamer-0.10 ${notice_platform}development files not found, gstreamer support disabled])
  test "x$ac_cv_lib_gstapp_0_10_gst_app_buffer_new" = xyes || enable_winegstreamer=${enable_winegstreamer:-no}
  
@@ -39,7 +39,7 @@
  dnl **** Check for ALSA 1.x ****
  AC_SUBST(ALSALIBS,"")
  if test "$ac_cv_header_sys_asoundlib_h" = "yes" -o "$ac_cv_header_alsa_asoundlib_h" = "yes"
-@@ -1609,7 +1634,7 @@
+@@ -1642,7 +1667,7 @@
  WINE_CHECK_SONAME(odbc,SQLConnect,,[AC_DEFINE_UNQUOTED(SONAME_LIBODBC,["libodbc.$LIBEXT"])])
  
  dnl **** Check for any sound system ****
@@ -48,11 +48,11 @@
          "$ac_cv_header_sys_soundcard_h" != "yes" -a \
          "$ac_cv_header_machine_soundcard_h" != "yes" -a \
          "$ac_cv_header_soundcard_h" != "yes" -a \
-@@ -2760,6 +2785,7 @@
+@@ -2797,6 +2822,7 @@
  WINE_CONFIG_DLL(wineoss.drv)
  WINE_CONFIG_DLL(wineps.drv)
  WINE_CONFIG_DLL(wineps16.drv16,enable_win16)
 +WINE_CONFIG_DLL(winepulse.drv)
+ WINE_CONFIG_DLL(wineqtdecoder)
  WINE_CONFIG_DLL(winequartz.drv)
  WINE_CONFIG_DLL(winex11.drv)
- WINE_CONFIG_DLL(wing.dll16,enable_win16)
