@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.9
+Version:	1.3.10
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -43,7 +43,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       winepulse-0.39-configure.ac.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.10.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
 Source402:      README-FEDORA-PULSEAUDIO
@@ -434,10 +434,10 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
-%patch1
-%patch100
-%patch200
-%patch400 -b .winepulse
+%patch1 -b .rpath
+%patch100 -b .fedorafonts
+%patch200 -b .imagemagick
+%patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
 %patch402 -p1 -b .winepulse
 
@@ -747,6 +747,7 @@ update-desktop-database &>/dev/null || :
 
 %ifarch x86_64
 %{_bindir}/wine64
+%{_bindir}/wine64-preloader
 %{_sysconfdir}/ld.so.conf.d/wine-64.conf
 %endif
 
@@ -954,6 +955,8 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/msvfw32.dll.so
 %{_libdir}/wine/msvidc32.dll.so
 %{_libdir}/wine/mswsock.dll.so
+%{_libdir}/wine/msxml.dll.so
+%{_libdir}/wine/msxml2.dll.so
 %{_libdir}/wine/msxml3.dll.so
 %{_libdir}/wine/msxml4.dll.so
 %{_libdir}/wine/msxml6.dll.so
@@ -1045,7 +1048,6 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/wer.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/windowscodecs.dll.so
-%{_libdir}/wine/wineaudioio.drv.so
 %{_libdir}/wine/winecoreaudio.drv.so
 %{_libdir}/wine/winegstreamer.dll.so
 %{_libdir}/wine/winejoystick.drv.so
@@ -1338,6 +1340,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Tue Dec 28 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.10-1
+- version upgrade
+
 * Sat Dec 11 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.9-1
 - version upgrade
