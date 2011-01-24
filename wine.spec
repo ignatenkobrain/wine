@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.10
+Version:	1.3.12
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -45,7 +45,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # and http://art.ified.ca/?page_id=40
 Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.10.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
-Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-0.38-winecfg.patch
+Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
 Source402:      README-FEDORA-PULSEAUDIO
 
 # enhancements
@@ -459,7 +459,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
         --enable-maintainer-mode \
 	--disable-tests
 
-%{__make} TARGETFLAGS="" %{?_smp_mflags}
+%{__make} TARGETFLAGS="" #%{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -964,6 +964,7 @@ update-desktop-database &>/dev/null || :
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/netsh.exe.so
 %{_libdir}/wine/newdev.dll.so
+%{_libdir}/wine/normaliz.dll.so
 %{_libdir}/wine/npmshtml.dll.so
 %{_libdir}/wine/ntdll.dll.so
 %{_libdir}/wine/ntdsapi.dll.so
@@ -1340,6 +1341,14 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Mon Jan 24 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.12-1
+- version upgrade
+
+* Sun Jan 09 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.11-1
+- version upgrade
+
 * Tue Dec 28 2010 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.10-1
 - version upgrade
