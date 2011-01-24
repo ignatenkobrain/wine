@@ -111,6 +111,8 @@ BuildRequires:  ImageMagick-devel
 BuildRequires:  gstreamer-devel gstreamer-plugins-base-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  prelink
+BuildRequires:  gettext-devel
+
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
