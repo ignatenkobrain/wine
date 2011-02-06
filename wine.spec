@@ -1349,6 +1349,7 @@ update-desktop-database &>/dev/null || :
 * Sun Feb 06 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.13-1
 - version upgrade
+- update desktop files
 
 * Mon Jan 24 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.12-1
