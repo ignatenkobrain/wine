@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.12
+Version:	1.3.13
 Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -727,14 +727,17 @@ update-desktop-database &>/dev/null || :
 %doc documentation/README.*
 %{_bindir}/winedump
 %{_libdir}/wine/explorer.exe.so
+%{_libdir}/wine/cabarc.exe.so
 %{_libdir}/wine/control.exe.so
 %{_libdir}/wine/cmd.exe.so
 %{_libdir}/wine/notepad.exe.so
+%{_libdir}/wine/plugplay.exe.so
 %{_libdir}/wine/progman.exe.so
 %{_libdir}/wine/taskmgr.exe.so
 %{_libdir}/wine/winedbg.exe.so
 %{_libdir}/wine/winefile.exe.so
 %{_libdir}/wine/winemine.exe.so
+%{_libdir}/wine/winemsibuilder.exe.so
 %{_libdir}/wine/winepath.exe.so
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.exe.so
@@ -1343,6 +1346,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sun Feb 06 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.13-1
+- version upgrade
+
 * Mon Jan 24 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.12-1
 - version upgrade
