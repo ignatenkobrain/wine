@@ -5,5 +5,4 @@ Exec=regedit
 Icon=regedit
 Terminal=false
 Type=Application
-Encoding=UTF-8
 Categories=X-Wine;

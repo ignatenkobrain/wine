@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=Windows Installer File
-Encoding=UTF-8
 Exec=wine %f
-MimeType=application/x-ole-storage;text/mspg-legacyinfo
+MimeType=application/x-ole-storage;text/mspg-legacyinfo;
 Hidden=true
