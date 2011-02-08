@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.3.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -1346,6 +1346,9 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.13-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Sun Feb 06 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.13-1
 - version upgrade
