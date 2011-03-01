@@ -1,6 +1,6 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.13
+Version:	1.3.14
 Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
@@ -487,6 +487,8 @@ mkdir -p %{buildroot}%{_datadir}/desktop-directories
 install -p -m 644 %{SOURCE201} \
 %{buildroot}%{_datadir}/desktop-directories/Wine.directory
 
+# add gecko dir
+mkdir -p %{buildroot}%{_datadir}/wine/gecko
 
 # extract and install icons
 %if 0%{?fedora} > 10
@@ -1178,6 +1180,7 @@ update-desktop-database &>/dev/null || :
 %{_bindir}/wineconsole
 %{_bindir}/winecfg
 %dir %{_datadir}/wine
+%dir %{_datadir}/wine/gecko
 %{_mandir}/man1/wine.1*
 %{_mandir}/man1/wineserver.1*
 %{_mandir}/man1/msiexec.1*
@@ -1346,6 +1349,14 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Tue Mar 01 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.14-2
+- prepare for wine-gecko
+
+* Sat Feb 19 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.14-1
+- version upgrade
+
 * Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.13-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
