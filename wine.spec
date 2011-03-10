@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.14
-Release:	2%{?dist}
+Version:	1.3.15
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -1349,6 +1349,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Tue Mar 08 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.15-1
+- version upgrade
+
 * Tue Mar 01 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.14-2
 - prepare for wine-gecko
