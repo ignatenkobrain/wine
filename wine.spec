@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.3.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -225,6 +225,7 @@ Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): desktop-file-utils >= 0.8
 Requires:       wine-core(x86-32) = %{version}-%{release}
 Requires:       wine-common = %{version}-%{release}
+Requires:       hicolor-icon-theme
 BuildArch:      noarch
 
 %description desktop
@@ -492,51 +493,34 @@ mkdir -p %{buildroot}%{_datadir}/wine/gecko
 
 # extract and install icons
 %if 0%{?fedora} > 10
-mkdir -p %{buildroot}%{_datadir}/pixmaps
-icotool -x --width=32 --height=32 --bit-depth=32 -o dlls/user32/resources/ \
- dlls/user32/resources/oic_winlogo.ico
-install -p -m 644 dlls/user32/resources/*png \
- %{buildroot}%{_datadir}/pixmaps/wine.png
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/notepad/ \
- programs/notepad/notepad.ico
-install -p -m 644 programs/notepad/notepad*png \
- %{buildroot}%{_datadir}/pixmaps/notepad.png
+install -p -m 644 dlls/user32/resources/oic_winlogo.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/regedit/ \
- programs/regedit/regedit.ico
-install -p -m 644 programs/regedit/regedit*png \
- %{buildroot}%{_datadir}/pixmaps/regedit.png
+install -p -m 644 programs/notepad/notepad.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/notepad.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/msiexec/ \
- programs/msiexec/msiexec.ico
-install -p -m 644 programs/msiexec/msiexec*png \
- %{buildroot}%{_datadir}/pixmaps/msiexec.png
+install -p -m 644 programs/regedit/regedit.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/regedit.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winecfg/ \
- programs/winecfg/winecfg.ico
-install -p -m 644 programs/winecfg/winecfg*png \
- %{buildroot}%{_datadir}/pixmaps/winecfg.png
+install -p -m 644 programs/msiexec/msiexec.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/msiexec.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winefile/ \
- programs/winefile/winefile.ico
-install -p -m 644 programs/winefile/winefile*png \
- %{buildroot}%{_datadir}/pixmaps/winefile.png
+install -p -m 644 programs/winecfg/winecfg.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winecfg.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winemine/ \
- programs/winemine/winemine.ico
-install -p -m 644 programs/winemine/winemine*png \
- %{buildroot}%{_datadir}/pixmaps/winemine.png
+install -p -m 644 programs/winefile/winefile.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winefile.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/winhlp32/ \
- programs/winhlp32/winhelp.ico
-install -p -m 644 programs/winhlp32/winhelp*png \
- %{buildroot}%{_datadir}/pixmaps/winhelp.png
+install -p -m 644 programs/winemine/winemine.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winemine.svg
 
-icotool -x --width=32 --height=32 --bit-depth=32 -o programs/wordpad/ \
- programs/wordpad/wordpad.ico
-install -p -m 644 programs/wordpad/wordpad*png \
- %{buildroot}%{_datadir}/pixmaps/wordpad.png
+install -p -m 644 programs/winhlp32/winhelp.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winhelp.svg
+
+install -p -m 644 programs/wordpad/wordpad.svg \
+ %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
 %endif
 
 # install desktop files
@@ -1259,7 +1243,7 @@ update-desktop-database &>/dev/null || :
 %{_initrddir}/wine
 
 %if 0%{?fedora} >= 10
-%{_datadir}/pixmaps/*png
+%{_datadir}/icons/hicolor/scalable/apps/*svg
 %endif
 
 # esd subpackage
@@ -1349,6 +1333,10 @@ update-desktop-database &>/dev/null || :
 %endif
 
 %changelog
+* Sun Mar 13 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.15-2
+- use svg files for icons (#684277)
+
 * Tue Mar 08 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.15-1
 - version upgrade
