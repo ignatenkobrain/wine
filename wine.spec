@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
 Version:	1.3.15
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -1344,10 +1344,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Mar 17 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.15-3
+- reenable fonts
+
 * Sun Mar 13 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.15-2
 - use svg files for icons (#684277)
-- reenable fonts
 
 * Tue Mar 08 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.15-1
