@@ -34,10 +34,6 @@ Source300:      wine-mime-msi.desktop
 
 Patch1:         wine-rpath.patch
 
-# bugfixes
-# fix for #593140
-Patch100:       wine-fonts.patch
-# 
 Patch200:       wine-imagemagick-6.5.patch
 
 # explain how to use wine with pulseaudio
@@ -240,8 +236,8 @@ Requires:      wine-courier-fonts = %{version}-%{release}
 Requires:      wine-small-fonts = %{version}-%{release}
 Requires:      wine-system-fonts = %{version}-%{release}
 Requires:      wine-marlett-fonts = %{version}-%{release}
-#Requires:      wine-ms-sans-serif-fonts = %{version}-%{release}
-#Requires:      wine-tahoma-fonts = %{version}-%{release}
+Requires:      wine-ms-sans-serif-fonts = %{version}-%{release}
+Requires:      wine-tahoma-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
@@ -290,24 +286,24 @@ Requires:      fontpackages-filesystem
 %{summary}
 
 
-#%package ms-sans-serif-fonts
-#Summary:       Wine MS Sans Serif font family
-#Group:         User Interface/X
-#BuildArch:     noarch
-#Requires:      fontpackages-filesystem
+%package ms-sans-serif-fonts
+Summary:       Wine MS Sans Serif font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
 
-#%description ms-sans-serif-fonts
-#%{summary}
+%description ms-sans-serif-fonts
+%{summary}
 
 
-#%package tahoma-fonts
-#Summary:       Wine Tahoma font family
-#Group:         User Interface/X
-#BuildArch:     noarch
-#Requires:      fontpackages-filesystem
+%package tahoma-fonts
+Summary:       Wine Tahoma font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
 
-#%description tahoma-fonts
-#%{summary}
+%description tahoma-fonts
+%{summary}
 
 
 %package symbol-fonts
@@ -438,7 +434,6 @@ This package adds an openal driver for wine.
 %setup -q
 
 %patch1 -b .rpath
-%patch100 -b .fedorafonts
 %patch200 -b .imagemagick
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
@@ -497,30 +492,40 @@ mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 
 install -p -m 644 dlls/user32/resources/oic_winlogo.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
 
 install -p -m 644 programs/notepad/notepad.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/notepad.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/notepad.svg
 
 install -p -m 644 programs/regedit/regedit.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/regedit.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/regedit.svg
 
 install -p -m 644 programs/msiexec/msiexec.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/msiexec.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/msiexec.svg
 
 install -p -m 644 programs/winecfg/winecfg.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winecfg.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winecfg.svg
 
 install -p -m 644 programs/winefile/winefile.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winefile.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winefile.svg
 
 install -p -m 644 programs/winemine/winemine.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winemine.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winemine.svg
 
 install -p -m 644 programs/winhlp32/winhelp.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winhelp.svg
+sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winhelp.svg
 
 install -p -m 644 programs/wordpad/wordpad.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
+sed -i -e '3s/368/64/'  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
+
 %endif
 
 # install desktop files
@@ -617,13 +622,11 @@ mv %{buildroot}/%{_datadir}/wine/fonts/jsma* %{buildroot}/%{_datadir}/fonts/wine
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-marlett-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/marlett.ttf %{buildroot}/%{_datadir}/fonts/wine-marlett-fonts/
 
-#install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts
-#mv %{buildroot}/%{_datadir}/wine/fonts/sse* %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts/
-rm -f %{buildroot}/%{_datadir}/wine/fonts/sse*
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/sse* %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts/
 
-#install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
-#mv %{buildroot}/%{_datadir}/wine/fonts/tahoma* %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts/
-rm -f %{buildroot}/%{_datadir}/wine/fonts/tahoma*
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/tahoma* %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts/
 
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/symbol.ttf %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts/
@@ -642,6 +645,7 @@ if [ $1 = 1 ]; then
 /sbin/chkconfig --level 2345 wine on
 /sbin/service wine start &>/dev/null || :
 fi
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %preun desktop
 if [ $1 = 0 ]; then
@@ -651,6 +655,13 @@ fi
 
 %postun desktop
 update-desktop-database &>/dev/null || :
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+
+%posttrans desktop
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %post esd -p /sbin/ldconfig
 %postun esd -p /sbin/ldconfig
@@ -1209,15 +1220,15 @@ update-desktop-database &>/dev/null || :
 %defattr(-,root,root,-)
 %{_datadir}/fonts/wine-marlett-fonts
 
-#%files ms-sans-serif-fonts
-#%defattr(-,root,root,-)
-#%doc COPYING.LIB
-#%{_datadir}/fonts/wine-ms-sans-serif-fonts
+%files ms-sans-serif-fonts
+%defattr(-,root,root,-)
+%doc COPYING.LIB
+%{_datadir}/fonts/wine-ms-sans-serif-fonts
 
-#%files tahoma-fonts
-#%defattr(-,root,root,-)
-#%doc COPYING.LIB
-#%{_datadir}/fonts/wine-tahoma-fonts
+%files tahoma-fonts
+%defattr(-,root,root,-)
+%doc COPYING.LIB
+%{_datadir}/fonts/wine-tahoma-fonts
 
 %files symbol-fonts
 %defattr(-,root,root,-)
@@ -1336,6 +1347,7 @@ update-desktop-database &>/dev/null || :
 * Sun Mar 13 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.15-2
 - use svg files for icons (#684277)
+- reenable fonts
 
 * Tue Mar 08 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.15-1
