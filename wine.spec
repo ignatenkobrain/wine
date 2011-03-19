@@ -1,7 +1,7 @@
 %define no64bit 0
 Name:		wine
-Version:	1.3.15
-Release:	3%{?dist}
+Version:	1.3.16
+Release:	1%{?dist}
 Summary:	A Windows 16/32/64 bit emulator
 
 Group:		Applications/Emulators
@@ -12,7 +12,6 @@ Source1:	wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
 Source5:        wine-64.conf
-Source6:        wine-chooser.sh
 # desktop stuff
 Source100:      wine-notepad.desktop
 Source101:      wine-regedit.desktop
@@ -32,21 +31,15 @@ Source201:      wine.directory
 # mime types
 Source300:      wine-mime-msi.desktop
 
-Patch1:         wine-rpath.patch
-
 Patch200:       wine-imagemagick-6.5.patch
 
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.10.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.16.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
 Source402:      README-FEDORA-PULSEAUDIO
-
-# enhancements
-# add wine-gecko support
-Patch1000:      wine-gecko.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -174,6 +167,9 @@ Obsoletes:      wine <= 0.9.15-1%{?dist}
 Obsoletes:      wine-arts < 0.9.34
 Obsoletes:      wine-tools <= 1.1.27
 Provides:       wine-tools = %{version}-%{release}
+# removed as of 1.3.16
+Obsoletes:      wine-nas <= 1.3.15
+Provides:       wine-nas = %{version}-%{release}
 # require -common so we get wine.inf (#528335)
 Requires:       wine-common = %{version}-%{release}
 # fix dns resolution (#492700)
@@ -194,7 +190,6 @@ Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
 %endif
-
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -346,14 +341,6 @@ Requires: jack-audio-connection-kit(x86-64)
 %description jack
 JACK sound support for wine
 
-%package nas
-Summary: NAS sound support for wine
-Group: System Environment/Libraries
-Requires: wine-core = %{version}-%{release}
-
-%description nas
-NAS sound support for wine
-
 %package ldap
 Summary: LDAP support for wine
 Group: System Environment/Libraries
@@ -433,7 +420,7 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
-%patch1 -b .rpath
+#%patch1 -b .rpath
 %patch200 -b .imagemagick
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
@@ -457,7 +444,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
         --enable-maintainer-mode \
 	--disable-tests
 
-%{__make} TARGETFLAGS="" #%{?_smp_mflags}
+%{__make} TARGETFLAGS="" %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -668,9 +655,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %post jack -p /sbin/ldconfig
 %postun jack -p /sbin/ldconfig
-
-%post nas -p /sbin/ldconfig
-%postun nas -p /sbin/ldconfig
 
 %post ldap -p /sbin/ldconfig
 %postun ldap -p /sbin/ldconfig
@@ -935,6 +919,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msi.dll.so
 %{_libdir}/wine/msimtf.dll.so
 %{_libdir}/wine/msimg32.dll.so
+%{_libdir}/wine/msimsg.dll.so
 %{_libdir}/wine/msisip.dll.so
 %{_libdir}/wine/msisys.ocx.so
 %{_libdir}/wine/msnet32.dll.so
@@ -1051,7 +1036,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wer.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/windowscodecs.dll.so
-%{_libdir}/wine/winecoreaudio.drv.so
 %{_libdir}/wine/winegstreamer.dll.so
 %{_libdir}/wine/winejoystick.drv.so
 %{_libdir}/wine/winemapi.dll.so
@@ -1267,11 +1251,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %defattr(-,root,root,-)
 %{_libdir}/wine/winejack.drv.so
 
-# nas subpackage
-%files nas
-%defattr(-,root,root,-)
-%{_libdir}/wine/winenas.drv.so
-
 # ldap subpackage
 %files ldap
 %defattr(-,root,root,-)
@@ -1344,6 +1323,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Mar 18 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.16-1
+- version upgrade
+- cleanup unneeded patches
+- drop some patches
+- reenable smp build
+
 * Thu Mar 17 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.15-3
 - reenable fonts
