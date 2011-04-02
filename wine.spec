@@ -1,14 +1,14 @@
-%define no64bit 0
-Name:		wine
-Version:	1.3.16
-Release:	1%{?dist}
-Summary:	A Windows 16/32/64 bit emulator
+%global no64bit 0
+Name:           wine
+Version:        1.3.17
+Release:        1%{?dist}
+Summary:        A Windows 16/32/64 bit emulator
 
-Group:		Applications/Emulators
-License:	LGPLv2+
-URL:		http://www.winehq.org/
+Group:          Applications/Emulators
+License:        LGPLv2+
+URL:            http://www.winehq.org/
 Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}.tar.bz2
-Source1:	wine.init
+Source1:        wine.init
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
 Source5:        wine-64.conf
@@ -160,7 +160,7 @@ wine-* sub packages.
 
 %package core
 Summary:        Wine core package
-Group:		Applications/Emulators
+Group:          Applications/Emulators
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Obsoletes:      wine <= 0.9.15-1%{?dist}
@@ -312,7 +312,7 @@ Requires:      fontpackages-filesystem
 
 %package common
 Summary:        Common files
-Group:		Applications/Emulators
+Group:          Applications/Emulators
 Requires:       wine-core = %{version}-%{release}
 BuildArch:      noarch
 
@@ -442,7 +442,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 	--enable-win64 \
 %endif
         --enable-maintainer-mode \
-	--disable-tests
+        --disable-tests
 
 %{__make} TARGETFLAGS="" %{?_smp_mflags}
 
@@ -450,11 +450,11 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 rm -rf %{buildroot}
 
 %makeinstall \
-	includedir=%{buildroot}%{_includedir}/wine \
-	sysconfdir=%{buildroot}%{_sysconfdir}/wine \
-	dlldir=%{buildroot}%{_libdir}/wine \
-	LDCONFIG=/bin/true \
-	UPDATE_DESKTOP_DATABASE=/bin/true
+        includedir=%{buildroot}%{_includedir}/wine \
+        sysconfdir=%{buildroot}%{_sysconfdir}/wine \
+        dlldir=%{buildroot}%{_libdir}/wine \
+        LDCONFIG=/bin/true \
+        UPDATE_DESKTOP_DATABASE=/bin/true
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
 
@@ -923,6 +923,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msisip.dll.so
 %{_libdir}/wine/msisys.ocx.so
 %{_libdir}/wine/msnet32.dll.so
+%{_libdir}/wine/mspatcha.dll.so
 %{_libdir}/wine/mssign32.dll.so
 %{_libdir}/wine/mssip32.dll.so
 %{_libdir}/wine/msrle32.dll.so
@@ -1323,6 +1324,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Apr 02 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.17-1
+- version upgrade
+
 * Fri Mar 18 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.16-1
 - version upgrade
