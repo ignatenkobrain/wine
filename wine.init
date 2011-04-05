@@ -7,9 +7,12 @@
 # description: Allow users to run Windows(tm) applications by just clicking \
 #	       on them (or typing ./file.exe)
 ### BEGIN INIT INFO
+# Provides: wine-binfmt
+# Required-Start:
+# Required-Stop:
 # Default-Start:  2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: start and stop wine binary handler
+# Short-Description: Add and remove wine binary handler
 # Description: Allow users to run Windows(tm) applications by just clicking
 #              on them (or typing ./file.exe)
 ### END INIT INFO
@@ -67,6 +70,10 @@ case "$1" in
 		stop
 		start
 		;;
+	reload)
+		stop
+		start
+		;;
 	condrestart|try-restart)
 	
 		if [ -e /proc/sys/fs/binfmt_misc/windows ]; then
@@ -75,7 +82,7 @@ case "$1" in
 		fi
 		;;
 	*)
-		echo $"Usage: $prog {start|stop|status|restart|try-restart}"
+		echo $"Usage: $prog {start|stop|status|restart|reload|try-restart}"
 		exit 1
 esac
 exit $RETVAL

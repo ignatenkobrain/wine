@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
 Version:        1.3.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -9,6 +9,7 @@ License:        LGPLv2+
 URL:            http://www.winehq.org/
 Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}.tar.bz2
 Source1:        wine.init
+Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
 Source5:        wine-64.conf
@@ -36,10 +37,17 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.16.patch
+Patch400:       winepulse-configure.ac-1.3.16.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
-Source402:      README-FEDORA-PULSEAUDIO
+Source402:      wine-README-fedora-pulseaudio
+
+
+# smooth tahoma (#693180)
+# disable embedded bitmaps
+Source501:      wine-tahoma.conf
+# and provide a readme
+Source502:      wine-README-tahoma
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -101,7 +109,7 @@ BuildRequires:  gstreamer-devel gstreamer-plugins-base-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  prelink
 BuildRequires:  gettext-devel
-
+BuildRequires:  chrpath
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
@@ -163,8 +171,8 @@ Summary:        Wine core package
 Group:          Applications/Emulators
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-Obsoletes:      wine <= 0.9.15-1%{?dist}
 Obsoletes:      wine-arts < 0.9.34
+Provides:       wine-arts = %{version}-%{release}
 Obsoletes:      wine-tools <= 1.1.27
 Provides:       wine-tools = %{version}-%{release}
 # removed as of 1.3.16
@@ -203,9 +211,28 @@ Requires:       wine-core(x86-64) = %{version}-%{release}
 Requires:       wine-core(x86-32) = %{version}-%{release}
 %endif
 
-
 %description wow
 %{summary}
+
+%if 0%{?fedora} >= 15
+%package systemd
+Summary:        Systemd config for the wine binfmt handler
+Group:          Applications/Emulators
+Requires:       systemd >= 23
+BuildArch:      noarch
+
+%description systemd
+Register the wine binary handler for windows executables via systemd binfmt
+handling. See man binfmt.d for further information.
+
+%package sysvinit
+Summary:        SysV initscript for the wine binfmt handler
+Group:          Applications/Emulators
+BuildArch:      noarch
+
+%description sysvinit
+Register the wine binary handler for windows executables via SysV init files.
+%endif
 
 %package desktop
 Summary:        Desktop integration features for wine
@@ -216,6 +243,9 @@ Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): desktop-file-utils >= 0.8
 Requires:       wine-core(x86-32) = %{version}-%{release}
 Requires:       wine-common = %{version}-%{release}
+%if 0%{?fedora} >= 15
+Requires:       wine-systemd = %{version}-%{release}
+%endif
 Requires:       hicolor-icon-theme
 BuildArch:      noarch
 
@@ -389,7 +419,8 @@ Requires: wine-core = %{version}-%{release}
 
 %description pulseaudio
 This package adds a native pulseaudio driver for wine. This is not an official
-wine audio driver. Please do not report bugs regarding this driver at winehq.org.
+wine audio driver. Please do not report bugs regarding this driver at
+winehq.org.
 
 %package alsa
 Summary: Alsa support for wine
@@ -420,7 +451,6 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
-#%patch1 -b .rpath
 %patch200 -b .imagemagick
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
@@ -434,15 +464,15 @@ autoreconf
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 %configure \
-	--sysconfdir=%{_sysconfdir}/wine \
-	--x-includes=%{_includedir} --x-libraries=%{_libdir} \
-	--with-pulse \
-        --with-x \
+ --sysconfdir=%{_sysconfdir}/wine \
+ --x-includes=%{_includedir} --x-libraries=%{_libdir} \
+ --with-pulse \
+ --with-x \
 %ifarch x86_64
-	--enable-win64 \
+ --enable-win64 \
 %endif
-        --enable-maintainer-mode \
-        --disable-tests
+ --enable-maintainer-mode \
+ --disable-tests
 
 %{__make} TARGETFLAGS="" %{?_smp_mflags}
 
@@ -456,11 +486,25 @@ rm -rf %{buildroot}
         LDCONFIG=/bin/true \
         UPDATE_DESKTOP_DATABASE=/bin/true
 
+# remove rpath
+chrpath --delete %{buildroot}%{_bindir}/wmc
+chrpath --delete %{buildroot}%{_bindir}/wrc
+chrpath --delete %{buildroot}%{_bindir}/wineserver
+%ifarch x86_64
+chrpath --delete %{buildroot}%{_bindir}/wine64
+%else
+chrpath --delete %{buildroot}%{_bindir}/wine
+%endif
+
 mkdir -p %{buildroot}%{_sysconfdir}/wine
 
 # Allow users to launch Windows programs by just clicking on the .exe file...
 mkdir -p %{buildroot}%{_initrddir}
 install -p -c -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/wine
+%if 0%{?fedora} >= 15
+mkdir -p %{buildroot}%{_sysconfdir}/binfmt.d/
+install -p -c -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/binfmt.d/wine.conf
+%endif
 
 # add wine dir to desktop
 mkdir -p %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged
@@ -578,8 +622,10 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE300}
 
-
-cp %{SOURCE3} README-Fedora
+# deploy pulseaudio readme
+cp %{SOURCE3} README-FEDORA
+cp %{SOURCE402} README-FEDORA-PulseAudio
+cp %{SOURCE502} README-tahoma
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 
@@ -591,8 +637,6 @@ install -p -m644 %{SOURCE4} %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 install -p -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 %endif
 
-# deploy pulseaudio readme
-cp %{SOURCE402} .
 
 # install fonts
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-courier-fonts
@@ -618,27 +662,59 @@ mv %{buildroot}/%{_datadir}/wine/fonts/tahoma* %{buildroot}/%{_datadir}/fonts/wi
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/symbol.ttf %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts/
 
+# add config and readme for tahoma
+install -m 0755 -d %{buildroot}%{_fontconfig_templatedir} \
+                   %{buildroot}%{_fontconfig_confdir}
+install -p -m 0644 %{SOURCE501} %{buildroot}%{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf
+
+ln -s %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf \
+      %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
+
+# clean readme files
+pushd documentation
+for lang in it hu sv es pt pt_br;
+do iconv -f iso8859-1 -t utf-8 README.$lang > \
+ README.$lang.conv && mv -f README.$lang.conv README.$lang
+done;
+popd
 
 %clean
 rm -rf %{buildroot}
 
-%post core -p /sbin/ldconfig
-%postun core -p /sbin/ldconfig
-
-%post desktop
-update-desktop-database &>/dev/null || :
-if [ $1 = 1 ]; then
+%if 0%{?fedora} >= 15
+%post sysvinit
+if [ $1 -eq 1 ]; then
 /sbin/chkconfig --add wine
 /sbin/chkconfig --level 2345 wine on
 /sbin/service wine start &>/dev/null || :
 fi
+
+%preun sysvinit
+if [ $1 -eq 0 ]; then
+/sbin/service wine stop >/dev/null 2>&1
+/sbin/chkconfig --del wine
+fi
+
+%post desktop
+update-desktop-database &>/dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
-%preun desktop
-if [ $1 = 0 ]; then
-	/sbin/service wine stop >/dev/null 2>&1
-	/sbin/chkconfig --del wine
+%else
+%post desktop
+update-desktop-database &>/dev/null || :
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+if [ $1 -eq 1 ]; then
+/sbin/chkconfig --add wine
+/sbin/chkconfig --level 2345 wine on
+/sbin/service wine start &>/dev/null || :
 fi
+
+%preun desktop
+if [ $1 -eq 0 ]; then
+/sbin/service wine stop >/dev/null 2>&1
+/sbin/chkconfig --del wine
+fi
+%endif
 
 %postun desktop
 update-desktop-database &>/dev/null || :
@@ -649,6 +725,9 @@ fi
 
 %posttrans desktop
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
+%post core -p /sbin/ldconfig
+%postun core -p /sbin/ldconfig
 
 %post esd -p /sbin/ldconfig
 %postun esd -p /sbin/ldconfig
@@ -701,7 +780,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc LICENSE
 %doc LICENSE.OLD
 %doc AUTHORS
-%doc README-Fedora
+%doc README-FEDORA
 %doc README
 %doc VERSION
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
@@ -728,13 +807,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %ifarch %{ix86}
 %{_bindir}/wine
 %{_bindir}/wine-preloader
-%{_sysconfdir}/ld.so.conf.d/wine-32.conf
+%config %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 %endif
 
 %ifarch x86_64
 %{_bindir}/wine64
 %{_bindir}/wine64-preloader
-%{_sysconfdir}/ld.so.conf.d/wine-64.conf
+%config %{_sysconfdir}/ld.so.conf.d/wine-64.conf
 %endif
 
 %dir %{_libdir}/wine
@@ -1201,8 +1280,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/fonts/wine-small-fonts
 
 %files marlett-fonts
-%doc COPYING.LIB
 %defattr(-,root,root,-)
+%doc COPYING.LIB
 %{_datadir}/fonts/wine-marlett-fonts
 
 %files ms-sans-serif-fonts
@@ -1212,8 +1291,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files tahoma-fonts
 %defattr(-,root,root,-)
-%doc COPYING.LIB
+%doc COPYING.LIB README-tahoma
 %{_datadir}/fonts/wine-tahoma-fonts
+%{_fontconfig_confdir}/20-wine-tahoma*conf
+%{_fontconfig_templatedir}/20-wine-tahoma*conf
 
 %files symbol-fonts
 %defattr(-,root,root,-)
@@ -1235,12 +1316,21 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/applications/fedora-wine-wordpad.desktop
 %{_datadir}/applications/fedora-wine-oleview.desktop
 %{_datadir}/desktop-directories/Wine.directory
-%{_sysconfdir}/xdg/menus/applications-merged/wine.menu
-%{_initrddir}/wine
-
+%config %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %if 0%{?fedora} >= 10
 %{_datadir}/icons/hicolor/scalable/apps/*svg
 %endif
+
+%if 0%{?fedora} >= 15
+%files systemd
+%defattr(0644,root,root)
+%config %{_sysconfdir}/binfmt.d/wine.conf
+
+%files sysvinit
+%defattr(0755,root,root)
+%endif
+%{_initrddir}/wine
+
 
 # esd subpackage
 %files esd
@@ -1306,7 +1396,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files pulseaudio
 %defattr(-,root,root,-)
 # winepulse documentation
-%doc README-FEDORA-PULSEAUDIO
+%doc README-FEDORA-PulseAudio
 %{_libdir}/wine/winepulse.drv.so
 
 %files alsa
@@ -1324,6 +1414,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Apr 05 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.17-2
+- cleanup spec file
+- remove rpath via chrpath
+- convert README files to utf8
+- move SysV init script so sysvinit subpackage (>=f15)
+- add some missing lsb keywords to init file
+- create systemd subpackage and require it in the wine-desktop package (>=f15)
+- disable embedded bitmaps in tahoma (#693180)
+- provide readme how to disable wine-tahoma in fontconfig (#693180)
+
 * Sat Apr 02 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.17-1
 - version upgrade
@@ -2134,7 +2235,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 20050930-3
 - add desktop files
 - revisit summary and description
-- consistant use of %{buildroot}
+- consistant use of %%{buildroot}
 
 * Sat Oct 22 2005 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 20050930-2
@@ -2218,7 +2319,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Wed Feb 18 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040213-1fc1
 - Update to 20040213
-- Moved Wine dlls back to %{_libdir}/wine rather than %{_libdir}/wine/wine
+- Moved Wine dlls back to %%{_libdir}/wine rather than %%{_libdir}/wine/wine
 
 * Sun Jan 25 2004 Vincent Béron <vberon@mecano.gme.usherb.ca> 20040121-fc1
 - Update to 20040121
@@ -2328,7 +2429,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Thu Jul 26 2001 Bernhard Rosenkraenzer <bero@redhat.com> 20010726-1
 - Fix -devel package group (#49989)
 - remove internal CVS files
-- chkconfig deletion should be in %preun, not %postun
+- chkconfig deletion should be in %%preun, not %%postun
 - rename initscript ("Starting windows:" at startup does look off)
 
 * Thu May 03 2001 Bernhard Rosenkraenzer <bero@redhat.com> 20010503-1
@@ -2356,7 +2457,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Update
 - Restore wine's ability to use a global config file, it was removed
   in CVS for whatever reason
-- Move libraries to %{_libdir}/wine to prevent conflicts with libuser
+- Move libraries to %%{_libdir}/wine to prevent conflicts with libuser
   (Bug #24202)
 - Move include files to /usr/include/wine to prevent it from messing with
   some autoconf scripts (some broken scripts assume they're running on windoze
@@ -2370,7 +2471,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Mon Nov 20 2000 Bernhard Rosenkraenzer <bero@redhat.com>
 - Update CVS
 - Add a new (user) group wine that can write to the "C: drive"
-  %{_datadir}/wine-c
+  %%{_datadir}/wine-c
 - Fix up winedbg installation (registry entries)
 - Add "Program Files/Common Files" subdirectory to the "C: drive", it's
   referenced in the registry
@@ -2424,8 +2525,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Fix up the default wine.conf file (We really don't want it to look
   for CD-ROMs in /cdrom!)
 - create a "root filesystem" with everything required to run wine without
-  windows in %{_datadir}/wine-c (drive c:)
-- add RedHat file in /usr/doc/wine-%{version} explaining the new directory
+  windows in %%{_datadir}/wine-c (drive c:)
+- add RedHat file in /usr/doc/wine-%%{version} explaining the new directory
   layout
 - wine-devel requires wine
 
