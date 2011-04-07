@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
 Version:        1.3.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -48,6 +48,8 @@ Source402:      wine-README-fedora-pulseaudio
 Source501:      wine-tahoma.conf
 # and provide a readme
 Source502:      wine-README-tahoma
+
+Patch1000:      msi_fix_empty_property_followed_by_non-empty_property.diff
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -455,6 +457,7 @@ This package adds an openal driver for wine.
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
 %patch402 -p1 -b .winepulse
+%patch1000 -p1 -b .officemsi
 
 autoreconf
 
@@ -1414,6 +1417,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Apr 07 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.17-3
+- add fix for office installation (upstream #26650)
+
 * Tue Apr 05 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.17-2
 - cleanup spec file
