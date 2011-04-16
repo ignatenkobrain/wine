@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.17
-Release:        3%{?dist}
+Version:        1.3.18
+Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -48,8 +48,6 @@ Source402:      wine-README-fedora-pulseaudio
 Source501:      wine-tahoma.conf
 # and provide a readme
 Source502:      wine-README-tahoma
-
-Patch1000:      msi_fix_empty_property_followed_by_non-empty_property.diff
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -457,7 +455,6 @@ This package adds an openal driver for wine.
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
 %patch402 -p1 -b .winepulse
-%patch1000 -p1 -b .officemsi
 
 autoreconf
 
@@ -1013,6 +1010,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msvcirt.dll.so
 %{_libdir}/wine/msvcp80.dll.so
 %{_libdir}/wine/msvcp90.dll.so
+%{_libdir}/wine/msvcp100.dll.so
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcr80.dll.so
@@ -1076,6 +1074,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/rtutils.dll.so
 %{_libdir}/wine/samlib.dll.so
 %{_libdir}/wine/sc.exe.so
+%{_libdir}/wine/scarddlg.dll.so
 %{_libdir}/wine/sccbase.dll.so
 %{_libdir}/wine/schannel.dll.so
 %{_libdir}/wine/secur32.dll.so
@@ -1113,6 +1112,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/usp10.dll.so
 %{_libdir}/wine/uxtheme.dll.so
 %{_libdir}/wine/userenv.dll.so
+%{_libdir}/wine/vcomp.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/wbemprox.dll.so
@@ -1417,6 +1417,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Apr 16 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.18-1
+- version upgrade
+
 * Thu Apr 07 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.17-3
 - add fix for office installation (upstream #26650)
