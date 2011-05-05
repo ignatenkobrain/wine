@@ -98,7 +98,10 @@ BuildRequires:  cups-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXi-devel
 BuildRequires:  libXcursor-devel
-BuildRequires:  dbus-devel hal-devel
+BuildRequires:  dbus-devel
+%if !0%{?fedora} >= 16
+BuildRequires:  hal-devel
+%endif
 BuildRequires:  gnutls-devel
 BuildRequires:  pulseaudio-libs-devel
 BuildRequires:  gsm-devel
@@ -1410,6 +1413,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - 1.3.19-1
 - version upgrade (#701003)
 - remove wine-oss
+- disable hal (>=f16)
 
 * Sat Apr 16 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.18-1
