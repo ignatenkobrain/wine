@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.18
+Version:        1.3.19
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -37,7 +37,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       winepulse-configure.ac-1.3.16.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.19.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
 Source402:      wine-README-fedora-pulseaudio
@@ -175,6 +175,9 @@ Obsoletes:      wine-arts < 0.9.34
 Provides:       wine-arts = %{version}-%{release}
 Obsoletes:      wine-tools <= 1.1.27
 Provides:       wine-tools = %{version}-%{release}
+# removed as of 1.3.19 (we don't support oss4)
+Obsoletes:      wine-oss <= 1.3.18
+Provides:       wine-oss = %{version}-%{release}
 # removed as of 1.3.16
 Obsoletes:      wine-nas <= 1.3.15
 Provides:       wine-nas = %{version}-%{release}
@@ -429,14 +432,6 @@ Requires: wine-core = %{version}-%{release}
 
 %description alsa
 This package adds an alsa driver for wine.
-
-%package oss
-Summary: OSS support for wine
-Group: System Environment/Libraries
-Requires: wine-core = %{version}-%{release}
-
-%description oss
-This package adds an oss driver for wine.
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %package openal
@@ -753,9 +748,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %post alsa -p /sbin/ldconfig
 %postun alsa -p /sbin/ldconfig
 
-%post oss -p /sbin/ldconfig
-%postun oss -p /sbin/ldconfig
-
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %post openal -p /sbin/ldconfig
 %postun openal -p /sbin/ldconfig
@@ -1008,6 +1000,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
+%{_libdir}/wine/msvcp60.dll.so
 %{_libdir}/wine/msvcp80.dll.so
 %{_libdir}/wine/msvcp90.dll.so
 %{_libdir}/wine/msvcp100.dll.so
@@ -1406,10 +1399,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %defattr(-,root,root,-)
 %{_libdir}/wine/winealsa.drv.so
 
-%files oss
-%defattr(-,root,root,-)
-%{_libdir}/wine/wineoss.drv.so
-
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %files openal
 %defattr(-,root,root,-)
@@ -1417,6 +1406,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Apr 30 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.19-1
+- version upgrade (#701003)
+- remove wine-oss
+
 * Sat Apr 16 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.18-1
 - version upgrade
