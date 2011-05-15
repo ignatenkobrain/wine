@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.19
+Version:        1.3.20
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -37,7 +37,7 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.19.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.20.patch
 Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
 Source402:      wine-README-fedora-pulseaudio
@@ -1001,6 +1001,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
 %{_libdir}/wine/msvcp60.dll.so
+%{_libdir}/wine/msvcp70.dll.so
+%{_libdir}/wine/msvcp71.dll.so
 %{_libdir}/wine/msvcp80.dll.so
 %{_libdir}/wine/msvcp90.dll.so
 %{_libdir}/wine/msvcp100.dll.so
@@ -1406,6 +1408,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun May 15 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.20-1
+- version upgrade
+
 * Sat Apr 30 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.19-1
 - version upgrade (#701003)
