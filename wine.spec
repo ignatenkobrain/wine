@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.20
+Version:        1.3.21
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -816,6 +816,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
+%{_libdir}/wine/hostname.exe.so
 %{_libdir}/wine/ipconfig.exe.so
 %{_libdir}/wine/winhlp32.exe.so
 %{_libdir}/wine/mshta.exe.so
@@ -1059,6 +1060,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/query.dll.so
 %{_libdir}/wine/rasapi32.dll.so
 %{_libdir}/wine/rasdlg.dll.so
+%{_libdir}/wine/regapi.dll.so
 %{_libdir}/wine/resutils.dll.so
 %{_libdir}/wine/riched20.dll.so
 %{_libdir}/wine/riched32.dll.so
@@ -1124,6 +1126,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/winmm.dll.so
 %{_libdir}/wine/winnls32.dll.so
 %{_libdir}/wine/winspool.drv.so
+%{_libdir}/wine/winsta.dll.so
 %{_libdir}/wine/wmi.dll.so
 %{_libdir}/wine/wmic.exe.so
 %{_libdir}/wine/wmiutils.dll.so
@@ -1408,6 +1411,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat May 28 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.21-1
+- version upgrade
+
 * Sun May 15 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.20-1
 - version upgrade
