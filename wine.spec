@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.21
+Version:        1.3.22
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -1260,6 +1260,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %lang(fr) %{_mandir}/fr.UTF-8/man1/wineserver.1*
 %lang(de) %{_mandir}/de.UTF-8/man1/wine.1*
 %lang(de) %{_mandir}/de.UTF-8/man1/wineserver.1*
+%lang(pl) %{_mandir}/pl.UTF-8/man1/wine.1*
 %{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/l_intl.nls
@@ -1414,6 +1415,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jun 12 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.22-1
+- version upgrade
+
 * Sat May 28 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.21-1
 - version upgrade
