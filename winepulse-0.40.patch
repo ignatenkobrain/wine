@@ -16,10 +16,10 @@ index 0000000..a6fdbf8
 +@MAKE_DLL_RULES@
 diff --git a/dlls/winepulse.drv/pulse.c b/dlls/winepulse.drv/pulse.c
 new file mode 100644
-index 0000000..9dd1f80
+index 0000000..04676a6
 --- /dev/null
 +++ b/dlls/winepulse.drv/pulse.c
-@@ -0,0 +1,805 @@
+@@ -0,0 +1,880 @@
 +/*
 + * Wine Driver for PulseAudio
 + * http://pulseaudio.org/
@@ -263,6 +263,81 @@ index 0000000..9dd1f80
 +}
 +
 +/**************************************************************************
++ * Win32 threaded mainloop implementation
++ *************************************************************************/
++
++static int poll_func(struct pollfd *ufds, unsigned long nfds, int timeout, void *userdata) {
++    int r;
++
++    PULSE_MainloopUnlock();
++    r = poll(ufds, nfds, timeout);
++    PULSE_MainloopLock();
++
++    return r;
++}
++
++static DWORD CALLBACK PULSE_Mainloop(LPVOID lpParam) {
++    TRACE("Mainloop thread started\n");
++
++    pa_mainloop_set_poll_func(PULSE_ml, poll_func, NULL);
++
++    PULSE_MainloopLock();
++    pa_mainloop_run(PULSE_ml, NULL);
++    PULSE_MainloopUnlock();
++
++    return 0;
++}
++
++void PULSE_MainloopStart(void) {
++    TRACE("Mainloop starting\n");
++
++    PULSE_ml_hEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
++    PULSE_ml_hMutex = CreateMutexW(NULL, FALSE, NULL);
++    PULSE_ml_hThread = CreateThread(NULL, 0, PULSE_Mainloop, NULL, 0, NULL);
++
++    TRACE("Mainloop started\n");
++}
++
++void PULSE_MainloopStop(void) {
++    TRACE("Mainloop stopping\n");
++
++    PULSE_MainloopLock();
++    pa_mainloop_quit(PULSE_ml, 0);
++    PULSE_MainloopUnlock();
++
++    WaitForSingleObject(PULSE_ml_hThread, INFINITE);
++    CloseHandle(PULSE_ml_hThread);
++    CloseHandle(PULSE_ml_hEvent);
++    CloseHandle(PULSE_ml_hMutex);
++
++    TRACE("Mainloop stopped\n");
++}
++
++void PULSE_MainloopLock(void) {
++    DWORD res = WaitForSingleObject(PULSE_ml_hMutex, INFINITE);
++    if (res != WAIT_OBJECT_0)
++        ERR("PULSE_MainloopLock mutex acquire failed: 0x%x\n", res);
++}
++
++void PULSE_MainloopUnlock(void) {
++    if (!ReleaseMutex(PULSE_ml_hMutex))
++        ERR("PULSE_MainloopUnlock mutex release failed\n");
++}
++
++void PULSE_MainloopWait(void) {
++    DWORD res = SignalObjectAndWait(PULSE_ml_hMutex, PULSE_ml_hEvent, INFINITE, FALSE);
++    if (res != WAIT_OBJECT_0)
++        ERR("PULSE_MainloopWait failed: 0x%x\n", res);
++
++    PULSE_MainloopLock();
++}
++
++void PULSE_MainloopSignal(void) {
++    if (!PulseEvent(PULSE_ml_hEvent))
++        ERR("PULSE_MainloopSignal failed\n");
++}
++
++/**************************************************************************
 + * Utility Functions
 + *************************************************************************/
 +
@@ -403,7 +478,7 @@ index 0000000..9dd1f80
 +    for (;;) {
 +        if (pa_operation_get_state(o) != PA_OPERATION_RUNNING)
 +            break;
-+        pa_threaded_mainloop_wait(PULSE_ml);
++        PULSE_MainloopWait();
 +    }
 +    pa_operation_unref(o);
 +}
@@ -460,7 +535,7 @@ index 0000000..9dd1f80
 +
 +    TRACE("Underrun occurred.\n");
 +
-+    if (wwo->hThread != INVALID_HANDLE_VALUE && wwo->msgRing.ring_buffer_size > 0);
++    if (wwo->hThread != INVALID_HANDLE_VALUE && wwo->msgRing.ring_buffer_size > 0)
 +        PULSE_AddRingMessage(&wwo->msgRing, WINE_WM_XRUN, 0, FALSE);
 +}
 +
@@ -500,7 +575,7 @@ index 0000000..9dd1f80
 +        case PA_STREAM_CREATING:
 +            return;
 +    }
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    PULSE_MainloopSignal();
 +}
 +
 +/**************************************************************************
@@ -510,7 +585,7 @@ index 0000000..9dd1f80
 +    if (!success)
 +        WARN("Stream %p operation failed: %s\n", userdata, pa_strerror(pa_context_errno(PULSE_context)));
 +
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    PULSE_MainloopSignal();
 +}
 +
 +/**************************************************************************
@@ -518,7 +593,7 @@ index 0000000..9dd1f80
 + */
 +void PULSE_ContextSuccessCallback(pa_context *c, int success, void *userdata) {
 +    if (!success) ERR("Context operation failed: %s\n", pa_strerror(pa_context_errno(c)));
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    PULSE_MainloopSignal();
 +}
 +
 +/**************************************************************************
@@ -540,12 +615,12 @@ index 0000000..9dd1f80
 +
 +        case PA_CONTEXT_READY:
 +        case PA_CONTEXT_TERMINATED:
-+            pa_threaded_mainloop_signal(PULSE_ml, 0);
++            PULSE_MainloopSignal();
 +            break;
 +
 +        case PA_CONTEXT_FAILED:
 +            ERR("Context failed: %s\n", pa_strerror(pa_context_errno(c)));
-+            pa_threaded_mainloop_signal(PULSE_ml, 0);
++            PULSE_MainloopSignal();
 +            break;
 +    }
 +}
@@ -658,7 +733,7 @@ index 0000000..9dd1f80
 +    if (!eol && i)
 +        PULSE_AllocateWaveinDevice(i->name, i->name, i->description, &i->volume);
 +
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    PULSE_MainloopSignal();
 +}
 +
 +/**************************************************************************
@@ -669,14 +744,14 @@ index 0000000..9dd1f80
 +    if (!eol && i)
 +        PULSE_AllocateWaveoutDevice(i->name, i->name, i->description, &i->volume);
 +
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    PULSE_MainloopSignal();
 +}
 +
 +/**************************************************************************
 + *                  PULSE_ContextNotifyCallback                 [internal]
 + */
 +static void PULSE_ContextNotifyCallback(pa_context *c, void *userdata) {
-+    pa_threaded_mainloop_signal(PULSE_ml, 0);
++    PULSE_MainloopSignal();
 +}
 +
 +/**************************************************************************
@@ -690,7 +765,7 @@ index 0000000..9dd1f80
 +    TRACE("()\n");
 +    if (!PULSE_ml) return DRV_FAILURE;
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    /* device_name is allocated with pa_xstrdup, free with pa_xfree */
 +    for (x = 0; x < PULSE_WodNumDevs; x++) pa_xfree(WOutDev[x].device_name);
 +    for (x = 0; x < PULSE_WidNumDevs; x++) pa_xfree(WInDev[x].device_name);
@@ -703,9 +778,9 @@ index 0000000..9dd1f80
 +        PULSE_context = NULL;
 +    }
 +
-+    pa_threaded_mainloop_unlock(PULSE_ml);
-+    pa_threaded_mainloop_stop(PULSE_ml);
-+    pa_threaded_mainloop_free(PULSE_ml);
++    PULSE_MainloopUnlock();
++    PULSE_MainloopStop();
++    pa_mainloop_free(PULSE_ml);
 +    PULSE_ml = NULL;
 +
 +    return DRV_SUCCESS;
@@ -730,7 +805,7 @@ index 0000000..9dd1f80
 +    PULSE_context = NULL;
 +    PULSE_ml = NULL;
 +
-+    if (!(PULSE_ml = pa_threaded_mainloop_new())) {
++    if (!(PULSE_ml = pa_mainloop_new())) {
 +        ERR("Failed to create mainloop object.");
 +        return DRV_FAILURE;
 +    }
@@ -750,14 +825,14 @@ index 0000000..9dd1f80
 +
 +    TRACE("App name is \"%s\"\n", app_name);
 +
-+    pa_threaded_mainloop_start(PULSE_ml);
-+    PULSE_context = pa_context_new(pa_threaded_mainloop_get_api(PULSE_ml), app_name);
++    PULSE_MainloopStart();
++    PULSE_context = pa_context_new(pa_mainloop_get_api(PULSE_ml), app_name);
 +    assert(PULSE_context);
 +    pa_xfree(app_name);
 +
 +    pa_context_set_state_callback(PULSE_context, PULSE_ContextStateCallback, NULL);
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +
 +    TRACE("libpulse protocol version: %u. API Version %u\n", pa_context_get_protocol_version(PULSE_context), PA_API_VERSION);
 +    if (pa_context_connect(PULSE_context, NULL, 0, NULL) < 0)
@@ -773,7 +848,7 @@ index 0000000..9dd1f80
 +        if (state == PA_CONTEXT_READY)
 +            break;
 +
-+        pa_threaded_mainloop_wait(PULSE_ml);
++        PULSE_MainloopWait();
 +    }
 +
 +    TRACE("Connected to server %s with protocol version: %i.\n",
@@ -789,12 +864,12 @@ index 0000000..9dd1f80
 +    PULSE_WaitForOperation(pa_context_get_source_info_list(PULSE_context, PULSE_SourceInfoCallback, &PULSE_WidNumDevs));
 +    TRACE("Found %u output and %u input device(s).\n", PULSE_WodNumDevs - 1, PULSE_WidNumDevs - 1);
 +
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +
 +    return DRV_SUCCESS;
 +
 +fail:
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +    /* Only warn, because if we failed wine may still choose the next driver */
 +    WARN("Failed to connect to server\n");
 +    return DRV_FAILURE;
@@ -827,7 +902,7 @@ index 0000000..9dd1f80
 +}
 diff --git a/dlls/winepulse.drv/wavein.c b/dlls/winepulse.drv/wavein.c
 new file mode 100644
-index 0000000..af721b9
+index 0000000..82bff06
 --- /dev/null
 +++ b/dlls/winepulse.drv/wavein.c
 @@ -0,0 +1,589 @@
@@ -913,9 +988,9 @@ index 0000000..af721b9
 +    /* Get this value once and trust it. Note that the total available is made
 +     * of one _or more_ fragments. These fragments will probably not align with
 +     * the wavehdr buffer sizes. */
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    bytes_avail = pa_stream_readable_size(wwi->stream);
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +
 +    if (bytes_avail == -1) {
 +        ERR("pa_stream_readable_size() returned -1, record stream has failed.\n");
@@ -930,9 +1005,9 @@ index 0000000..af721b9
 +        size_t peek_avail;
 +
 +        if (!wwi->buffer) {
-+            pa_threaded_mainloop_lock(PULSE_ml);
++            PULSE_MainloopLock();
 +            pa_stream_peek(wwi->stream, &wwi->buffer, &wwi->buffer_length);
-+            pa_threaded_mainloop_unlock(PULSE_ml);
++            PULSE_MainloopUnlock();
 +            wwi->buffer_read_offset = 0;
 +
 +            if (!wwi->buffer || !wwi->buffer_length) {
@@ -960,10 +1035,10 @@ index 0000000..af721b9
 +        }
 +
 +        if (wwi->buffer_read_offset == wwi->buffer_length) {
-+            pa_threaded_mainloop_lock(PULSE_ml);
++            PULSE_MainloopLock();
 +            pa_stream_drop(wwi->stream);
 +            wwi->buffer = NULL;
-+            pa_threaded_mainloop_unlock(PULSE_ml);
++            PULSE_MainloopUnlock();
 +        }
 +    } /* for(bytes_avail && lpWaveHdr) */
 +
@@ -988,9 +1063,9 @@ index 0000000..af721b9
 +
 +        case WINE_WM_STARTING:
 +            wwi->dwLastReset = wwi->timing_info->read_index;
-+            pa_threaded_mainloop_lock(PULSE_ml);
++            PULSE_MainloopLock();
 +            PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 0, PULSE_StreamSuccessCallback, NULL));
-+            pa_threaded_mainloop_unlock(PULSE_ml);
++            PULSE_MainloopUnlock();
 +            wwi->state = WINE_WS_PLAYING;
 +            SetEvent(ev);
 +            break;
@@ -1009,13 +1084,13 @@ index 0000000..af721b9
 +        case WINE_WM_STOPPING:
 +            if (wwi->state != WINE_WS_STOPPED) {
 +                wwi->state = WINE_WS_STOPPED;
-+                pa_threaded_mainloop_lock(PULSE_ml);
++                PULSE_MainloopLock();
 +                PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 1, PULSE_StreamSuccessCallback, NULL));
 +                if (wwi->buffer) {
 +                    pa_stream_drop(wwi->stream);
 +                    wwi->buffer = NULL;
 +                }
-+                pa_threaded_mainloop_unlock(PULSE_ml);
++                PULSE_MainloopUnlock();
 +
 +                /* return only the current buffer to app */
 +                if ((lpWaveHdr = wwi->lpQueuePtr)) {
@@ -1033,13 +1108,13 @@ index 0000000..af721b9
 +        case WINE_WM_RESETTING:
 +            if (wwi->state != WINE_WS_STOPPED) {
 +                wwi->state = WINE_WS_STOPPED;
-+                pa_threaded_mainloop_lock(PULSE_ml);
++                PULSE_MainloopLock();
 +                PULSE_WaitForOperation(pa_stream_cork(wwi->stream, 1, PULSE_StreamSuccessCallback, NULL));
 +                if (wwi->buffer) {
 +                    pa_stream_drop(wwi->stream);
 +                    wwi->buffer = NULL;
 +                }
-+                pa_threaded_mainloop_unlock(PULSE_ml);
++                PULSE_MainloopUnlock();
 +            }
 +
 +            /* return all the buffers to the app */
@@ -1149,7 +1224,7 @@ index 0000000..af721b9
 +    wwi->buffer_attr.maxlength = (uint32_t)-1;
 +    wwi->buffer_attr.fragsize = pa_bytes_per_second(&wwi->sample_spec) / 100;
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    TRACE("Asking to open %s for recording.\n", wdi->device_name);
 +    pa_stream_connect_record(wwi->stream, wdi->device_name, &wwi->buffer_attr,
 +                             PA_STREAM_START_CORKED |
@@ -1164,14 +1239,14 @@ index 0000000..af721b9
 +            sstate == PA_STREAM_FAILED || sstate == PA_STREAM_TERMINATED) {
 +            ERR("Failed to connect context object: %s\n", pa_strerror(pa_context_errno(PULSE_context)));
 +                ret = MMSYSERR_NODRIVER;
-+                pa_threaded_mainloop_unlock(PULSE_ml);
++                PULSE_MainloopUnlock();
 +                goto exit;
 +            }
 +
 +            if (sstate == PA_STREAM_READY)
 +                break;
 +
-+            pa_threaded_mainloop_wait(PULSE_ml);
++            PULSE_MainloopWait();
 +        }
 +    TRACE("(%p)->stream connected for recording.\n", wwi);
 +
@@ -1179,7 +1254,7 @@ index 0000000..af721b9
 +
 +    wwi->timing_info = pa_stream_get_timing_info(wwi->stream);
 +    assert(wwi->timing_info);
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +
 +    wwi->hStartUpEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
 +    wwi->hThread = CreateThread(NULL, 0, widRecorder, (LPVOID)wwi, 0, &(wwi->dwThreadID));
@@ -1236,11 +1311,11 @@ index 0000000..af721b9
 +            return WAVERR_STILLPLAYING;
 +        }
 +
-+        pa_threaded_mainloop_lock(PULSE_ml);
++        PULSE_MainloopLock();
 +        if (pa_stream_get_state(wwi->stream) == PA_STREAM_READY)
 +            pa_stream_drop(wwi->stream);
 +            pa_stream_disconnect(wwi->stream);
-+        pa_threaded_mainloop_unlock(PULSE_ml);
++        PULSE_MainloopUnlock();
 +
 +        if (wwi->hThread != INVALID_HANDLE_VALUE)
 +            PULSE_AddRingMessage(&wwi->msgRing, WINE_WM_CLOSING, 0, TRUE);
@@ -1422,7 +1497,7 @@ index 0000000..af721b9
 +#endif /* HAVE_PULSEAUDIO */
 diff --git a/dlls/winepulse.drv/waveout.c b/dlls/winepulse.drv/waveout.c
 new file mode 100644
-index 0000000..99b7c18
+index 0000000..3f52c83
 --- /dev/null
 +++ b/dlls/winepulse.drv/waveout.c
 @@ -0,0 +1,1029 @@
@@ -1508,7 +1583,7 @@ index 0000000..99b7c18
 +    if (!eol && i) {
 +        for (wwo->volume.channels = 0; wwo->volume.channels != i->volume.channels; wwo->volume.channels++)
 +            wwo->volume.values[wwo->volume.channels] = i->volume.values[wwo->volume.channels];
-+        pa_threaded_mainloop_signal(PULSE_ml, 0);
++        PULSE_MainloopSignal();
 +    }
 +}
 +
@@ -1611,7 +1686,7 @@ index 0000000..99b7c18
 +    LPWAVEHDR lpWaveHdr;
 +
 +    if (wwo->buffer_attr.tlength == -1) {
-+        pa_threaded_mainloop_lock(PULSE_ml);
++        PULSE_MainloopLock();
 +        if (!wwo->timing_info->playing) {
 +
 +            /* Calculate how large a buffer the application has made so far */
@@ -1631,7 +1706,7 @@ index 0000000..99b7c18
 +	    TRACE("Triggering stream and hoping for the best\n");
 +	    PULSE_WaitForOperation(pa_stream_trigger(wwo->stream, PULSE_StreamSuccessCallback, wwo));
 +        }
-+        pa_threaded_mainloop_unlock(PULSE_ml);
++        PULSE_MainloopUnlock();
 +    }
 +}
 +
@@ -1717,7 +1792,7 @@ index 0000000..99b7c18
 +        pa_stream_get_state(wwo->stream) != PA_STREAM_READY)
 +        return;
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    /* Feed from a partial wavehdr */
 +    if (wwo->lpPlayPtr && wwo->dwPartialOffset != 0)
 +        wodPlayer_WriteMax(wwo, &space);
@@ -1729,7 +1804,7 @@ index 0000000..99b7c18
 +        } while (wodPlayer_WriteMax(wwo, &space) && wwo->lpPlayPtr && space > 0);
 +    }
 +
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +}
 +
 +/**************************************************************************
@@ -1760,7 +1835,7 @@ index 0000000..99b7c18
 +        return;
 +    }
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +
 +    /* Flush the output buffer of written data*/
 +    PULSE_WaitForOperation(pa_stream_flush(wwo->stream, PULSE_StreamSuccessCallback, NULL));
@@ -1785,7 +1860,7 @@ index 0000000..99b7c18
 +    PULSE_ResetRingMessage(&wwo->msgRing);
 +    LeaveCriticalSection(&wwo->msgRing.msg_crst);
 +
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +}
 +
 +/**************************************************************************
@@ -1801,12 +1876,12 @@ index 0000000..99b7c18
 +
 +    t = wwo->timing_info;
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +
 +    time = pa_bytes_to_usec(t->read_index, &wwo->sample_spec);
 +    if (t->read_index_corrupt) {
 +        WARN("Read index corrupt?!\n");
-+        pa_threaded_mainloop_unlock(PULSE_ml);
++        PULSE_MainloopUnlock();
 +        return time;
 +    }
 +
@@ -1824,7 +1899,7 @@ index 0000000..99b7c18
 +    /* No queued buffer shows an underrun, so we lie */
 +    if (!wwo->lpQueuePtr) time = temp;
 +
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +
 +    return time;
 +}
@@ -1844,21 +1919,21 @@ index 0000000..99b7c18
 +        switch (msg) {
 +        case WINE_WM_PAUSING:
 +            wwo->state = WINE_WS_PAUSED;
-+            pa_threaded_mainloop_lock(PULSE_ml);
++            PULSE_MainloopLock();
 +            PULSE_WaitForOperation(pa_stream_cork(wwo->stream, 1, PULSE_StreamSuccessCallback, wwo));
-+            pa_threaded_mainloop_unlock(PULSE_ml);
++            PULSE_MainloopUnlock();
 +            SetEvent(ev);
 +            break;
 +
 +        case WINE_WM_RESTARTING:
 +            if (wwo->state == WINE_WS_PAUSED) {
 +                wwo->state = WINE_WS_PLAYING;
-+                pa_threaded_mainloop_lock(PULSE_ml);
++                PULSE_MainloopLock();
 +                PULSE_WaitForOperation(pa_stream_cork(wwo->stream, 0, PULSE_StreamSuccessCallback, wwo));
 +                /* If the serverside buffer was near full before pausing, we
 +                 * need to have space to write soon, so force playback start */
 +                PULSE_WaitForOperation(pa_stream_trigger(wwo->stream, PULSE_StreamSuccessCallback, wwo));
-+                pa_threaded_mainloop_unlock(PULSE_ml);
++                PULSE_MainloopUnlock();
 +            }
 +            SetEvent(ev);
 +            break;
@@ -2042,7 +2117,7 @@ index 0000000..99b7c18
 +
 +    /* Try and connect */
 +    TRACE("Connecting stream for playback on %s.\n", wdo->device_name);
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    pa_stream_connect_playback(wwo->stream, wdo->device_name, &wwo->buffer_attr, PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_ADJUST_LATENCY, NULL, NULL);
 +
 +    /* Wait for connection */
@@ -2053,7 +2128,7 @@ index 0000000..99b7c18
 +        if (cstate == PA_CONTEXT_FAILED || cstate == PA_CONTEXT_TERMINATED ||
 +            sstate == PA_STREAM_FAILED || sstate == PA_STREAM_TERMINATED) {
 +            ERR("Failed to connect stream context object: %s\n", pa_strerror(pa_context_errno(PULSE_context)));
-+            pa_threaded_mainloop_unlock(PULSE_ml);
++            PULSE_MainloopUnlock();
 +            ret = MMSYSERR_NODRIVER;
 +            goto exit;
 +        }
@@ -2061,7 +2136,7 @@ index 0000000..99b7c18
 +        if (sstate == PA_STREAM_READY)
 +            break;
 +
-+        pa_threaded_mainloop_wait(PULSE_ml);
++        PULSE_MainloopWait();
 +    }
 +    TRACE("(%p)->stream connected for playback.\n", wwo);
 +
@@ -2069,7 +2144,7 @@ index 0000000..99b7c18
 +    PULSE_WaitForOperation(pa_stream_update_timing_info(wwo->stream, PULSE_StreamSuccessCallback, wwo));
 +    wwo->timing_info = pa_stream_get_timing_info(wwo->stream);
 +    assert(wwo->timing_info);
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +
 +    /* Create and start the wodPlayer() thread to manage playback */
 +    wwo->hStartUpEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
@@ -2126,10 +2201,10 @@ index 0000000..99b7c18
 +            return WAVERR_STILLPLAYING;
 +        }
 +
-+        pa_threaded_mainloop_lock(PULSE_ml);
++        PULSE_MainloopLock();
 +        PULSE_WaitForOperation(pa_stream_drain(wwo->stream, PULSE_StreamSuccessCallback, NULL));
 +        pa_stream_disconnect(wwo->stream);
-+        pa_threaded_mainloop_unlock(PULSE_ml);
++        PULSE_MainloopUnlock();
 +
 +        if (wwo->hThread != INVALID_HANDLE_VALUE)
 +            PULSE_AddRingMessage(&wwo->msgRing, WINE_WM_CLOSING, 0, TRUE);
@@ -2262,12 +2337,12 @@ index 0000000..99b7c18
 +    if (lpdwVol == NULL)
 +        return MMSYSERR_NOTENABLED;
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    if (wwo->stream && PULSE_context && pa_context_get_state(PULSE_context) == PA_CONTEXT_READY &&
 +        pa_stream_get_state(wwo->stream) == PA_STREAM_READY) {
 +        PULSE_WaitForOperation(pa_context_get_sink_input_info(PULSE_context, pa_stream_get_index(wwo->stream), WAVEOUT_SinkInputInfoCallback, wwo));
 +    }
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +
 +
 +    if (wwo->volume.channels == 2) {
@@ -2322,17 +2397,17 @@ index 0000000..99b7c18
 +        TRACE("%s\n", s);
 +    }
 +
-+    pa_threaded_mainloop_lock(PULSE_ml);
++    PULSE_MainloopLock();
 +    if (!wwo->stream || !PULSE_context || pa_context_get_state(PULSE_context) != PA_CONTEXT_READY ||
 +        pa_stream_get_state(wwo->stream) != PA_STREAM_READY || !pa_cvolume_valid(&wwo->volume)) {
-+        pa_threaded_mainloop_unlock(PULSE_ml);
++        PULSE_MainloopUnlock();
 +        return MMSYSERR_NOERROR;
 +    }
 +
 +    PULSE_WaitForOperation(pa_context_set_sink_input_volume(PULSE_context,
 +            pa_stream_get_index(wwo->stream), &wwo->volume,
 +            PULSE_ContextSuccessCallback, wwo));
-+    pa_threaded_mainloop_unlock(PULSE_ml);
++    PULSE_MainloopUnlock();
 +    return MMSYSERR_NOERROR;
 +}
 +
@@ -2466,10 +2541,10 @@ index 0000000..1b49460
 +@ stdcall -private widMessage(long long long long long long) PULSE_widMessage
 diff --git a/dlls/winepulse.drv/winepulse.h b/dlls/winepulse.drv/winepulse.h
 new file mode 100644
-index 0000000..b83de5d
+index 0000000..30eacfd
 --- /dev/null
 +++ b/dlls/winepulse.drv/winepulse.h
-@@ -0,0 +1,197 @@
+@@ -0,0 +1,210 @@
 +/* Definitions for PulseAudio Wine Driver
 + *
 + * Copyright    2009 Arthur Taylor <theycallhimart@gmail.com>
@@ -2634,7 +2709,12 @@ index 0000000..b83de5d
 +
 +/* We establish one context per instance, so make it global to the lib */
 +pa_context              *PULSE_context;   /* Connection Context */
-+pa_threaded_mainloop    *PULSE_ml;        /* PA Runtime information */
++pa_mainloop             *PULSE_ml;        /* PA Runtime information */
++
++/* Win32 mainloop handles */
++HANDLE                  PULSE_ml_hThread;
++HANDLE                  PULSE_ml_hEvent;
++HANDLE                  PULSE_ml_hMutex;
 +
 +/* WaveIn / WaveOut devices */
 +WINE_WAVEDEV *WOutDev;
@@ -2655,6 +2735,14 @@ index 0000000..b83de5d
 +void    PULSE_WaitForOperation(pa_operation *o);
 +BOOL    PULSE_SetupFormat(LPWAVEFORMATEX wf, pa_sample_spec *ss);
 +HRESULT PULSE_UsecToMMTime(pa_usec_t time, LPMMTIME lpTime, const pa_sample_spec *ss);
++
++/* pulse.c: Win32 Mainloop */
++void    PULSE_MainloopStart(void);
++void    PULSE_MainloopStop(void);
++void    PULSE_MainloopLock(void);
++void    PULSE_MainloopUnlock(void);
++void    PULSE_MainloopWait(void);
++void    PULSE_MainloopSignal(void);
 +
 +/* pulse.c: Message Ring */
 +int     PULSE_InitRingMessage(PULSE_MSG_RING* omr);

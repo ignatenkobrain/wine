@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.22
+Version:        1.3.23
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -25,6 +25,10 @@ Source107:      wine-wineboot.desktop
 Source108:      wine-wordpad.desktop
 Source109:      wine-oleview.desktop
 
+# wine bugs
+# 27375 gcc optimization problem
+Patch100:       wine-gcc46mshtml.patch
+
 # desktop dir
 Source200:      wine.menu
 Source201:      wine.directory
@@ -37,8 +41,8 @@ Patch200:       wine-imagemagick-6.5.patch
 # explain how to use wine with pulseaudio
 # see http://bugs.winehq.org/show_bug.cgi?id=10495
 # and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.20.patch
-Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.39.patch
+Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.22.patch
+Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.40.patch
 Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
 Source402:      wine-README-fedora-pulseaudio
 
@@ -449,6 +453,7 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
+%patch100 -p1 -b .gcc46
 %patch200 -b .imagemagick
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
@@ -460,7 +465,9 @@ autoreconf
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
+
 export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
@@ -1112,6 +1119,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/usp10.dll.so
 %{_libdir}/wine/uxtheme.dll.so
 %{_libdir}/wine/userenv.dll.so
+%{_libdir}/wine/vbscript.dll.so
 %{_libdir}/wine/vcomp.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
@@ -1415,6 +1423,16 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jun 26 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.23-1
+- version upgrade
+- winepulse upgrade (0.40)
+- fix gcc optimization problem (rhbz#710352, winehq#27375)
+
+* Tue Jun 21 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.22-2
+- workaround gcc optimization problem (rhbz#710352)
+
 * Sun Jun 12 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.22-1
 - version upgrade
