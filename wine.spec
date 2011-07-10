@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.23
+Version:        1.3.24
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -8,6 +8,7 @@ Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
 Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}.tar.bz2
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2.sign
 Source1:        wine.init
 Source2:        wine.systemd
 Source3:        wine-README-Fedora
@@ -26,8 +27,6 @@ Source108:      wine-wordpad.desktop
 Source109:      wine-oleview.desktop
 
 # wine bugs
-# 27375 gcc optimization problem
-Patch100:       wine-gcc46mshtml.patch
 
 # desktop dir
 Source200:      wine.menu
@@ -453,7 +452,6 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
-%patch100 -p1 -b .gcc46
 %patch200 -b .imagemagick
 %patch400 -p1 -b .winepulse
 %patch401 -p1 -b .winepulse
@@ -1423,6 +1421,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jul 10 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.24-1
+- version upgrade
+- add sign as source10
+- drop mshtml patch (upstream)
+
 * Sun Jun 26 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.23-1
 - version upgrade
