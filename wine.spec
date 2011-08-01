@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.24
+Version:        1.3.25
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -37,14 +37,20 @@ Source300:      wine-mime-msi.desktop
 
 Patch200:       wine-imagemagick-6.5.patch
 
-# explain how to use wine with pulseaudio
-# see http://bugs.winehq.org/show_bug.cgi?id=10495
-# and http://art.ified.ca/?page_id=40
-Patch400:       http://art.ified.ca/downloads/winepulse/winepulse-configure.ac-1.3.22.patch
-Patch401:       http://art.ified.ca/downloads/winepulse/winepulse-0.40.patch
-Patch402:       http://art.ified.ca/downloads/winepulse/winepulse-winecfg-1.3.11.patch
-Source402:      wine-README-fedora-pulseaudio
+# pull pulse parts from Maarten Lankhorst multimedia repository
+# http://repo.or.cz/w/wine/multimedia.git
+Patch400:       wine-pulseaudio-configure.patch
+Source401:      dlls_winepulse.drv_Makefile.in
+Source402:      dlls_winepulse.drv_mmdevdrv.c
+Source403:      dlls_winepulse.drv_winepulse.drv
 
+# add udisks support
+# https://bugzilla.redhat.com/show_bug.cgi?id=712755
+# http://bugs.winehq.org/show_bug.cgi?id=21713
+# http://source.winehq.org/patches/data/76788
+# http://source.winehq.org/patches/data/76787
+Patch410:       wine-udisks1.patch
+Patch411:       wine-udisks2.patch
 
 # smooth tahoma (#693180)
 # disable embedded bitmaps
@@ -66,7 +72,6 @@ BuildRequires:  autoconf
 BuildRequires:  desktop-file-utils
 BuildRequires:  alsa-lib-devel
 BuildRequires:  audiofile-devel
-BuildRequires:  esound-devel
 BuildRequires:  freeglut-devel
 BuildRequires:  lcms-devel
 BuildRequires:  libieee1284-devel
@@ -84,7 +89,6 @@ BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
 BuildRequires:  fontforge freetype-devel
 BuildRequires:  libgphoto2-devel
-BuildRequires:  jack-audio-connection-kit-devel
 # #217338
 BuildRequires:  isdn4k-utils-devel
 # modular x
@@ -181,6 +185,11 @@ Obsoletes:      wine-arts < 0.9.34
 Provides:       wine-arts = %{version}-%{release}
 Obsoletes:      wine-tools <= 1.1.27
 Provides:       wine-tools = %{version}-%{release}
+# removed as of 1.3.25 (new sound api)
+Obsoletes:      wine-esd <= 1.3.24
+Provides:       wine-esd = %{version}-%{release}
+Obsoletes:      wine-jack <= 1.3.24
+Provides:       wine-jack = %{version}-%{release}
 # removed as of 1.3.19 (we don't support oss4)
 Obsoletes:      wine-oss <= 1.3.18
 Provides:       wine-oss = %{version}-%{release}
@@ -358,28 +367,6 @@ BuildArch:      noarch
 %description common
 Common wine files and scripts.
 
-%package esd
-Summary: ESD sound support for wine
-Group: System Environment/Libraries
-Requires: wine-core = %{version}-%{release}
-
-%description esd
-ESD sound support for wine
-
-%package jack
-Summary: JACK sound support for wine
-Group: System Environment/Libraries
-Requires: wine-core = %{version}-%{release}
-%ifarch %{ix86}
-Requires: jack-audio-connection-kit(x86-32)
-%endif
-%ifarch x86_64
-Requires: jack-audio-connection-kit(x86-64)
-%endif
-
-%description jack
-JACK sound support for wine
-
 %package ldap
 Summary: LDAP support for wine
 Group: System Environment/Libraries
@@ -452,10 +439,17 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
+%patch400 -p1 -b .winepulse-configure
+mkdir -p dlls/winepulse.drv
+cp -p %{SOURCE401} dlls/winepulse.drv/Makefile.in
+cp -p %{SOURCE402} dlls/winepulse.drv/mmdevdrv.c
+cp -p %{SOURCE403} dlls/winepulse.drv/winepulse.drv.spec
+
 %patch200 -b .imagemagick
-%patch400 -p1 -b .winepulse
-%patch401 -p1 -b .winepulse
-%patch402 -p1 -b .winepulse
+
+%patch410 -p1 -b .mountmgr
+%patch411 -p1 -b .mountmgr
+
 
 autoreconf
 
@@ -471,6 +465,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
  --with-pulse \
  --with-x \
+ --without-xinput2 \
 %ifarch x86_64
  --enable-win64 \
 %endif
@@ -627,7 +622,6 @@ desktop-file-install \
 
 # deploy pulseaudio readme
 cp %{SOURCE3} README-FEDORA
-cp %{SOURCE402} README-FEDORA-PulseAudio
 cp %{SOURCE502} README-tahoma
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
@@ -731,12 +725,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %post core -p /sbin/ldconfig
 %postun core -p /sbin/ldconfig
-
-%post esd -p /sbin/ldconfig
-%postun esd -p /sbin/ldconfig
-
-%post jack -p /sbin/ldconfig
-%postun jack -p /sbin/ldconfig
 
 %post ldap -p /sbin/ldconfig
 %postun ldap -p /sbin/ldconfig
@@ -1342,17 +1330,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 %{_initrddir}/wine
 
-
-# esd subpackage
-%files esd
-%defattr(-,root,root,-)
-%{_libdir}/wine/wineesd.drv.so
-
-# jack subpackage
-%files jack
-%defattr(-,root,root,-)
-%{_libdir}/wine/winejack.drv.so
-
 # ldap subpackage
 %files ldap
 %defattr(-,root,root,-)
@@ -1406,8 +1383,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files pulseaudio
 %defattr(-,root,root,-)
-# winepulse documentation
-%doc README-FEDORA-PulseAudio
 %{_libdir}/wine/winepulse.drv.so
 
 %files alsa
@@ -1421,6 +1396,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Jul 22 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.25-1
+- version upgrade
+- remove -jack and -esd (retired upstream)
+- rebase to Maarten Lankhorst's winepulse
+- drop obsolete winepulse readme
+- add udisks support from pending patches (winehq#21713, rhbz#712755)
+- disable xinput2 (broken)
+
 * Sun Jul 10 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.24-1
 - version upgrade
