@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.25
-Release:        1%{?dist}
+Version:        1.3.26
+Release:        2%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -37,20 +37,11 @@ Source300:      wine-mime-msi.desktop
 
 Patch200:       wine-imagemagick-6.5.patch
 
-# pull pulse parts from Maarten Lankhorst multimedia repository
-# http://repo.or.cz/w/wine/multimedia.git
-Patch400:       wine-pulseaudio-configure.patch
-Source401:      dlls_winepulse.drv_Makefile.in
-Source402:      dlls_winepulse.drv_mmdevdrv.c
-Source403:      dlls_winepulse.drv_winepulse.drv
-
 # add udisks support
 # https://bugzilla.redhat.com/show_bug.cgi?id=712755
 # http://bugs.winehq.org/show_bug.cgi?id=21713
-# http://source.winehq.org/patches/data/76788
-# http://source.winehq.org/patches/data/76787
+# http://source.winehq.org/patches/data/77534
 Patch410:       wine-udisks1.patch
-Patch411:       wine-udisks2.patch
 
 # smooth tahoma (#693180)
 # disable embedded bitmaps
@@ -412,11 +403,16 @@ with the Wine Windows(TM) emulation libraries.
 Summary: Pulseaudio support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
+%ifarch %{ix86}
+Requires: alsa-plugins-pulseaudio(x86-32)
+%endif
+%ifarch x86_64
+Requires: alsa-plugins-pulseaudio(x86-64)
+%endif
 
 %description pulseaudio
-This package adds a native pulseaudio driver for wine. This is not an official
-wine audio driver. Please do not report bugs regarding this driver at
-winehq.org.
+This package pulse in the alsa pulseaudio backend to allow for pulse playback
+over alsa.
 
 %package alsa
 Summary: Alsa support for wine
@@ -439,17 +435,9 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
-%patch400 -p1 -b .winepulse-configure
-mkdir -p dlls/winepulse.drv
-cp -p %{SOURCE401} dlls/winepulse.drv/Makefile.in
-cp -p %{SOURCE402} dlls/winepulse.drv/mmdevdrv.c
-cp -p %{SOURCE403} dlls/winepulse.drv/winepulse.drv.spec
-
 %patch200 -b .imagemagick
 
 %patch410 -p1 -b .mountmgr
-%patch411 -p1 -b .mountmgr
-
 
 autoreconf
 
@@ -620,8 +608,8 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE300}
 
-# deploy pulseaudio readme
 cp %{SOURCE3} README-FEDORA
+
 cp %{SOURCE502} README-tahoma
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
@@ -737,9 +725,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %post capi -p /sbin/ldconfig
 %postun capi -p /sbin/ldconfig
-
-%post pulseaudio -p /sbin/ldconfig
-%postun pulseaudio -p /sbin/ldconfig
 
 %post alsa -p /sbin/ldconfig
 %postun alsa -p /sbin/ldconfig
@@ -936,6 +921,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/iccvid.dll.so
 %{_libdir}/wine/icinfo.exe.so
 %{_libdir}/wine/icmp.dll.so
+%{_libdir}/wine/ieframe.dll.so
 %{_libdir}/wine/imaadp32.acm.so
 %{_libdir}/wine/imagehlp.dll.so
 %{_libdir}/wine/imm32.dll.so
@@ -1134,6 +1120,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wlanapi.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
 %{_libdir}/wine/ws2_32.dll.so
+%{_libdir}/wine/wshom.ocx.so
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
 %{_libdir}/wine/wuapi.dll.so
@@ -1383,7 +1370,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files pulseaudio
 %defattr(-,root,root,-)
-%{_libdir}/wine/winepulse.drv.so
+# empty meta package for deps
 
 %files alsa
 %defattr(-,root,root,-)
@@ -1396,6 +1383,16 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Aug 22 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.26-2
+- drop pulse patches
+- make pulseaudio package meta and require alsa pa plugin
+- update udisks patch
+
+* Sun Aug 07 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.26-1
+- version upgrade
+
 * Fri Jul 22 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.25-1
 - version upgrade
