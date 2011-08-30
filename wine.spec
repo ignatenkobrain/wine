@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.26
-Release:        3%{?dist}
+Version:        1.3.27
+Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -114,9 +114,6 @@ BuildRequires:  chrpath
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
-%endif
-
-%if 0%{?fedora} >= 10
 BuildRequires:  icoutils
 %endif
 
@@ -1030,6 +1027,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/pidgen.dll.so
 %{_libdir}/wine/powrprof.dll.so
+%{_libdir}/wine/presentationfontcache.exe.so
 %{_libdir}/wine/printui.dll.so
 %{_libdir}/wine/propsys.dll.so
 %{_libdir}/wine/psapi.dll.so
@@ -1383,6 +1381,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Aug 29 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.27-1
+- version upgrade
+- fix epel build (rhbz#733802)
+
 * Tue Aug 23 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.26-3
 - drop pulse configure option
