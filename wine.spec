@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.27
+Version:        1.3.28
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -401,9 +401,11 @@ Summary: Pulseaudio support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 %ifarch %{ix86}
+Requires: wine-alsa = %{version}-%{release}
 Requires: alsa-plugins-pulseaudio(x86-32)
 %endif
 %ifarch x86_64
+Requires: wine-alsa = %{version}-%{release}
 Requires: alsa-plugins-pulseaudio(x86-64)
 %endif
 
@@ -805,6 +807,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/oleview.exe.so
 %{_libdir}/wine/ping.exe.so
 %{_libdir}/wine/reg.exe.so
+%{_libdir}/wine/regasm.exe.so
 %{_libdir}/wine/regedit.exe.so
 %{_libdir}/wine/regsvcs.exe.so
 %{_libdir}/wine/regsvr32.exe.so
@@ -815,6 +818,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/services.exe.so
 %{_libdir}/wine/start.exe.so
 %{_libdir}/wine/termsv.exe.so
+%{_libdir}/wine/view.exe.so
 %{_libdir}/wine/winebrowser.exe.so
 %{_libdir}/wine/wineconsole.exe.so
 %{_libdir}/wine/winemenubuilder.exe.so
@@ -1139,6 +1143,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/xinput1_3.dll.so
 %{_libdir}/wine/xinput9_1_0.dll.so
 %{_libdir}/wine/xmllite.dll.so
+%{_libdir}/wine/xolehlp.dll.so
 
 # 16 bit and other non 64bit stuff
 %ifnarch x86_64
@@ -1381,6 +1386,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Sep 11 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.28-1
+- version upgrade
+- require -alsa from -pulseaudio package for new sound api
+
 * Mon Aug 29 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.27-1
 - version upgrade
