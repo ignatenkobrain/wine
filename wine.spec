@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.29
+Version:        1.3.30
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -1386,6 +1386,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Oct 10 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.30-1
+- version upgrade
+
 * Sat Sep 24 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.29-1
 - version upgrade
