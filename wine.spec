@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.30
+Version:        1.3.31
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -952,6 +952,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mciwave.dll.so
 %{_libdir}/wine/midimap.dll.so
 %{_libdir}/wine/mlang.dll.so
+%{_libdir}/wine/mmcndmgr.dll.so
 %{_libdir}/wine/mmdevapi.dll.so
 %{_libdir}/wine/mofcomp.exe.so
 %{_libdir}/wine/mountmgr.sys.so
@@ -1386,6 +1387,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Oct 23 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.31-1
+- version upgrade
+
 * Mon Oct 10 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.30-1
 - version upgrade
