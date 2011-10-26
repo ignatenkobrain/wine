@@ -436,7 +436,7 @@ This package adds an openal driver for wine.
 
 %patch200 -b .imagemagick
 
-%patch410 -p1 -b .mountmgr
+#%patch410 -p1 -b .mountmgr
 
 autoreconf
 
