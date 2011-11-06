@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.31
+Version:        1.3.32
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -401,11 +401,11 @@ Summary: Pulseaudio support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
 %ifarch %{ix86}
-Requires: wine-alsa = %{version}-%{release}
+Requires: wine-alsa(x86-32) = %{version}-%{release}
 Requires: alsa-plugins-pulseaudio(x86-32)
 %endif
 %ifarch x86_64
-Requires: wine-alsa = %{version}-%{release}
+Requires: wine-alsa(x86-64) = %{version}-%{release}
 Requires: alsa-plugins-pulseaudio(x86-64)
 %endif
 
@@ -459,7 +459,8 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
  --enable-maintainer-mode \
  --disable-tests
 
-%{__make} TARGETFLAGS="" %{?_smp_mflags}
+# -32 disable smp flags again
+%{__make} TARGETFLAGS="" #%{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -834,6 +835,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
 %{_libdir}/wine/authz.dll.so
@@ -1387,6 +1389,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Nov 05 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.32-1
+- version upgrade (rhbz#745434)
+
+* Fri Nov 04 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.31-2
+- pull in correct wine-alsa arch in the pa meta package (rhbz#737431)
+
 * Sun Oct 23 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.31-1
 - version upgrade
