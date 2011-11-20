@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.32
+Version:        1.3.33
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -460,7 +460,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
  --disable-tests
 
 # -32 disable smp flags again
-%{__make} TARGETFLAGS="" #%{?_smp_mflags}
+%{__make} TARGETFLAGS="" %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -1060,6 +1060,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/sc.exe.so
 %{_libdir}/wine/scarddlg.dll.so
 %{_libdir}/wine/sccbase.dll.so
+%{_libdir}/wine/scrrun.dll.so
 %{_libdir}/wine/schannel.dll.so
 %{_libdir}/wine/secur32.dll.so
 %{_libdir}/wine/sensapi.dll.so
@@ -1389,6 +1390,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Nov 20 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.33-1
+- version upgrade(rhbz#755192)
+
 * Sat Nov 05 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.32-1
 - version upgrade (rhbz#745434)
