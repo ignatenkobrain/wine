@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.35
+Version:        1.3.36
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -794,6 +794,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/attrib.exe.so
 %{_libdir}/wine/aspnet_regiis.exe.so
 %{_libdir}/wine/cacls.exe.so
+%{_libdir}/wine/cscript.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
 %{_libdir}/wine/hostname.exe.so
@@ -875,6 +876,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/ddraw.dll.so
 %{_libdir}/wine/ddrawex.dll.so
 %{_libdir}/wine/devenum.dll.so
+%{_libdir}/wine/dhcpcsvc.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
 %{_libdir}/wine/dispex.dll.so
@@ -1389,6 +1391,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Dec 31 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.36-1
+- version upgrade
+
 * Mon Dec 19 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.35-1
 - version upgrade
