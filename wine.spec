@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.3.36
+Version:        1.3.37
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -9,12 +9,14 @@ License:        LGPLv2+
 URL:            http://www.winehq.org/
 Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}.tar.bz2
 Source10:       http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2.sign
+
 Source1:        wine.init
 Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source4:        wine-32.conf
 Source5:        wine-64.conf
-# desktop stuff
+
+# desktop files
 Source100:      wine-notepad.desktop
 Source101:      wine-regedit.desktop
 Source102:      wine-uninstaller.desktop
@@ -35,13 +37,6 @@ Source201:      wine.directory
 # mime types
 Source300:      wine-mime-msi.desktop
 
-Patch200:       wine-imagemagick-6.5.patch
-
-# add udisks support
-# https://bugzilla.redhat.com/show_bug.cgi?id=712755
-# http://bugs.winehq.org/show_bug.cgi?id=21713
-# http://source.winehq.org/patches/data/77534
-Patch410:       wine-udisks1.patch
 
 # smooth tahoma (#693180)
 # disable embedded bitmaps
@@ -433,12 +428,6 @@ This package adds an openal driver for wine.
 
 %prep
 %setup -q
-
-%patch200 -b .imagemagick
-
-#%patch410 -p1 -b .mountmgr
-
-autoreconf
 
 %build
 # disable fortify as it breaks wine
@@ -1033,6 +1022,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/olesvr32.dll.so
 %{_libdir}/wine/olethk32.dll.so
 %{_libdir}/wine/pdh.dll.so
+%{_libdir}/wine/photometadatahandler.dll.so
 %{_libdir}/wine/pidgen.dll.so
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/presentationfontcache.exe.so
@@ -1149,6 +1139,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/xinput9_1_0.dll.so
 %{_libdir}/wine/xmllite.dll.so
 %{_libdir}/wine/xolehlp.dll.so
+%{_libdir}/wine/xpsprint.dll.so
 
 # 16 bit and other non 64bit stuff
 %ifnarch x86_64
@@ -1391,6 +1382,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Jan 13 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.3.37-1
+- version upgrade
+- drop obsoleted patches
+
 * Sat Dec 31 2011 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.36-1
 - version upgrade
