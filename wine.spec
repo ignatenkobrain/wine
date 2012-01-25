@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
 Version:        1.3.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -47,9 +47,9 @@ Source502:      wine-README-tahoma
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if !%{?no64bit}
-ExclusiveArch:  %{ix86} x86_64
+ExclusiveArch:  %{ix86} x86_64 %{arm}
 %else
-ExclusiveArch:  %{ix86}
+ExclusiveArch:  %{ix86} %{arm}
 %endif
 
 BuildRequires:  bison
@@ -76,7 +76,10 @@ BuildRequires:  zlib-devel
 BuildRequires:  fontforge freetype-devel
 BuildRequires:  libgphoto2-devel
 # #217338
+# isdn has issues on ARM atm
+%ifnarch %{arm}
 BuildRequires:  isdn4k-utils-devel
+%endif
 # modular x
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
@@ -143,7 +146,7 @@ Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 %endif
 
 # 32bit only parts
-%ifarch %{ix86}
+%ifarch %{ix86} %{arm}
 Requires:      wine-wow(x86-32) = %{version}-%{release}
 %endif
 
@@ -199,6 +202,15 @@ Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
 %endif
+%ifarch %{arm}
+Requires:       freetype
+Requires:       nss-mdns
+# require Xrender isa on x86_64 (#510947)
+Requires:       libXrender
+# requireXcursor (#655255)
+Requires:       libXcursor
+Requires:       gnutls
+%endif
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -208,8 +220,12 @@ Summary:        Files for wine wow separation
 Group:          Applications/Emulators
 %ifarch x86_64
 Requires:       wine-core(x86-64) = %{version}-%{release}
-%else
+%endif
+%ifarch %{ix86}
 Requires:       wine-core(x86-32) = %{version}-%{release}
+%endif
+%ifarch %{arm}
+Requires:       wine-core = %{version}-%{release}
 %endif
 
 %description wow
@@ -402,6 +418,10 @@ Requires: alsa-plugins-pulseaudio(x86-32)
 %ifarch x86_64
 Requires: wine-alsa(x86-64) = %{version}-%{release}
 Requires: alsa-plugins-pulseaudio(x86-64)
+%endif
+%ifarch %{arm}
+Requires: wine-alsa = %{version}-%{release}
+Requires: alsa-plugins-pulseaudio
 %endif
 
 %description pulseaudio
@@ -602,7 +622,7 @@ cp %{SOURCE502} README-tahoma
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 
-%ifarch %{ix86}
+%ifarch %{ix86} %{arm}
 install -p -m644 %{SOURCE4} %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 %endif
 
@@ -728,7 +748,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files wow
 %defattr(-,root,root,-)
-%ifarch %{ix86}
+%ifarch %{ix86} %{arm}
 %{_bindir}/wine
 %endif
 %{_bindir}/wineserver
@@ -765,9 +785,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/write.exe.so
 %{_libdir}/wine/dxdiag.exe.so
 
-%ifarch %{ix86}
+%ifarch %{ix86} %{arm}
 %{_bindir}/wine
+%ifnarch %{arm}
 %{_bindir}/wine-preloader
+%endif
 %config %{_sysconfdir}/ld.so.conf.d/wine-32.conf
 %endif
 
@@ -1142,7 +1164,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/xpsprint.dll.so
 
 # 16 bit and other non 64bit stuff
-%ifnarch x86_64
+%ifnarch x86_64 %{arm}
 %{_libdir}/wine/winevdm.exe.so
 %{_libdir}/wine/ifsmgr.vxd.so
 %{_libdir}/wine/mmdevldr.vxd.so
@@ -1382,6 +1404,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Wed Jan 25 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.3.37-2
+- Add initial support for wine on ARM
+
 * Fri Jan 13 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.3.37-1
 - version upgrade
