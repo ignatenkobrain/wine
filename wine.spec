@@ -1,14 +1,14 @@
 %global no64bit 0
 Name:           wine
 Version:        1.4
-Release:        0.1.rc1%{?dist}
+Release:        0.2.rc2%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}-rc1.tar.bz2
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc1.tar.bz2.sign
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}-rc2.tar.bz2
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc2.tar.bz2.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -447,7 +447,7 @@ This package adds an openal driver for wine.
 %endif
 
 %prep
-%setup -q -n %{name}-%{version}-rc1
+%setup -q -n %{name}-%{version}-rc2
 
 %build
 # disable fortify as it breaks wine
@@ -1404,6 +1404,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Feb 02 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.4-0.2.rc2
+- version upgrade
+
 * Sat Jan 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.4-0.1.rc1
 - version upgrade
