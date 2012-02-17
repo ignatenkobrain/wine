@@ -63,6 +63,8 @@ BuildRequires:  lcms-devel
 BuildRequires:  libieee1284-devel
 BuildRequires:  libjpeg-devel
 BuildRequires:  libpng-devel
+BuildRequires:  librsvg2
+BuildRequires:  librsvg2-devel
 BuildRequires:  libstdc++-devel
 BuildRequires:  libusb-devel
 BuildRequires:  libxml2-devel
