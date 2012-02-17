@@ -121,7 +121,8 @@ BuildRequires:  icoutils
 Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-fonts = %{version}-%{release}
 
-# 32bit parts
+# x86-32 parts
+%ifarch %{ix86}
 Requires:       wine-core(x86-32) = %{version}-%{release}
 Requires:       wine-capi(x86-32) = %{version}-%{release}
 Requires:       wine-cms(x86-32) = %{version}-%{release}
@@ -130,9 +131,11 @@ Requires:       wine-twain(x86-32) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-openal(x86-32) = %{version}-%{release}
+Requires:       wine-wow(x86-32) = %{version}-%{release}
+%endif
 %endif
 
-# 64bit
+# x86-64 parts
 %ifarch x86_64
 Requires:       wine-core(x86-64) = %{version}-%{release}
 Requires:       wine-capi(x86-64) = %{version}-%{release}
@@ -147,9 +150,16 @@ Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 %endif
 
-# 32bit only parts
-%ifarch %{ix86} %{arm}
-Requires:      wine-wow(x86-32) = %{version}-%{release}
+# ARM parts
+%ifarch %{arm}
+Requires:       wine-core = %{version}-%{release}
+Requires:       wine-capi = %{version}-%{release}
+Requires:       wine-cms = %{version}-%{release}
+Requires:       wine-ldap = %{version}-%{release}
+Requires:       wine-twain = %{version}-%{release}
+Requires:       wine-pulseaudio = %{version}-%{release}
+Requires:       wine-openal = %{version}-%{release}
+Requires:       wine-wow = %{version}-%{release}
 %endif
 
 %description
@@ -191,15 +201,13 @@ Requires:       wine-common = %{version}-%{release}
 %ifarch %{ix86}
 Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
-# require Xrender isa on x86_64 (#510947)
-Requires:       libXrender(x86-32)
-# requireXcursor (#655255)
-Requires:       libXcursor(x86-32)
 Requires:       gnutls(x86-32)
+Requires:       libXrender(x86-32)
+Requires:       libXcursor(x86-32)
 %endif
 %ifarch x86_64
-Requires:       nss-mdns(x86-64)
 Requires:       freetype(x86-64)
+Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
@@ -207,11 +215,9 @@ Requires:       libXcursor(x86-64)
 %ifarch %{arm}
 Requires:       freetype
 Requires:       nss-mdns
-# require Xrender isa on x86_64 (#510947)
-Requires:       libXrender
-# requireXcursor (#655255)
-Requires:       libXcursor
 Requires:       gnutls
+Requires:       libXrender
+Requires:       libXcursor
 %endif
 
 %description core
@@ -260,7 +266,11 @@ Requires(post): /sbin/chkconfig, /sbin/service,
 Requires(post): desktop-file-utils >= 0.8
 Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): desktop-file-utils >= 0.8
+%ifarch %{arm}
+Requires:       wine-core = %{version}-%{release}
+%else
 Requires:       wine-core(x86-32) = %{version}-%{release}
+%endif
 Requires:       wine-common = %{version}-%{release}
 %if 0%{?fedora} >= 15
 Requires:       wine-systemd = %{version}-%{release}
@@ -285,9 +295,7 @@ Requires:      wine-tahoma-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
-%if 0%{?fedora} > 12
 Requires:      liberation-narrow-fonts
-%endif
 
 %description fonts
 %{summary}
@@ -474,7 +482,6 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 
 %install
 rm -rf %{buildroot}
-
 %makeinstall \
         includedir=%{buildroot}%{_includedir}/wine \
         sysconfdir=%{buildroot}%{_sysconfdir}/wine \
@@ -1406,6 +1413,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Feb 17 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.4-0.3.rc2
+- Fix architecture dependencies on ARM so it installs
+
 * Thu Feb 02 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.4-0.2.rc2
 - version upgrade
