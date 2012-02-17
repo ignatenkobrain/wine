@@ -122,7 +122,7 @@ Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-fonts = %{version}-%{release}
 
 # x86-32 parts
-%ifarch %{ix86}
+%ifarch %{ix86} x86_64
 Requires:       wine-core(x86-32) = %{version}-%{release}
 Requires:       wine-capi(x86-32) = %{version}-%{release}
 Requires:       wine-cms(x86-32) = %{version}-%{release}
@@ -196,8 +196,7 @@ Obsoletes:      wine-nas <= 1.3.15
 Provides:       wine-nas = %{version}-%{release}
 # require -common so we get wine.inf (#528335)
 Requires:       wine-common = %{version}-%{release}
-# fix dns resolution (#492700)
-# require both to be sure 64bit is present as well...
+
 %ifarch %{ix86}
 Requires:       freetype(x86-32)
 Requires:       nss-mdns(x86-32)
@@ -205,6 +204,7 @@ Requires:       gnutls(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXcursor(x86-32)
 %endif
+
 %ifarch x86_64
 Requires:       freetype(x86-64)
 Requires:       nss-mdns(x86-64)
@@ -212,6 +212,7 @@ Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
 %endif
+
 %ifarch %{arm}
 Requires:       freetype
 Requires:       nss-mdns
@@ -226,12 +227,15 @@ Wine core package includes the basic wine stuff needed by all other packages.
 %package wow
 Summary:        Files for wine wow separation
 Group:          Applications/Emulators
+
 %ifarch x86_64
 Requires:       wine-core(x86-64) = %{version}-%{release}
 %endif
+
 %ifarch %{ix86}
 Requires:       wine-core(x86-32) = %{version}-%{release}
 %endif
+
 %ifarch %{arm}
 Requires:       wine-core = %{version}-%{release}
 %endif
@@ -295,7 +299,9 @@ Requires:      wine-tahoma-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
+%if 0%{?fedora} > 12
 Requires:      liberation-narrow-fonts
+%endif
 
 %description fonts
 %{summary}
@@ -482,6 +488,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 
 %install
 rm -rf %{buildroot}
+
 %makeinstall \
         includedir=%{buildroot}%{_includedir}/wine \
         sysconfdir=%{buildroot}%{_sysconfdir}/wine \
