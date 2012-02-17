@@ -1,14 +1,14 @@
 %global no64bit 0
 Name:           wine
 Version:        1.4
-Release:        0.2.rc2%{?dist}
+Release:        0.4.rc3%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}-rc2.tar.bz2
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc2.tar.bz2.sign
+Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}-rc3.tar.bz2
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc3.tar.bz2.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -463,7 +463,7 @@ This package adds an openal driver for wine.
 %endif
 
 %prep
-%setup -q -n %{name}-%{version}-rc2
+%setup -q -n %{name}-%{version}-rc3
 
 %build
 # disable fortify as it breaks wine
@@ -481,7 +481,6 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 %ifarch x86_64
  --enable-win64 \
 %endif
- --enable-maintainer-mode \
  --disable-tests
 
 %{__make} TARGETFLAGS="" %{?_smp_mflags}
@@ -1420,6 +1419,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Feb 17 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.4-0.4.rc3
+- version upgrade
+- cleanup arm dependency fixes
+
 * Fri Feb 17 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.4-0.3.rc2
 - Fix architecture dependencies on ARM so it installs
 
