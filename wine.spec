@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
 Version:        1.4
-Release:        0.5.rc4%{?dist}
+Release:        0.6.rc4%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -131,6 +131,11 @@ Requires:       wine-twain(x86-32) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-openal(x86-32) = %{version}-%{release}
+%endif
+%endif
+
+%ifarch %{ix86}
+%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-wow(x86-32) = %{version}-%{release}
 %endif
 %endif
@@ -1419,6 +1424,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Feb 21 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.4-0.6.rc4
+- fix dependency issue (#795295)
+
 * Sun Feb 19 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.4-0.5.rc4
 - version upgrade
