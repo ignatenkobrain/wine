@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.4
+Version:        1.5.0
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -803,6 +803,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/winver.exe.so
 %{_libdir}/wine/wordpad.exe.so
 %{_libdir}/wine/write.exe.so
+%{_libdir}/wine/wusa.exe.so
 %{_libdir}/wine/dxdiag.exe.so
 
 %ifarch %{ix86} %{arm}
@@ -982,8 +983,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mapistub.dll.so
 %{_libdir}/wine/mciavi32.dll.so
 %{_libdir}/wine/mcicda.dll.so
+%{_libdir}/wine/mciqtz32.dll.so
 %{_libdir}/wine/mciseq.dll.so
 %{_libdir}/wine/mciwave.dll.so
+%{_libdir}/wine/mgmtapi.dll.so
 %{_libdir}/wine/midimap.dll.so
 %{_libdir}/wine/mlang.dll.so
 %{_libdir}/wine/mmcndmgr.dll.so
@@ -992,7 +995,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mountmgr.sys.so
 %{_libdir}/wine/mpr.dll.so
 %{_libdir}/wine/mprapi.dll.so
-%{_libdir}/wine/mciqtz32.dll.so
 %{_libdir}/wine/msacm32.dll.so
 %{_libdir}/wine/msacm32.drv.so
 %{_libdir}/wine/msadp32.acm.so
@@ -1007,6 +1009,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mshtml.dll.so
 %{_libdir}/wine/mshtml.tlb.so
 %{_libdir}/wine/msi.dll.so
+%{_libdir}/wine/msident.dll.so
 %{_libdir}/wine/msimtf.dll.so
 %{_libdir}/wine/msimg32.dll.so
 %{_libdir}/wine/msimsg.dll.so
@@ -1136,6 +1139,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/wbemprox.dll.so
 %{_libdir}/wine/wer.dll.so
+%{_libdir}/wine/wevtapi.dll.so
 %{_libdir}/wine/wiaservc.dll.so
 %{_libdir}/wine/windowscodecs.dll.so
 %{_libdir}/wine/winegstreamer.dll.so
@@ -1424,6 +1428,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Mar 19 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.0-1
+- version upgrade
+
 * Wed Mar 07 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.4-1
 - version upgrade
