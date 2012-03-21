@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
 Version:        1.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -132,6 +132,9 @@ Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-openal(x86-32) = %{version}-%{release}
 %endif
+%if 0%{?fedora} >= 17
+Requires:       mingw32-wine-gecko = 1.5
+%endif
 %endif
 
 %ifarch %{ix86}
@@ -150,6 +153,9 @@ Requires:       wine-twain(x86-64) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{version}-%{release}
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 Requires:       wine-openal(x86-64) = %{version}-%{release}
+%endif
+%if 0%{?fedora} >= 17
+Requires:       mingw64-wine-gecko = 1.5
 %endif
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
@@ -1428,6 +1434,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Mar 20 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.0-2
+- require wine gecko from fedora mingw
+
 * Mon Mar 19 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.0-1
 - version upgrade
