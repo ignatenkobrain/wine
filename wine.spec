@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
-Version:        1.5.0
-Release:        2%{?dist}
+Version:        1.5.1
+Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -1141,6 +1141,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/userenv.dll.so
 %{_libdir}/wine/vbscript.dll.so
 %{_libdir}/wine/vcomp.dll.so
+%{_libdir}/wine/vcomp100.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/wbemprox.dll.so
@@ -1434,6 +1435,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Mar 31 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.1-1
+- version upgrade
+
 * Tue Mar 20 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.0-2
 - require wine gecko from fedora mingw
