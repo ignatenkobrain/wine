@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.5.1
+Version:        1.5.2
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -876,6 +876,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
+%{_libdir}/wine/atl80.dll.so
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
@@ -1435,6 +1436,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Apr 14 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.2-1
+- version upgrade
+
 * Sat Mar 31 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.1-1
 - version upgrade
