@@ -1,7 +1,7 @@
 %global no64bit 0
 Name:           wine
 Version:        1.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
 Group:          Applications/Emulators
@@ -1436,6 +1436,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Apr 21 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.2-2
+- reenable xinput2 (rhbz#801436)
+
 * Sat Apr 14 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.2-1
 - version upgrade
