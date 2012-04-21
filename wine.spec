@@ -488,7 +488,6 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
  --without-hal --with-dbus \
  --with-x \
- --without-xinput2 \
 %ifarch x86_64
  --enable-win64 \
 %endif
