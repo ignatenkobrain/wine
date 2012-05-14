@@ -1,6 +1,6 @@
 %global no64bit 0
 Name:           wine
-Version:        1.5.3
+Version:        1.5.4
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -1028,6 +1028,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msrle32.dll.so
 %{_libdir}/wine/mstask.dll.so
 %{_libdir}/wine/msvcirt.dll.so
+%{_libdir}/wine/msvcm80.dll.so
+%{_libdir}/wine/msvcm90.dll.so
 %{_libdir}/wine/msvcp60.dll.so
 %{_libdir}/wine/msvcp70.dll.so
 %{_libdir}/wine/msvcp71.dll.so
@@ -1163,6 +1165,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wmi.dll.so
 %{_libdir}/wine/wmic.exe.so
 %{_libdir}/wine/wmiutils.dll.so
+%{_libdir}/wine/wmvcore.dll.so
 %{_libdir}/wine/spoolss.dll.so
 %{_libdir}/wine/winscard.dll.so
 %{_libdir}/wine/wintab32.dll.so
@@ -1171,6 +1174,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wnaspi32.dll.so
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wshom.ocx.so
+%{_libdir}/wine/wsnmp32.dll.so
 %{_libdir}/wine/wsock32.dll.so
 %{_libdir}/wine/wtsapi32.dll.so
 %{_libdir}/wine/wuapi.dll.so
@@ -1435,6 +1439,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon May 14 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.4-1
+- version upgrade
+
 * Mon Apr 30 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.3-1
 - version upgrade
