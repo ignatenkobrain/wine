@@ -1,6 +1,8 @@
-%global no64bit 0
+%global no64bit   0
+%global winegecko 1.5.0
+%global winemono  0.0.4
 Name:           wine
-Version:        1.5.4
+Version:        1.5.5
 Release:        1%{?dist}
 Summary:        A Windows 16/32/64 bit emulator
 
@@ -43,6 +45,12 @@ Source300:      wine-mime-msi.desktop
 Source501:      wine-tahoma.conf
 # and provide a readme
 Source502:      wine-README-tahoma
+
+Patch511:       wine-cjk.patch
+
+# winepulse backend
+# http://repo.or.cz/w/wine/multimedia.git
+Patch1001:      wine-pulse-1.5.4.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -117,7 +125,7 @@ BuildRequires:  openal-soft-devel
 BuildRequires:  icoutils
 %endif
 
-
+Requires:       wine-common = %{version}-%{release}
 Requires:       wine-desktop = %{version}-%{release}
 Requires:       wine-fonts = %{version}-%{release}
 
@@ -133,7 +141,8 @@ Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
 Requires:       wine-openal(x86-32) = %{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
-Requires:       mingw32-wine-gecko = 1.5
+Requires:       mingw32-wine-gecko = %winegecko
+Requires:       mingw-wine-mono = %winemono
 %endif
 %endif
 
@@ -155,7 +164,8 @@ Requires:       wine-pulseaudio(x86-64) = %{version}-%{release}
 Requires:       wine-openal(x86-64) = %{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
-Requires:       mingw64-wine-gecko = 1.5
+Requires:       mingw64-wine-gecko = %winegecko
+Requires:       mingw-wine-mono = %winemono
 %endif
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
@@ -190,23 +200,9 @@ Summary:        Wine core package
 Group:          Applications/Emulators
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-Obsoletes:      wine-arts < 0.9.34
-Provides:       wine-arts = %{version}-%{release}
-Obsoletes:      wine-tools <= 1.1.27
-Provides:       wine-tools = %{version}-%{release}
-# removed as of 1.3.25 (new sound api)
-Obsoletes:      wine-esd <= 1.3.24
-Provides:       wine-esd = %{version}-%{release}
-Obsoletes:      wine-jack <= 1.3.24
-Provides:       wine-jack = %{version}-%{release}
-# removed as of 1.3.19 (we don't support oss4)
-Obsoletes:      wine-oss <= 1.3.18
-Provides:       wine-oss = %{version}-%{release}
-# removed as of 1.3.16
-Obsoletes:      wine-nas <= 1.3.15
-Provides:       wine-nas = %{version}-%{release}
-# require -common so we get wine.inf (#528335)
-Requires:       wine-common = %{version}-%{release}
+
+# require -filesystem
+Requires:       wine-filesystem = %{version}-%{release}
 
 %ifarch %{ix86}
 Requires:       freetype(x86-32)
@@ -231,6 +227,26 @@ Requires:       gnutls
 Requires:       libXrender
 Requires:       libXcursor
 %endif
+
+# old removed packages
+Obsoletes:      wine-arts < 0.9.34
+Provides:       wine-arts = %{version}-%{release}
+Obsoletes:      wine-tools <= 1.1.27
+Provides:       wine-tools = %{version}-%{release}
+
+# removed as of 1.3.25 (new sound api)
+Obsoletes:      wine-esd <= 1.3.24
+Provides:       wine-esd = %{version}-%{release}
+Obsoletes:      wine-jack <= 1.3.24
+Provides:       wine-jack = %{version}-%{release}
+
+# removed as of 1.3.19 (we don't support oss4)
+Obsoletes:      wine-oss <= 1.3.18
+Provides:       wine-oss = %{version}-%{release}
+
+# removed as of 1.3.16
+Obsoletes:      wine-nas <= 1.3.15
+Provides:       wine-nas = %{version}-%{release}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -273,6 +289,23 @@ BuildArch:      noarch
 %description sysvinit
 Register the wine binary handler for windows executables via SysV init files.
 %endif
+
+%package filesystem
+Summary:        Filesystem directories for wine
+Group:          Applications/Emulators
+BuildArch:      noarch
+
+%description filesystem
+Filesystem directories and basic configuration for wine.
+
+%package common
+Summary:        Common files
+Group:          Applications/Emulators
+Requires:       wine-core = %{version}-%{release}
+BuildArch:      noarch
+
+%description common
+Common wine files and scripts.
 
 %package desktop
 Summary:        Desktop integration features for wine
@@ -384,15 +417,6 @@ Requires:      fontpackages-filesystem
 %description symbol-fonts
 %{summary}
 
-%package common
-Summary:        Common files
-Group:          Applications/Emulators
-Requires:       wine-core = %{version}-%{release}
-BuildArch:      noarch
-
-%description common
-Common wine files and scripts.
-
 %package ldap
 Summary: LDAP support for wine
 Group: System Environment/Libraries
@@ -438,22 +462,10 @@ with the Wine Windows(TM) emulation libraries.
 Summary: Pulseaudio support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
-%ifarch %{ix86}
-Requires: wine-alsa(x86-32) = %{version}-%{release}
-Requires: alsa-plugins-pulseaudio(x86-32)
-%endif
-%ifarch x86_64
-Requires: wine-alsa(x86-64) = %{version}-%{release}
-Requires: alsa-plugins-pulseaudio(x86-64)
-%endif
-%ifarch %{arm}
-Requires: wine-alsa = %{version}-%{release}
-Requires: alsa-plugins-pulseaudio
-%endif
 
 %description pulseaudio
-This package pulse in the alsa pulseaudio backend to allow for pulse playback
-over alsa.
+This package adds a pulseaudio driver for wine. Please do not report bugs in
+the pulseaudio wine backend at winehq.
 
 %package alsa
 Summary: Alsa support for wine
@@ -476,6 +488,12 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
+%patch511 -p1 -b.cjk
+
+%patch1001 -p1 -b.winepulse
+
+autoreconf
+
 %build
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -488,6 +506,7 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
  --without-hal --with-dbus \
  --with-x \
+ --with-pulse \
 %ifarch x86_64
  --enable-win64 \
 %endif
@@ -535,6 +554,9 @@ install -p -m 644 %{SOURCE201} \
 
 # add gecko dir
 mkdir -p %{buildroot}%{_datadir}/wine/gecko
+
+# add mono dir
+mkdir -p %{buildroot}%{_datadir}/wine/mono
 
 # extract and install icons
 %if 0%{?fedora} > 10
@@ -1265,6 +1287,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wow32.dll.so
 %endif
 
+%files filesystem
+%defattr(-,root,root,-)
+%doc COPYING.LIB
+%dir %{_datadir}/wine
+%dir %{_datadir}/wine/gecko
+%dir %{_datadir}/wine/mono
+%dir %{_datadir}/wine/fonts
+%{_datadir}/wine/generic.ppd
+%{_datadir}/wine/wine.inf
+%{_datadir}/wine/l_intl.nls
+
 %files common
 %defattr(-,root,root,-)
 %{_bindir}/notepad
@@ -1279,8 +1312,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/wineboot
 %{_bindir}/wineconsole
 %{_bindir}/winecfg
-%dir %{_datadir}/wine
-%dir %{_datadir}/wine/gecko
 %{_mandir}/man1/wine.1*
 %{_mandir}/man1/wineserver.1*
 %{_mandir}/man1/msiexec.1*
@@ -1298,13 +1329,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %lang(de) %{_mandir}/de.UTF-8/man1/wine.1*
 %lang(de) %{_mandir}/de.UTF-8/man1/wineserver.1*
 %lang(pl) %{_mandir}/pl.UTF-8/man1/wine.1*
-%{_datadir}/wine/generic.ppd
-%{_datadir}/wine/wine.inf
-%{_datadir}/wine/l_intl.nls
 
 %files fonts
 %defattr(-,root,root,-)
-%dir %{_datadir}/wine/fonts
+# meta package
+
 
 %files courier-fonts
 %defattr(-,root,root,-)
@@ -1426,7 +1455,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files pulseaudio
 %defattr(-,root,root,-)
-# empty meta package for deps
+%{_libdir}/wine/winepulse.drv.so
 
 %files alsa
 %defattr(-,root,root,-)
@@ -1439,6 +1468,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon May 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.5-1
+- version upgrade (rhbz#817257)
+- split out -filesystem and clean up -common/-core requires
+- re-add winepulse driver (rhbz#821207, rhbz#783699)
+- add font replacements for CJK to wine.inf and add information for cjk users
+  to fedora readme (rhbz#815125, rhbz#820096)
+- add support for and require wine-mono
+
 * Mon May 14 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.4-1
 - version upgrade
