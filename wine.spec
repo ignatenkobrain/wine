@@ -1,10 +1,11 @@
 %global no64bit   0
-%global winegecko 1.5.0
+%global winegecko 1.5
 %global winemono  0.0.4
+
 Name:           wine
-Version:        1.5.5
+Version:        1.5.6
 Release:        1%{?dist}
-Summary:        A Windows 16/32/64 bit emulator
+Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
 License:        LGPLv2+
@@ -184,11 +185,9 @@ Requires:       wine-wow = %{version}-%{release}
 %endif
 
 %description
-While Wine is usually thought of as a Windows(TM) emulator, the Wine
-developers would prefer that users thought of Wine as a Windows
-compatibility layer for UNIX. This package includes a program loader,
-which allows unmodified Windows 3.x/9x/NT binaries to run on x86 and x86_64
-Unixes. Wine does not require MS Windows, but it can use native system
+Wine as a compatibility layer for UNIX to run Windows applications. This
+package includes a program loader, which allows unmodified Windows
+3.x/9x/NT binaries to run on x86 and x86_64 Unixes. Wine can use native system
 .dll files if they are available.
 
 In Fedora wine is a meta-package which will install everything needed for wine
@@ -397,16 +396,28 @@ Requires:      fontpackages-filesystem
 %description ms-sans-serif-fonts
 %{summary}
 
-
+# rhbz#693180
+# http://lists.fedoraproject.org/pipermail/devel/2012-June/168153.html
 %package tahoma-fonts
 Summary:       Wine Tahoma font family
 Group:         User Interface/X
 BuildArch:     noarch
-Requires:      fontpackages-filesystem
+Requires:      wine-filesystem = %{version}-%{release}
 
 %description tahoma-fonts
 %{summary}
+Please note: If you want system integration for wine tahoma fonts install the
+wine-tahoma-fonts-system package.
 
+%package tahoma-fonts-system
+Summary:       Wine Tahoma font family system integration
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+Requires:      wine-tahoma-fonts = %{version}-%{release}
+
+%description tahoma-fonts-system
+%{summary}
 
 %package symbol-fonts
 Summary:       Wine Symbol font family
@@ -697,7 +708,10 @@ install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/sse* %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts/
 
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/tahoma* %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts/
+pushd %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
+ln -s ../../wine/fonts/tahoma.ttf tahoma.ttf
+ln -s ../../wine/fonts/tahomabd.ttf tahomabd.ttf
+popd
 
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/symbol.ttf %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts/
@@ -999,6 +1013,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/iphlpapi.dll.so
 %{_libdir}/wine/itircl.dll.so
 %{_libdir}/wine/itss.dll.so
+%{_libdir}/wine/joy.cpl.so
 %{_libdir}/wine/jscript.dll.so
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/ktmw32.dll.so
@@ -1362,7 +1377,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files tahoma-fonts
 %defattr(-,root,root,-)
-%doc COPYING.LIB README-tahoma
+%doc COPYING.LIB
+%{_datadir}/wine/fonts/tahoma*ttf
+
+%files tahoma-fonts-system
+%defattr(-,root,root,-)
+%doc README-tahoma
 %{_datadir}/fonts/wine-tahoma-fonts
 %{_fontconfig_confdir}/20-wine-tahoma*conf
 %{_fontconfig_templatedir}/20-wine-tahoma*conf
@@ -1468,6 +1488,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Jun 09 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.6-1
+- version upgrade (rhbz#830424)
+- split tahoma font package and add -system subpackage (rhbz#693180)
+
+* Thu May 31 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.5-2
+- fix description
+
 * Mon May 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.5-1
 - version upgrade (rhbz#817257)
