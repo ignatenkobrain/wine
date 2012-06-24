@@ -1,9 +1,10 @@
 %global no64bit   0
-%global winegecko 1.5
+%global winegecko 1.6
 %global winemono  0.0.4
+%define __os_install_post %{nil}
 
 Name:           wine
-Version:        1.5.6
+Version:        1.5.7
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1488,6 +1489,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jun 24 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.7-1
+- version upgrade
+- require new wine-gecko version
+
 * Sat Jun 09 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.6-1
 - version upgrade (rhbz#830424)
