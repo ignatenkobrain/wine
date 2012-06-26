@@ -1491,7 +1491,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %changelog
 * Sun Jun 24 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.7-1
-- version upgrade
+- version upgrade (rhbz#834762)
 - require new wine-gecko version
 
 * Sat Jun 09 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
