@@ -1,10 +1,9 @@
 %global no64bit   0
 %global winegecko 1.6
 %global winemono  0.0.4
-%define __os_install_post %{nil}
 
 Name:           wine
-Version:        1.5.7
+Version:        1.5.8
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -144,7 +143,7 @@ Requires:       wine-openal(x86-32) = %{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
 Requires:       mingw32-wine-gecko = %winegecko
-Requires:       mingw-wine-mono = %winemono
+Requires:       wine-mono = %winemono
 %endif
 %endif
 
@@ -167,7 +166,7 @@ Requires:       wine-openal(x86-64) = %{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
 Requires:       mingw64-wine-gecko = %winegecko
-Requires:       mingw-wine-mono = %winemono
+Requires:       wine-mono = %winemono
 %endif
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
@@ -1489,6 +1488,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Wed Jul 04 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.8-1
+- version upgrade (rhbz#834762)
+- change {mingw-,}wine-mono require
+
 * Sun Jun 24 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.7-1
 - version upgrade (rhbz#834762)
