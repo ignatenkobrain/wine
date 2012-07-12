@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.5.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1488,6 +1488,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Jul 12 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.8-2
+- bump for libgphoto2 2.5.0
+
 * Wed Jul 04 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.8-1
 - version upgrade (rhbz#834762)
