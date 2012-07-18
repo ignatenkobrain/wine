@@ -23,6 +23,22 @@ is already reported. In case it is not please report it.
 
 CJK support:
 ============
-Fedora carries a modified wine.inf file with support for cjk through the
-wqy-microhei font family. If you want to use cjk fonts install the
-wqy-microhei-fonts.noarch package.
+Fedora carries a modified wine.inf file with support for cjk complying to the
+fedora default fonts (see
+http://tagoh.fedorapeople.org/fonts/fedora-current-defaultfonts.html)
+
+wine does _not_ pull in the cjk font packages automatically. The following
+font packages may need to be installed depending on your locale:
+
+zh_CN:
+wqy-microhei
+
+jp:
+vlgothic-fonts
+vlgothic-p-fonts
+ipa-mincho-fonts
+ipa-pmincho-fonts
+
+ko:
+nhn-nanum-gothic-fonts
+nhn-nanum-myeongjo-fonts.noarch

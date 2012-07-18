@@ -3,8 +3,8 @@
 %global winemono  0.0.4
 
 Name:           wine
-Version:        1.5.8
-Release:        2%{?dist}
+Version:        1.5.9
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1488,6 +1488,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Wed Jul 18 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.9-1
+- version upgrade
+- clean up cjk patch to comply with default fonts where possible
+- update fedora readme to point out required font packages per cjk locale
+
 * Thu Jul 12 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.8-2
 - bump for libgphoto2 2.5.0
