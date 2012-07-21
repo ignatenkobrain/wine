@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.5.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -86,11 +86,7 @@ BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
 BuildRequires:  fontforge freetype-devel
 BuildRequires:  libgphoto2-devel
-# #217338
-# isdn has issues on ARM atm
-%ifnarch %{arm}
 BuildRequires:  isdn4k-utils-devel
-%endif
 # modular x
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
@@ -1488,6 +1484,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Jul 21 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.5.9-2
+- isdn4linux now builds on ARM
+
 * Wed Jul 18 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.9-1
 - version upgrade
