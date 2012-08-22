@@ -1,16 +1,16 @@
 %global no64bit   0
-%global winegecko 1.6
+%global winegecko 1.7
 %global winemono  0.0.4
 
 Name:           wine
-Version:        1.5.9
-Release:        2%{?dist}
+Version:        1.5.11
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://ibiblio.org/pub/linux/system/emulators/wine/wine-%{version}.tar.bz2
+Source0:        http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2
 Source10:       http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2.sign
 
 Source1:        wine.init
@@ -30,6 +30,11 @@ Source106:      wine-winhelp.desktop
 Source107:      wine-wineboot.desktop
 Source108:      wine-wordpad.desktop
 Source109:      wine-oleview.desktop
+
+# build fixes
+# do not check for glAccum
+# wget http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-emulation/wine/files/wine-1.5.10-osmesa-check.patch?revision=1.1
+Patch1:          wine-1.5.10-osmesa-check.patch
 
 # wine bugs
 
@@ -89,7 +94,7 @@ BuildRequires:  libgphoto2-devel
 BuildRequires:  isdn4k-utils-devel
 # modular x
 BuildRequires:  libX11-devel
-BuildRequires:  mesa-libGL-devel mesa-libGLU-devel
+BuildRequires:  mesa-libGL-devel mesa-libGLU-devel mesa-libOSMesa-devel
 BuildRequires:  libXxf86dga-devel libXxf86vm-devel
 BuildRequires:  libXrandr-devel libXrender-devel
 BuildRequires:  libXext-devel
@@ -494,6 +499,8 @@ This package adds an openal driver for wine.
 
 %prep
 %setup -q
+
+%patch1 -p1 -b.osmesa
 
 %patch511 -p1 -b.cjk
 
@@ -971,6 +978,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/dssenh.dll.so
 %{_libdir}/wine/dswave.dll.so
 %{_libdir}/wine/dwmapi.dll.so
+%{_libdir}/wine/dwrite.dll.so
 %{_libdir}/wine/dxdiagn.dll.so
 %{_libdir}/wine/dxgi.dll.so
 %{_libdir}/wine/eject.exe.so
@@ -1484,6 +1492,16 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Aug 18 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.11-1
+- version upgrade
+- use changed libOSMesa check from gentoo (>f18 still fails see rhbz#849405)
+
+* Tue Jul 31 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.10-1
+- version upgrade
+- wine gecko 1.7
+
 * Sat Jul 21 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 1.5.9-2
 - isdn4linux now builds on ARM
 
