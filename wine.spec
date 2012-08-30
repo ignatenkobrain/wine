@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.5.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1492,6 +1492,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Aug 30 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.11-2
+- rebuild on rawhide for fixed libOSMesa
+
 * Sat Aug 18 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.11-1
 - version upgrade
