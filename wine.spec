@@ -3,7 +3,7 @@
 %global winemono  0.0.4
 
 Name:           wine
-Version:        1.5.11
+Version:        1.5.12
 Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1492,6 +1492,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Aug 31 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.12-1
+- version upgrade
+
 * Thu Aug 30 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.11-2
 - rebuild on rawhide for fixed libOSMesa
