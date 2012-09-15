@@ -3,8 +3,8 @@
 %global winemono  0.0.4
 
 Name:           wine
-Version:        1.5.12
-Release:        2%{?dist}
+Version:        1.5.13
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1062,6 +1062,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msimsg.dll.so
 %{_libdir}/wine/msisip.dll.so
 %{_libdir}/wine/msisys.ocx.so
+%{_libdir}/wine/msls31.dll.so
 %{_libdir}/wine/msnet32.dll.so
 %{_libdir}/wine/mspatcha.dll.so
 %{_libdir}/wine/mssign32.dll.so
@@ -1492,6 +1493,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Sep 15 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.13-1
+- version upgrade
+
 * Fri Aug 31 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.12-1
 - version upgrade
