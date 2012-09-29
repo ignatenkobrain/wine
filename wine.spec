@@ -3,7 +3,7 @@
 %global winemono  0.0.4
 
 Name:           wine
-Version:        1.5.13
+Version:        1.5.14
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1107,6 +1107,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/objsel.dll.so
 %{_libdir}/wine/odbc32.dll.so
 %{_libdir}/wine/odbccp32.dll.so
+%{_libdir}/wine/odbccu32.dll.so
 %{_libdir}/wine/ole32.dll.so
 %{_libdir}/wine/oleacc.dll.so
 %{_libdir}/wine/oleaut32.dll.so
@@ -1185,6 +1186,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/userenv.dll.so
 %{_libdir}/wine/vbscript.dll.so
 %{_libdir}/wine/vcomp.dll.so
+%{_libdir}/wine/vcomp90.dll.so
 %{_libdir}/wine/vcomp100.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
@@ -1493,6 +1495,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Sep 29 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.14-1
+- version upgrade
+
 * Sat Sep 15 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.13-1
 - version upgrade
