@@ -1,9 +1,9 @@
 %global no64bit   0
-%global winegecko 1.7
+%global winegecko 1.8
 %global winemono  0.0.4
 
 Name:           wine
-Version:        1.5.14
+Version:        1.5.15
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -873,6 +873,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/cscript.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
+%{_libdir}/wine/findstr.exe.so
 %{_libdir}/wine/hostname.exe.so
 %{_libdir}/wine/ipconfig.exe.so
 %{_libdir}/wine/winhlp32.exe.so
@@ -1147,8 +1148,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/sc.exe.so
 %{_libdir}/wine/scarddlg.dll.so
 %{_libdir}/wine/sccbase.dll.so
-%{_libdir}/wine/scrrun.dll.so
 %{_libdir}/wine/schannel.dll.so
+%{_libdir}/wine/scrrun.dll.so
+%{_libdir}/wine/scsiport.sys.so
 %{_libdir}/wine/secur32.dll.so
 %{_libdir}/wine/sensapi.dll.so
 %{_libdir}/wine/serialui.dll.so
@@ -1495,6 +1497,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Oct 15 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.15-1
+- version upgrade
+- wine gecko 1.8
+
 * Sat Sep 29 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.14-1
 - version upgrade
