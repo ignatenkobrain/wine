@@ -1,9 +1,9 @@
 %global no64bit   0
 %global winegecko 1.8
-%global winemono  0.0.4
+%global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.15
+Version:        1.5.16
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -54,9 +54,12 @@ Source502:      wine-README-tahoma
 
 Patch511:       wine-cjk.patch
 
-# winepulse backend
+## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-Patch1001:      wine-pulse-1.5.4.patch
+# last change Fri, 26 Oct 2012 17:16:03 +0000
+Patch1001:      wine-pulse-1.5.16.patch
+# use winealsa for midi in the pa backend
+Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -210,6 +213,13 @@ Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXcursor(x86-32)
+
+%if 0%{?fedora} >= 18
+Requires:       openssl-libs(x86-32)
+%else
+Requires:       openssl(x86-32)
+%endif
+
 %endif
 
 %ifarch x86_64
@@ -218,6 +228,13 @@ Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
+
+%if 0%{?fedora} >= 18
+Requires:       openssl-libs(x86-64)
+%else
+Requires:       openssl(x86-64)
+%endif
+
 %endif
 
 %ifarch %{arm}
@@ -226,6 +243,13 @@ Requires:       nss-mdns
 Requires:       gnutls
 Requires:       libXrender
 Requires:       libXcursor
+
+%if 0%{?fedora} >= 18
+Requires:       openssl-libs
+%else
+Requires:       openssl
+%endif
+
 %endif
 
 # old removed packages
@@ -474,6 +498,8 @@ with the Wine Windows(TM) emulation libraries.
 Summary: Pulseaudio support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
+# midi output
+Requires: wine-alsa = %{version}-%{release}
 
 %description pulseaudio
 This package adds a pulseaudio driver for wine. Please do not report bugs in
@@ -505,6 +531,7 @@ This package adds an openal driver for wine.
 %patch511 -p1 -b.cjk
 
 %patch1001 -p1 -b.winepulse
+%patch1002 -p1 -b.winepulse-midi
 
 autoreconf
 
@@ -1497,6 +1524,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Oct 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.16-1
+- version upgrade (rhbz#870611)
+- wine mono 0.8
+- update pulse patch
+- fix midi in winepulse (rhbz#863129)
+- fix dependencies for openssl (rhbz#868576)
+
 * Mon Oct 15 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.15-1
 - version upgrade
