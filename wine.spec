@@ -843,7 +843,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/wine
 %endif
 %{_bindir}/wineserver
-%{_libdir}/wine/wineboot.exe.so
 
 %files core
 %defattr(-,root,root,-)
@@ -924,6 +923,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/start.exe.so
 %{_libdir}/wine/termsv.exe.so
 %{_libdir}/wine/view.exe.so
+%{_libdir}/wine/wineboot.exe.so
 %{_libdir}/wine/winebrowser.exe.so
 %{_libdir}/wine/wineconsole.exe.so
 %{_libdir}/wine/winemenubuilder.exe.so
@@ -1531,6 +1531,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - update pulse patch
 - fix midi in winepulse (rhbz#863129)
 - fix dependencies for openssl (rhbz#868576)
+- move wineboot.exe.so to -core instead of -wow (rhbz#842820)
 
 * Mon Oct 15 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.15-1
