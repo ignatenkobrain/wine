@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.16
+Version:        1.5.17
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -33,8 +33,8 @@ Source109:      wine-oleview.desktop
 
 # build fixes
 # do not check for glAccum
-# wget http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-emulation/wine/files/wine-1.5.10-osmesa-check.patch?revision=1.1
-Patch1:          wine-1.5.10-osmesa-check.patch
+# wget http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-emulation/wine/files/wine-1.5.17-osmesa-check.patch?revision=1.1
+Patch1:          wine-1.5.17-osmesa-check.patch
 
 # wine bugs
 
@@ -56,8 +56,8 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# last change Fri, 26 Oct 2012 17:16:03 +0000
-Patch1001:      wine-pulse-1.5.16.patch
+# last change Mon, 12 Nov 2012 16:25:41 +0000
+Patch1001:      wine-pulse-1.5.17.patch
 # use winealsa for midi in the pa backend
 Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
 
@@ -917,6 +917,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/regsvr32.exe.so
 %{_libdir}/wine/rpcss.exe.so
 %{_libdir}/wine/rundll32.exe.so
+%{_libdir}/wine/schtasks.exe.so
 %{_libdir}/wine/secedit.exe.so
 %{_libdir}/wine/servicemodelreg.exe.so
 %{_libdir}/wine/services.exe.so
@@ -1270,6 +1271,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/xmllite.dll.so
 %{_libdir}/wine/xolehlp.dll.so
 %{_libdir}/wine/xpsprint.dll.so
+%{_libdir}/wine/xpssvcs.dll.so
 
 # 16 bit and other non 64bit stuff
 %ifnarch x86_64 %{arm}
@@ -1524,6 +1526,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Nov 12 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.17-1
+- version upgrade
+- upgraded winepulse
+
 * Sun Oct 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.16-1
 - version upgrade (rhbz#870611)
