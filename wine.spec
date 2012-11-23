@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.17
+Version:        1.5.18
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -944,6 +944,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
 %{_libdir}/wine/atl80.dll.so
+%{_libdir}/wine/atl100.dll.so
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
@@ -1526,6 +1527,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Nov 23 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.18-1
+- version upgrade
+
 * Mon Nov 12 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.17-1
 - version upgrade
