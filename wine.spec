@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.18
+Version:        1.5.20
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -56,9 +56,10 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# last change Mon, 12 Nov 2012 16:25:41 +0000
-Patch1001:      wine-pulse-1.5.17.patch
+# Sat, 29 Dec 2012 00:02:38 +0000
+Patch1001:      wine-pulse-1.5.20.patch
 # use winealsa for midi in the pa backend
+# http://repo.or.cz/w/wine/multimedia.git/commit/8f39a12639ee1d39c8caaf5f2ab72540d281814e
 Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
 
 Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -893,6 +894,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_libdir}/wine
 %dir %{_libdir}/wine/fakedlls
 %{_libdir}/wine/fakedlls/*
+
 %{_libdir}/wine/attrib.exe.so
 %{_libdir}/wine/aspnet_regiis.exe.so
 %{_libdir}/wine/cacls.exe.so
@@ -932,7 +934,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/winedevice.exe.so
 %{_libdir}/wine/wscript.exe.so
 %{_libdir}/wine/uninstaller.exe.so
+
 %{_libdir}/libwine.so.1*
+
 %{_libdir}/wine/acledit.dll.so
 %{_libdir}/wine/aclui.dll.so
 %{_libdir}/wine/activeds.dll.so
@@ -940,6 +944,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/api-ms-win-core-winrt-error-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-advapi32-l2-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-normaliz-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-ole32-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-shell32-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-shlwapi-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-shlwapi-l2-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-user32-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-downlevel-version-l1-1-0.dll.so
 %{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
@@ -971,6 +986,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/ctl3d32.dll.so
 %{_libdir}/wine/d3d10.dll.so
 %{_libdir}/wine/d3d10core.dll.so
+%{_libdir}/wine/d3d11.dll.so
 %{_libdir}/wine/d3dcompiler_*.dll.so
 %{_libdir}/wine/d3dim.dll.so
 %{_libdir}/wine/d3drm.dll.so
@@ -1527,6 +1543,16 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Dec 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.20-1
+- version upgrade
+- upgraded winepulse
+
+* Sun Dec 09 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.19-1
+- version upgrade
+- upgraded winepulse
+
 * Fri Nov 23 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.18-1
 - version upgrade
