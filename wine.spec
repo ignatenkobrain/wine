@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.20
+Version:        1.5.21
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -898,6 +898,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/attrib.exe.so
 %{_libdir}/wine/aspnet_regiis.exe.so
 %{_libdir}/wine/cacls.exe.so
+%{_libdir}/wine/conhost.exe.so
 %{_libdir}/wine/cscript.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
@@ -908,6 +909,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mshta.exe.so
 %{_libdir}/wine/msiexec.exe.so
 %{_libdir}/wine/net.exe.so
+%{_libdir}/wine/netstat.exe.so
 %{_libdir}/wine/ngen.exe.so
 %{_libdir}/wine/ntoskrnl.exe.so
 %{_libdir}/wine/oleview.exe.so
@@ -955,6 +957,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-downlevel-shlwapi-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-user32-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-version-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-security-base-l1-1-0.dll.so
 %{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
@@ -1543,6 +1546,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jan 06 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.21-1
+- version upgrade
+
 * Fri Dec 28 2012 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.20-1
 - version upgrade
