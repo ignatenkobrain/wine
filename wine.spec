@@ -1,9 +1,9 @@
 %global no64bit   0
-%global winegecko 1.8
+%global winegecko 1.9
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.21
+Version:        1.5.22
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -56,8 +56,13 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Sat, 29 Dec 2012 00:02:38 +0000
-Patch1001:      wine-pulse-1.5.20.patch
+# Sat, 19 Jan 2013 00:22:27 +0000
+# configure
+# configure.ac
+# dlls/mmdevapi/main.c
+# dlls/winepulse.drv
+# 
+Patch1001:      wine-pulse-1.5.22.patch
 # use winealsa for midi in the pa backend
 # http://repo.or.cz/w/wine/multimedia.git/commit/8f39a12639ee1d39c8caaf5f2ab72540d281814e
 Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
@@ -1546,6 +1551,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Jan 19 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.22-1
+- version upgrade
+- upgraded winepulse
+- wine gecko 1.9
+
 * Sun Jan 06 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.21-1
 - version upgrade
