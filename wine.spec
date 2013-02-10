@@ -1425,18 +1425,18 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/fonts/wine-symbol-fonts
 
 %files desktop
-%{_datadir}/applications/fedora-wine-notepad.desktop
-%{_datadir}/applications/fedora-wine-winefile.desktop
-%{_datadir}/applications/fedora-wine-winemine.desktop
-%{_datadir}/applications/fedora-wine-mime-msi.desktop
-%{_datadir}/applications/fedora-wine.desktop
-%{_datadir}/applications/fedora-wine-regedit.desktop
-%{_datadir}/applications/fedora-wine-uninstaller.desktop
-%{_datadir}/applications/fedora-wine-winecfg.desktop
-%{_datadir}/applications/fedora-wine-wineboot.desktop
-%{_datadir}/applications/fedora-wine-winhelp.desktop
-%{_datadir}/applications/fedora-wine-wordpad.desktop
-%{_datadir}/applications/fedora-wine-oleview.desktop
+%{_datadir}/applications/wine-notepad.desktop
+%{_datadir}/applications/wine-winefile.desktop
+%{_datadir}/applications/wine-winemine.desktop
+%{_datadir}/applications/wine-mime-msi.desktop
+%{_datadir}/applications/wine.desktop
+%{_datadir}/applications/wine-regedit.desktop
+%{_datadir}/applications/wine-uninstaller.desktop
+%{_datadir}/applications/wine-winecfg.desktop
+%{_datadir}/applications/wine-wineboot.desktop
+%{_datadir}/applications/wine-winhelp.desktop
+%{_datadir}/applications/wine-wordpad.desktop
+%{_datadir}/applications/wine-oleview.desktop
 %{_datadir}/desktop-directories/Wine.directory
 %config %{_sysconfdir}/xdg/menus/applications-merged/wine.menu
 %if 0%{?fedora} >= 10
@@ -1512,6 +1512,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Sun Feb 10 2013 Parag Nemade <paragn AT fedoraproject DOT org> - 1.5.22-2
 - Remove vendor tag from desktop file as per https://fedorahosted.org/fesco/ticket/1077
 - Cleanup spec as per recently changed packaging guidelines
+- fix bogus date changelog
 
 * Sat Jan 19 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.22-1
@@ -2720,13 +2721,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Sat Dec 13 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031212-fc1
 - Update to 20031212
 
-* Wed Nov 18 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031118-fc1
+* Tue Nov 18 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031118-fc1
 - Update to 20031118
 
 * Thu Oct 16 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20031016-1rh9
 - Update to 20031016
 
-* Tue Sep 11 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030911-1rh9
+* Thu Sep 11 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030911-1rh9
 - Fix of include location
 - Better separation of run-time and development files
 - Update to 20030911
@@ -2755,7 +2756,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Tue Mar 18 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030318-1
 - Update to 20030318
 
-* Thu Mar 11 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030219-2
+* Tue Mar 11 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030219-2
 - Fix the symlinks in wine-c.
 
 * Wed Feb 19 2003 Vincent Béron <vberon@mecano.gme.usherb.ca> 20030219-1
@@ -2891,7 +2892,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Fri Jun 23 2000 Bernhard Rosenkraenzer <bero@redhat.com>
 - Start the initscript on startup
 
-* Mon May  9 2000 Bernhard Rosenkraenzer <bero@redhat.com>
+* Tue May  9 2000 Bernhard Rosenkraenzer <bero@redhat.com>
 - New version
 - new feature: You can now launch wine by just running a windows .exe file
   (./some.exe or just click on it in kfm, gmc and the likes)
