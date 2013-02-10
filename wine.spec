@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.5.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -66,8 +66,6 @@ Patch1001:      wine-pulse-1.5.22.patch
 # use winealsa for midi in the pa backend
 # http://repo.or.cz/w/wine/multimedia.git/commit/8f39a12639ee1d39c8caaf5f2ab72540d281814e
 Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
-
-Buildroot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -562,7 +560,6 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 %{__make} TARGETFLAGS="" %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
 
 %makeinstall \
         includedir=%{buildroot}%{_includedir}/wine \
@@ -649,70 +646,58 @@ sed -i -e '3s/368/64/'  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/word
 
 # install desktop files
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE100}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE101}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE102}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE103}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE104}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE105}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE106}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE107}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE108}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE109}
 
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   --delete-original \
   %{buildroot}%{_datadir}/applications/wine.desktop
 
 #mime-types
 desktop-file-install \
-  --vendor=fedora \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE300}
 
-cp %{SOURCE3} README-FEDORA
+cp -p %{SOURCE3} README-FEDORA
 
-cp %{SOURCE502} README-tahoma
+cp -p %{SOURCE502} README-tahoma
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 
@@ -768,8 +753,6 @@ do iconv -f iso8859-1 -t utf-8 README.$lang > \
 done;
 popd
 
-%clean
-rm -rf %{buildroot}
 
 %if 0%{?fedora} >= 15
 %post sysvinit
@@ -840,18 +823,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %files
-%defattr(-,root,root,-)
 # meta package
 
 %files wow
-%defattr(-,root,root,-)
 %ifarch %{ix86} %{arm}
 %{_bindir}/wine
 %endif
 %{_bindir}/wineserver
 
 %files core
-%defattr(-,root,root,-)
 %doc ANNOUNCE
 %doc COPYING.LIB
 %doc LICENSE
@@ -1366,7 +1346,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %files filesystem
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %dir %{_datadir}/wine
 %dir %{_datadir}/wine/gecko
@@ -1377,7 +1356,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/wine/l_intl.nls
 
 %files common
-%defattr(-,root,root,-)
 %{_bindir}/notepad
 %{_bindir}/winedbg
 %{_bindir}/winefile
@@ -1409,54 +1387,44 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %lang(pl) %{_mandir}/pl.UTF-8/man1/wine.1*
 
 %files fonts
-%defattr(-,root,root,-)
 # meta package
 
 
 %files courier-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-courier-fonts
 
 %files system-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-system-fonts
 
 %files small-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-small-fonts
 
 %files marlett-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-marlett-fonts
 
 %files ms-sans-serif-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-ms-sans-serif-fonts
 
 %files tahoma-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/wine/fonts/tahoma*ttf
 
 %files tahoma-fonts-system
-%defattr(-,root,root,-)
 %doc README-tahoma
 %{_datadir}/fonts/wine-tahoma-fonts
 %{_fontconfig_confdir}/20-wine-tahoma*conf
 %{_fontconfig_templatedir}/20-wine-tahoma*conf
 
 %files symbol-fonts
-%defattr(-,root,root,-)
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-symbol-fonts
 
 %files desktop
-%defattr(-,root,root,-)
 %{_datadir}/applications/fedora-wine-notepad.desktop
 %{_datadir}/applications/fedora-wine-winefile.desktop
 %{_datadir}/applications/fedora-wine-winemine.desktop
@@ -1477,37 +1445,30 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %if 0%{?fedora} >= 15
 %files systemd
-%defattr(0644,root,root)
 %config %{_sysconfdir}/binfmt.d/wine.conf
 
 %files sysvinit
-%defattr(0755,root,root)
 %endif
 %{_initrddir}/wine
 
 # ldap subpackage
 %files ldap
-%defattr(-,root,root,-)
 %{_libdir}/wine/wldap32.dll.so
 
 # cms subpackage
 %files cms
-%defattr(-,root,root,-)
 %{_libdir}/wine/mscms.dll.so
 
 # twain subpackage
 %files twain
-%defattr(-,root,root,-)
 %{_libdir}/wine/twain_32.dll.so
 %{_libdir}/wine/sane.ds.so
 
 # capi subpackage
 %files capi
-%defattr(-,root,root,-)
 %{_libdir}/wine/capi2032.dll.so
 
 %files devel
-%defattr(-,root,root,-)
 %{_bindir}/function_grep.pl
 %{_bindir}/widl
 %{_bindir}/winebuild
@@ -1537,20 +1498,21 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/*.def
 
 %files pulseaudio
-%defattr(-,root,root,-)
 %{_libdir}/wine/winepulse.drv.so
 
 %files alsa
-%defattr(-,root,root,-)
 %{_libdir}/wine/winealsa.drv.so
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 %files openal
-%defattr(-,root,root,-)
 %{_libdir}/wine/openal32.dll.so
 %endif
 
 %changelog
+* Sun Feb 10 2013 Parag Nemade <paragn AT fedoraproject DOT org> - 1.5.22-2
+- Remove vendor tag from desktop file as per https://fedorahosted.org/fesco/ticket/1077
+- Cleanup spec as per recently changed packaging guidelines
+
 * Sat Jan 19 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.22-1
 - version upgrade
