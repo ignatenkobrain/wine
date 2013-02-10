@@ -3,8 +3,8 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.22
-Release:        2%{?dist}
+Version:        1.5.23
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1509,6 +1509,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Feb 10 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.23-1
+- version upgrade
+
 * Sun Feb 10 2013 Parag Nemade <paragn AT fedoraproject DOT org> - 1.5.22-2
 - Remove vendor tag from desktop file as per https://fedorahosted.org/fesco/ticket/1077
 - Cleanup spec as per recently changed packaging guidelines
