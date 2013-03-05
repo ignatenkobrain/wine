@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.24
+Version:        1.5.25
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -369,6 +369,7 @@ Requires:      wine-marlett-fonts = %{version}-%{release}
 Requires:      wine-ms-sans-serif-fonts = %{version}-%{release}
 Requires:      wine-tahoma-fonts = %{version}-%{release}
 Requires:      wine-symbol-fonts = %{version}-%{release}
+Requires:      wine-wingdings-fonts = %{version}-%{release}
 # intermediate fix for #593140
 Requires:      liberation-sans-fonts liberation-serif-fonts liberation-mono-fonts
 %if 0%{?fedora} > 12
@@ -456,6 +457,16 @@ Requires:      fontpackages-filesystem
 
 %description symbol-fonts
 %{summary}
+
+%package wingdings-fonts
+Summary:       Wine Wingdings font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description wingdings-fonts
+%{summary}
+
 
 %package ldap
 Summary: LDAP support for wine
@@ -744,6 +755,10 @@ install -p -m 0644 %{SOURCE501} %{buildroot}%{_fontconfig_templatedir}/20-wine-t
 
 ln -s %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf \
       %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
+
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/wingding.ttf %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts/
+
 
 # clean readme files
 pushd documentation
@@ -1226,6 +1241,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
 %{_libdir}/wine/wbemprox.dll.so
+%{_libdir}/wine/webservices.dll.so
 %{_libdir}/wine/wer.dll.so
 %{_libdir}/wine/wevtapi.dll.so
 %{_libdir}/wine/wiaservc.dll.so
@@ -1390,7 +1406,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files fonts
 # meta package
 
-
 %files courier-fonts
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-courier-fonts
@@ -1424,6 +1439,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files symbol-fonts
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-symbol-fonts
+
+%files wingdings-fonts
+%doc COPYING.LIB
+%{_datadir}/fonts/wine-wingdings-fonts
 
 %files desktop
 %{_datadir}/applications/wine-notepad.desktop
@@ -1510,6 +1529,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Mar 05 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.25-1
+- version upgrade
+- now font package for wingdings family
+
 * Mon Feb 18 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.24-1
 - version upgrade
