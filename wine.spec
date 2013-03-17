@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.25
+Version:        1.5.26
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1132,6 +1132,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msvcr80.dll.so
 %{_libdir}/wine/msvcr90.dll.so
 %{_libdir}/wine/msvcr100.dll.so
+%{_libdir}/wine/msvcr110.dll.so
 %{_libdir}/wine/msvcrt.dll.so
 %{_libdir}/wine/msvcrt20.dll.so
 %{_libdir}/wine/msvcrt40.dll.so
@@ -1529,6 +1530,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Mar 17 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.26-1
+- version upgrade
+
 * Tue Mar 05 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.25-1
 - version upgrade
