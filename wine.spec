@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.27
+Version:        1.5.29
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -93,7 +93,6 @@ BuildRequires:  libxslt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openldap-devel
 BuildRequires:  unixODBC-devel
-BuildRequires:  openssl-devel
 BuildRequires:  sane-backends-devel
 BuildRequires:  zlib-devel
 BuildRequires:  fontforge freetype-devel
@@ -217,13 +216,6 @@ Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXcursor(x86-32)
-
-%if 0%{?fedora} >= 18
-Requires:       openssl-libs(x86-32)
-%else
-Requires:       openssl(x86-32)
-%endif
-
 %endif
 
 %ifarch x86_64
@@ -232,13 +224,6 @@ Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
-
-%if 0%{?fedora} >= 18
-Requires:       openssl-libs(x86-64)
-%else
-Requires:       openssl(x86-64)
-%endif
-
 %endif
 
 %ifarch %{arm}
@@ -247,13 +232,6 @@ Requires:       nss-mdns
 Requires:       gnutls
 Requires:       libXrender
 Requires:       libXcursor
-
-%if 0%{?fedora} >= 18
-Requires:       openssl-libs
-%else
-Requires:       openssl
-%endif
-
 %endif
 
 # old removed packages
@@ -363,6 +341,7 @@ Summary:       Wine font files
 Group:         Applications/Emulators
 BuildArch:     noarch
 Requires:      wine-courier-fonts = %{version}-%{release}
+Requires:      wine-fixedsys-fonts = %{version}-%{release}
 Requires:      wine-small-fonts = %{version}-%{release}
 Requires:      wine-system-fonts = %{version}-%{release}
 Requires:      wine-marlett-fonts = %{version}-%{release}
@@ -386,6 +365,15 @@ BuildArch:     noarch
 Requires:      fontpackages-filesystem
 
 %description courier-fonts
+%{summary}
+
+%package fixedsys-fonts
+Summary:       Wine Fixedsys font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description fixedsys-fonts
 %{summary}
 
 %package small-fonts
@@ -724,6 +712,9 @@ install -p -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 # install fonts
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-courier-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/cou* %{buildroot}/%{_datadir}/fonts/wine-courier-fonts/
+
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-fixedsys-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/*vgafix.fon %{buildroot}/%{_datadir}/fonts/wine-fixedsys-fonts/
 
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-system-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/*sys.* %{buildroot}/%{_datadir}/fonts/wine-system-fonts/
@@ -1127,6 +1118,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msvcp80.dll.so
 %{_libdir}/wine/msvcp90.dll.so
 %{_libdir}/wine/msvcp100.dll.so
+%{_libdir}/wine/msvcp110.dll.so
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcr80.dll.so
@@ -1411,6 +1403,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-courier-fonts
 
+%files fixedsys-fonts
+%doc COPYING.LIB
+%{_datadir}/fonts/wine-fixedsys-fonts
+
 %files system-fonts
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-system-fonts
@@ -1530,6 +1526,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu May 09 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.29-1
+- version upgrade
+
 * Sat Mar 30 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.27-1
 - version upgrade
