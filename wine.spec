@@ -1,9 +1,9 @@
 %global no64bit   0
-%global winegecko 1.9
+%global winegecko 2.21
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.29
+Version:        1.5.31
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -56,13 +56,13 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Sat, 19 Jan 2013 00:22:27 +0000
+# Wed, 29 May 2013 08:06:36 +0000
 # configure
 # configure.ac
 # dlls/mmdevapi/main.c
 # dlls/winepulse.drv
 # 
-Patch1001:      wine-pulse-1.5.22.patch
+Patch1001:      wine-pulse-1.5.31.patch
 # use winealsa for midi in the pa backend
 # http://repo.or.cz/w/wine/multimedia.git/commit/8f39a12639ee1d39c8caaf5f2ab72540d281814e
 Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
@@ -152,6 +152,7 @@ Requires:       wine-openal(x86-32) = %{version}-%{release}
 Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
+# Requires:       samba-winbind-clients(x86-32) wait for rhbz#968860
 %endif
 
 %ifarch %{ix86}
@@ -175,6 +176,7 @@ Requires:       wine-openal(x86-64) = %{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
+# Requires:       samba-winbind-clients(x86-64) wait for rhbz#968860
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 %endif
@@ -994,6 +996,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/ddrawex.dll.so
 %{_libdir}/wine/devenum.dll.so
 %{_libdir}/wine/dhcpcsvc.dll.so
+%{_libdir}/wine/difxapi.dll.so
 %{_libdir}/wine/dinput.dll.so
 %{_libdir}/wine/dinput8.dll.so
 %{_libdir}/wine/dispex.dll.so
@@ -1526,6 +1529,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu May 30 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.31-1
+- version upgrade
+- upgraded winepulse
+- wine gecko 2.21
+- wine meta: require samba-winbind-clients for ntlm
+
+* Tue May 14 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.5.30-1
+- version upgrade
+
 * Thu May 09 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.29-1
 - version upgrade
