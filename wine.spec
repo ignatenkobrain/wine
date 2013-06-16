@@ -3,15 +3,15 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.5.31
-Release:        1%{?dist}
+Version:        1.6
+Release:        0.1.rc2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2.sign
+Source0:        http://downloads.sourceforge.net/wine/wine-%{version}-rc2.tar.bz2
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc2.tar.bz2.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -529,7 +529,7 @@ This package adds an openal driver for wine.
 %endif
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{version}-rc2
 
 %patch1 -p1 -b.osmesa
 
@@ -939,6 +939,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/api-ms-win-core-localregistry-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-processthreads-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-error-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.dll.so
@@ -1529,6 +1531,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jun 16 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.6-0.1.rc2
+- 1.6 rc2
+
 * Thu May 30 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.5.31-1
 - version upgrade
