@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.6
-Release:        0.4.rc5%{?dist}
+Release:        0.5.rc5%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1531,6 +1531,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Jul 18 2013 Petr Pisar <ppisar@redhat.com> - 1.6-0.5.rc5
+- Perl 5.18 rebuild
+
 * Fri Jul 12 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.6-0.4.rc5
 - 1.6 rc5
