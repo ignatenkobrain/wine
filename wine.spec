@@ -4,14 +4,14 @@
 
 Name:           wine
 Version:        1.6
-Release:        0.5.rc5%{?dist}
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
 License:        LGPLv2+
 URL:            http://www.winehq.org/
-Source0:        http://downloads.sourceforge.net/wine/wine-%{version}-rc5.tar.bz2
-Source10:       http://downloads.sourceforge.net/wine/wine-%{version}-rc5.tar.bz2.sign
+Source0:        http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2
+Source10:       http://downloads.sourceforge.net/wine/wine-%{version}.tar.bz2.sign
 
 Source1:        wine.init
 Source2:        wine.systemd
@@ -529,7 +529,7 @@ This package adds an openal driver for wine.
 %endif
 
 %prep
-%setup -q -n %{name}-%{version}-rc5
+%setup -q
 
 %patch1 -p1 -b.osmesa
 
@@ -1531,6 +1531,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Jul 20 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.6-1
+- 1.6 release
+
 * Thu Jul 18 2013 Petr Pisar <ppisar@redhat.com> - 1.6-0.5.rc5
 - Perl 5.18 rebuild
 
