@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -332,7 +332,6 @@ Requires:       wine-common = %{version}-%{release}
 Requires:       wine-systemd = %{version}-%{release}
 %endif
 Requires:       hicolor-icon-theme
-BuildArch:      noarch
 
 %description desktop
 Desktop integration features for wine, including mime-types and a binary format
@@ -1531,6 +1530,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Jul 23 2013 Dennis Gilmore <dennis@ausil.us> - 1.6-2
+- wine-desktop has architecture specific Requires so can not be noarch
+
 * Sat Jul 20 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.6-1
 - 1.6 release
