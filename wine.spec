@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1530,6 +1530,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.6-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Tue Jul 23 2013 Dennis Gilmore <dennis@ausil.us> - 1.6-2
 - wine-desktop has architecture specific Requires so can not be noarch
 
