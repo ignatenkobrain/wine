@@ -3,8 +3,8 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.6
-Release:        3%{?dist}
+Version:        1.7.0
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -56,13 +56,13 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Wed, 29 May 2013 08:06:36 +0000
+# Fri, 2 Aug 2013 21:19:49 +0000
 # configure
 # configure.ac
 # dlls/mmdevapi/main.c
 # dlls/winepulse.drv
 # 
-Patch1001:      wine-pulse-1.5.31.patch
+Patch1001:      wine-pulse-1.7.0.patch
 # use winealsa for midi in the pa backend
 # http://repo.or.cz/w/wine/multimedia.git/commit/8f39a12639ee1d39c8caaf5f2ab72540d281814e
 Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
@@ -1530,6 +1530,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Aug 17 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.0-1
+- version upgrade
+- wine pulse update
+
 * Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.6-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 

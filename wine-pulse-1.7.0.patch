@@ -1,6 +1,6 @@
---- wine-1.5.31/configure	2013-05-24 20:20:05.000000000 +0200
-+++ wine-1.5.31-multimedia/configure	2013-05-30 07:55:57.501493755 +0200
-@@ -649,6 +649,8 @@
+--- wine-1.7.0/configure	2013-08-02 20:09:56.000000000 +0200
++++ wine-1.7.0-multimedia/configure	2013-08-17 08:36:36.681595552 +0200
+@@ -656,6 +656,8 @@
  ALSALIBS
  GSTREAMER_LIBS
  GSTREAMER_CFLAGS
@@ -9,7 +9,7 @@
  LIBGETTEXTPO
  ZLIB
  FREETYPE_LIBS
-@@ -830,6 +832,7 @@
+@@ -837,6 +839,7 @@
  with_oss
  with_png
  with_pthread
@@ -17,7 +17,7 @@
  with_sane
  with_tiff
  with_v4l
-@@ -1543,6 +1546,7 @@
+@@ -1558,6 +1561,7 @@
    --without-oss           do not use the OSS sound support
    --without-png           do not use PNG
    --without-pthread       do not use the pthread library
@@ -25,7 +25,7 @@
    --without-sane          do not use SANE (scanner support)
    --without-tiff          do not use TIFF
    --without-v4l           do not use v4l1 (v4l support)
-@@ -2761,6 +2765,12 @@
+@@ -2787,6 +2791,12 @@
  fi
  
  
@@ -38,7 +38,7 @@
  # Check whether --with-sane was given.
  if test "${with_sane+set}" = set; then :
    withval=$with_sane;
-@@ -11164,6 +11174,87 @@
+@@ -11193,6 +11203,87 @@
  fi
  fi
  
@@ -125,8 +125,8 @@
 +
  if test "x$with_gstreamer" != "xno"
  then
-     ac_save_CPPFLAGS="$CPPFLAGS"
-@@ -12244,12 +12335,13 @@
+     if test -n "$GSTREAMER_CFLAGS"; then :
+@@ -12422,12 +12513,13 @@
  
  test -n "$ALSALIBS" || enable_winealsa_drv=${enable_winealsa_drv:-no}
  test -n "$COREAUDIO" || enable_winecoreaudio_drv=${enable_winecoreaudio_drv:-no}
@@ -142,7 +142,7 @@
  then
      as_fn_append wine_warnings "|No sound system was found. Windows applications will be silent."
  fi
-@@ -16292,6 +16384,7 @@
+@@ -16473,6 +16565,7 @@
  wine_fn_config_dll wineoss.drv enable_wineoss_drv
  wine_fn_config_dll wineps.drv enable_wineps_drv install-lib,po
  wine_fn_config_dll wineps16.drv16 enable_win16
@@ -150,17 +150,17 @@
  wine_fn_config_dll wineqtdecoder enable_wineqtdecoder
  wine_fn_config_dll winex11.drv enable_winex11_drv
  wine_fn_config_dll wing.dll16 enable_win16
---- wine-1.5.31/configure.ac	2013-05-24 20:20:05.000000000 +0200
-+++ wine-1.5.31-multimedia/configure.ac	2013-05-30 07:55:57.726498855 +0200
-@@ -70,6 +70,7 @@
+--- wine-1.7.0/configure.ac	2013-08-02 20:09:56.000000000 +0200
++++ wine-1.7.0-multimedia/configure.ac	2013-08-17 08:36:36.682595549 +0200
+@@ -67,6 +67,7 @@
  AC_ARG_WITH(png,       AS_HELP_STRING([--without-png],[do not use PNG]))
  AC_ARG_WITH(pthread,   AS_HELP_STRING([--without-pthread],[do not use the pthread library]),
              [if test "x$withval" = "xno"; then ac_cv_header_pthread_h=no; fi])
 +AC_ARG_WITH(pulse,     AC_HELP_STRING([--without-pulse],[do not use PulseAudio sound support]))
  AC_ARG_WITH(sane,      AS_HELP_STRING([--without-sane],[do not use SANE (scanner support)]))
- AC_ARG_WITH(tiff,       AS_HELP_STRING([--without-tiff],[do not use TIFF]),
-             [if test "x$withval" = "xno"; then ac_cv_header_tiffio_h=no; fi])
-@@ -1544,6 +1545,30 @@
+ AC_ARG_WITH(tiff,      AS_HELP_STRING([--without-tiff],[do not use TIFF]))
+ AC_ARG_WITH(v4l,       AS_HELP_STRING([--without-v4l],[do not use v4l1 (v4l support)]))
+@@ -1517,6 +1518,30 @@
            [GetText ${notice_platform}development files not found (or too old), po files can't be rebuilt.])
  fi
  
@@ -191,7 +191,7 @@
  dnl **** Check for gstreamer ****
  if test "x$with_gstreamer" != "xno"
  then
-@@ -1733,13 +1758,14 @@
+@@ -1727,13 +1752,14 @@
  dnl **** Disable unsupported winmm drivers ****
  test -n "$ALSALIBS" || enable_winealsa_drv=${enable_winealsa_drv:-no}
  test -n "$COREAUDIO" || enable_winecoreaudio_drv=${enable_winecoreaudio_drv:-no}
@@ -208,7 +208,7 @@
  then
      WINE_WARNING([No sound system was found. Windows applications will be silent.])
  fi
-@@ -3116,6 +3142,7 @@
+@@ -3113,6 +3139,7 @@
  WINE_CONFIG_DLL(wineoss.drv)
  WINE_CONFIG_DLL(wineps.drv,,[install-lib,po])
  WINE_CONFIG_DLL(wineps16.drv16,enable_win16)
@@ -216,8 +216,8 @@
  WINE_CONFIG_DLL(wineqtdecoder)
  WINE_CONFIG_DLL(winex11.drv)
  WINE_CONFIG_DLL(wing.dll16,enable_win16)
---- wine-1.5.31/dlls/mmdevapi/main.c	2013-05-24 20:20:05.000000000 +0200
-+++ wine-1.5.31-multimedia/dlls/mmdevapi/main.c	2013-05-30 07:55:57.600495999 +0200
+--- wine-1.7.0/dlls/mmdevapi/main.c	2013-08-02 20:09:56.000000000 +0200
++++ wine-1.7.0-multimedia/dlls/mmdevapi/main.c	2013-08-17 08:36:36.910594852 +0200
 @@ -110,7 +110,7 @@
  {
      static const WCHAR drv_value[] = {'A','u','d','i','o',0};
@@ -227,9 +227,9 @@
          'c','o','r','e','a','u','d','i','o',0};
  
      DriverFuncs driver;
-diff -uhNr wine-1.5.31/dlls/winepulse.drv/Makefile.in wine-1.5.31-multimedia/dlls/winepulse.drv/Makefile.in
---- wine-1.5.31/dlls/winepulse.drv/Makefile.in	1970-01-01 01:00:00.000000000 +0100
-+++ wine-1.5.31-multimedia/dlls/winepulse.drv/Makefile.in	2013-05-30 07:55:57.646497041 +0200
+diff -uhNr wine-1.7.0/dlls/winepulse.drv/Makefile.in wine-1.7.0-multimedia/dlls/winepulse.drv/Makefile.in
+--- wine-1.7.0/dlls/winepulse.drv/Makefile.in	1970-01-01 01:00:00.000000000 +0100
++++ wine-1.7.0-multimedia/dlls/winepulse.drv/Makefile.in	2013-08-17 08:36:37.219593908 +0200
 @@ -0,0 +1,9 @@
 +MODULE    = winepulse.drv
 +IMPORTS   = dxguid uuid winmm user32 advapi32 ole32
@@ -240,10 +240,10 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/Makefile.in wine-1.5.31-multimedia/dll
 +	mmdevdrv.c
 +
 +@MAKE_DLL_RULES@
-diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls/winepulse.drv/mmdevdrv.c
---- wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c	1970-01-01 01:00:00.000000000 +0100
-+++ wine-1.5.31-multimedia/dlls/winepulse.drv/mmdevdrv.c	2013-05-30 07:55:57.646497041 +0200
-@@ -0,0 +1,3190 @@
+diff -uhNr wine-1.7.0/dlls/winepulse.drv/mmdevdrv.c wine-1.7.0-multimedia/dlls/winepulse.drv/mmdevdrv.c
+--- wine-1.7.0/dlls/winepulse.drv/mmdevdrv.c	1970-01-01 01:00:00.000000000 +0100
++++ wine-1.7.0-multimedia/dlls/winepulse.drv/mmdevdrv.c	2013-08-17 08:36:37.219593908 +0200
+@@ -0,0 +1,3221 @@
 +/*
 + * Copyright 2011-2012 Maarten Lankhorst
 + * Copyright 2010-2011 Maarten Lankhorst for CodeWeavers
@@ -415,6 +415,7 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +    IAudioClock IAudioClock_iface;
 +    IAudioClock2 IAudioClock2_iface;
 +    IAudioStreamVolume IAudioStreamVolume_iface;
++    IUnknown *marshal;
 +    IMMDevice *parent;
 +    struct list entry;
 +    float vol[PA_CHANNELS_MAX];
@@ -1080,6 +1081,12 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +    This->parent = dev;
 +    for (i = 0; i < PA_CHANNELS_MAX; ++i)
 +        This->vol[i] = 1.f;
++
++    hr = CoCreateFreeThreadedMarshaler((IUnknown*)This, &This->marshal);
++    if (hr) {
++        HeapFree(GetProcessHeap(), 0, This);
++        return hr;
++    }
 +    IMMDevice_AddRef(This->parent);
 +
 +    *out = &This->IAudioClient_iface;
@@ -1091,10 +1098,13 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +static HRESULT WINAPI AudioClient_QueryInterface(IAudioClient *iface,
 +        REFIID riid, void **ppv)
 +{
++    ACImpl *This = impl_from_IAudioClient(iface);
++
 +    TRACE("(%p)->(%s, %p)\n", iface, debugstr_guid(riid), ppv);
 +
 +    if (!ppv)
 +        return E_POINTER;
++
 +    *ppv = NULL;
 +    if (IsEqualIID(riid, &IID_IUnknown) || IsEqualIID(riid, &IID_IAudioClient))
 +        *ppv = iface;
@@ -1102,6 +1112,10 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +        IUnknown_AddRef((IUnknown*)*ppv);
 +        return S_OK;
 +    }
++
++    if (IsEqualIID(riid, &IID_IMarshal))
++        return IUnknown_QueryInterface(This->marshal, riid, ppv);
++
 +    WARN("Unknown interface %s\n", debugstr_guid(riid));
 +    return E_NOINTERFACE;
 +}
@@ -1134,6 +1148,7 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +            list_remove(&This->entry);
 +            pthread_mutex_unlock(&pulse_lock);
 +        }
++        IUnknown_Release(This->marshal);
 +        IMMDevice_Release(This->parent);
 +        HeapFree(GetProcessHeap(), 0, This->tmp_buffer);
 +        HeapFree(GetProcessHeap(), 0, This);
@@ -2072,6 +2087,7 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +static HRESULT WINAPI AudioRenderClient_QueryInterface(
 +        IAudioRenderClient *iface, REFIID riid, void **ppv)
 +{
++    ACImpl *This = impl_from_IAudioRenderClient(iface);
 +    TRACE("(%p)->(%s, %p)\n", iface, debugstr_guid(riid), ppv);
 +
 +    if (!ppv)
@@ -2085,6 +2101,9 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +        IUnknown_AddRef((IUnknown*)*ppv);
 +        return S_OK;
 +    }
++
++    if (IsEqualIID(riid, &IID_IMarshal))
++        return IUnknown_QueryInterface(This->marshal, riid, ppv);
 +
 +    WARN("Unknown interface %s\n", debugstr_guid(riid));
 +    return E_NOINTERFACE;
@@ -2215,6 +2234,7 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +static HRESULT WINAPI AudioCaptureClient_QueryInterface(
 +        IAudioCaptureClient *iface, REFIID riid, void **ppv)
 +{
++    ACImpl *This = impl_from_IAudioCaptureClient(iface);
 +    TRACE("(%p)->(%s, %p)\n", iface, debugstr_guid(riid), ppv);
 +
 +    if (!ppv)
@@ -2228,6 +2248,9 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +        IUnknown_AddRef((IUnknown*)*ppv);
 +        return S_OK;
 +    }
++
++    if (IsEqualIID(riid, &IID_IMarshal))
++        return IUnknown_QueryInterface(This->marshal, riid, ppv);
 +
 +    WARN("Unknown interface %s\n", debugstr_guid(riid));
 +    return E_NOINTERFACE;
@@ -2371,6 +2394,9 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +        return S_OK;
 +    }
 +
++    if (IsEqualIID(riid, &IID_IMarshal))
++        return IUnknown_QueryInterface(This->marshal, riid, ppv);
++
 +    WARN("Unknown interface %s\n", debugstr_guid(riid));
 +    return E_NOINTERFACE;
 +}
@@ -2506,6 +2532,8 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +static HRESULT WINAPI AudioStreamVolume_QueryInterface(
 +        IAudioStreamVolume *iface, REFIID riid, void **ppv)
 +{
++    ACImpl *This = impl_from_IAudioStreamVolume(iface);
++
 +    TRACE("(%p)->(%s, %p)\n", iface, debugstr_guid(riid), ppv);
 +
 +    if (!ppv)
@@ -2519,6 +2547,9 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +        IUnknown_AddRef((IUnknown*)*ppv);
 +        return S_OK;
 +    }
++
++    if (IsEqualIID(riid, &IID_IMarshal))
++        return IUnknown_QueryInterface(This->marshal, riid, ppv);
 +
 +    WARN("Unknown interface %s\n", debugstr_guid(riid));
 +    return E_NOINTERFACE;
@@ -3434,9 +3465,9 @@ diff -uhNr wine-1.5.31/dlls/winepulse.drv/mmdevdrv.c wine-1.5.31-multimedia/dlls
 +    *out = &This->IAudioSessionManager2_iface;
 +    return S_OK;
 +}
-diff -uhNr wine-1.5.31/dlls/winepulse.drv/winepulse.drv.spec wine-1.5.31-multimedia/dlls/winepulse.drv/winepulse.drv.spec
---- wine-1.5.31/dlls/winepulse.drv/winepulse.drv.spec	1970-01-01 01:00:00.000000000 +0100
-+++ wine-1.5.31-multimedia/dlls/winepulse.drv/winepulse.drv.spec	2013-05-30 07:55:57.646497041 +0200
+diff -uhNr wine-1.7.0/dlls/winepulse.drv/winepulse.drv.spec wine-1.7.0-multimedia/dlls/winepulse.drv/winepulse.drv.spec
+--- wine-1.7.0/dlls/winepulse.drv/winepulse.drv.spec	1970-01-01 01:00:00.000000000 +0100
++++ wine-1.7.0-multimedia/dlls/winepulse.drv/winepulse.drv.spec	2013-08-17 08:36:37.219593908 +0200
 @@ -0,0 +1,5 @@
 +# MMDevAPI driver functions
 +@ stdcall -private GetPriority() AUDDRV_GetPriority
