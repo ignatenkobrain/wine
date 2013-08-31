@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.7.0
+Version:        1.7.1
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -80,7 +80,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  alsa-lib-devel
 BuildRequires:  audiofile-devel
 BuildRequires:  freeglut-devel
-BuildRequires:  lcms-devel
+BuildRequires:  lcms2-devel
 BuildRequires:  libieee1284-devel
 BuildRequires:  libjpeg-devel
 BuildRequires:  libpng-devel
@@ -918,6 +918,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/servicemodelreg.exe.so
 %{_libdir}/wine/services.exe.so
 %{_libdir}/wine/start.exe.so
+%{_libdir}/wine/tasklist.exe.so
 %{_libdir}/wine/termsv.exe.so
 %{_libdir}/wine/view.exe.so
 %{_libdir}/wine/wineboot.exe.so
@@ -972,6 +973,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/comctl32.dll.so
 %{_libdir}/wine/comdlg32.dll.so
 %{_libdir}/wine/compstui.dll.so
+%{_libdir}/wine/comsvcs.dll.so
 %{_libdir}/wine/credui.dll.so
 %{_libdir}/wine/crtdll.dll.so
 %{_libdir}/wine/crypt32.dll.so
@@ -1237,6 +1239,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/vcomp100.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
+%{_libdir}/wine/wbemdisp.dll.so
 %{_libdir}/wine/wbemprox.dll.so
 %{_libdir}/wine/webservices.dll.so
 %{_libdir}/wine/wer.dll.so
@@ -1530,6 +1533,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Aug 31 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.1-1
+- version upgrade
+- build with lcms2
+
 * Sat Aug 17 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.0-1
 - version upgrade
