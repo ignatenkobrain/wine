@@ -4,7 +4,7 @@
 
 Name:           wine
 Version:        1.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -153,6 +153,7 @@ Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
 # Requires:       samba-winbind-clients(x86-32) wait for rhbz#968860
+Requires:       mesa-dri-drivers(x86-32)
 %endif
 
 %ifarch %{ix86}
@@ -177,6 +178,7 @@ Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
 # Requires:       samba-winbind-clients(x86-64) wait for rhbz#968860
+Requires:       mesa-dri-drivers(x86-64)
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 %endif
@@ -191,6 +193,8 @@ Requires:       wine-twain = %{version}-%{release}
 Requires:       wine-pulseaudio = %{version}-%{release}
 Requires:       wine-openal = %{version}-%{release}
 Requires:       wine-wow = %{version}-%{release}
+Requires:       mesa-dri-drivers
+Requires:       samba-winbind-clients
 %endif
 
 %description
@@ -284,6 +288,8 @@ Summary:        Systemd config for the wine binfmt handler
 Group:          Applications/Emulators
 Requires:       systemd >= 23
 BuildArch:      noarch
+Requires(post):  systemd
+Requires(postun): systemd
 
 %description systemd
 Register the wine binary handler for windows executables via systemd binfmt
@@ -606,41 +612,52 @@ mkdir -p %{buildroot}%{_datadir}/wine/mono
 %if 0%{?fedora} > 10
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 
+# This replacement masks a composite program icon .SVG down
+# so that only its full-size scalable icon is visible
+PROGRAM_ICONFIX='s/height="272"/height="256"/;'\
+'s/width="632"/width="256"\n'\
+'   x="368"\n'\
+'   y="8"\n'\
+'   viewBox="368, 8, 256, 256"/;'
+
+# This icon file is still in the legacy format
 install -p -m 644 dlls/user32/resources/oic_winlogo.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
 sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wine.svg
 
+# The rest come from programs/, and contain larger scalable icons
+# with a new layout that requires the PROGRAM_ICONFIX sed adjustment
 install -p -m 644 programs/notepad/notepad.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/notepad.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/notepad.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/notepad.svg
 
 install -p -m 644 programs/regedit/regedit.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/regedit.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/regedit.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/regedit.svg
 
 install -p -m 644 programs/msiexec/msiexec.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/msiexec.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/msiexec.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/msiexec.svg
 
 install -p -m 644 programs/winecfg/winecfg.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winecfg.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winecfg.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winecfg.svg
 
 install -p -m 644 programs/winefile/winefile.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winefile.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winefile.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winefile.svg
 
 install -p -m 644 programs/winemine/winemine.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winemine.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winemine.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winemine.svg
 
 install -p -m 644 programs/winhlp32/winhelp.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winhelp.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winhelp.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/winhelp.svg
 
 install -p -m 644 programs/wordpad/wordpad.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
-sed -i -e '3s/368/64/'  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
+sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/wordpad.svg
 
 %endif
 
@@ -773,6 +790,14 @@ fi
 if [ $1 -eq 0 ]; then
 /sbin/service wine stop >/dev/null 2>&1
 /sbin/chkconfig --del wine
+fi
+
+%post systemd
+/bin/systemctl try-restart systemd-binfmt.service
+
+%postun systemd
+if [$1 -eq 0]; then
+/bin/systemctl try-restart systemd-binfmt.service
 fi
 
 %post desktop
@@ -1533,6 +1558,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Aug 31 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.1-2
+- fix icons with patch provided by Frank Dana (rhbz#997543) 
+- pull in mesa-dri-drivers in meta package to make direct rendering work out
+  of the box (rhbz#827776)
+- restart systemd binfmt handler on post/postun (rhbz#912354)
+- add arabic translation to fedora desktop files provided by Mosaab Alzoubi
+  (rhbz#979770)
+
 * Sat Aug 31 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.1-1
 - version upgrade
