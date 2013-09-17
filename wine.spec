@@ -3,8 +3,8 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.7.1
-Release:        2%{?dist}
+Version:        1.7.2
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -32,9 +32,6 @@ Source108:      wine-wordpad.desktop
 Source109:      wine-oleview.desktop
 
 # build fixes
-# do not check for glAccum
-# wget http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-emulation/wine/files/wine-1.5.17-osmesa-check.patch?revision=1.1
-Patch1:          wine-1.5.17-osmesa-check.patch
 
 # wine bugs
 
@@ -56,16 +53,14 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Fri, 2 Aug 2013 21:19:49 +0000
-# configure
-# configure.ac
-# dlls/mmdevapi/main.c
-# dlls/winepulse.drv
-# 
-Patch1001:      wine-pulse-1.7.0.patch
-# use winealsa for midi in the pa backend
-# http://repo.or.cz/w/wine/multimedia.git/commit/8f39a12639ee1d39c8caaf5f2ab72540d281814e
-Patch1002:      wine-pulse-winmm-Load-winealsa-if-winepulse-is-found.patch
+# Sat, 31 Aug 2013 06:36:03 +0000
+# based on wine tree 1.7.1
+##
+# git clone http://repo.or.cz/w/wine/multimedia.git
+# cd multimedia.git
+# git format-patch -k --stdout bea77093864177659aa16aab5d81b213015990b9~..eecbc197a50ddee696590019e8aa644108f3efb2 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.1.patch
+# git format-patch -k --stdout 8513286932d086a28eeab6652b81990b7cb3f36d~..5a091534be9dcb6cdfa8bdf9f4e642b42acd35de --stdout >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.1.patch
+Patch1001:      wine-pulse-1.7.1.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -152,7 +147,8 @@ Requires:       wine-openal(x86-32) = %{version}-%{release}
 Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
-# Requires:       samba-winbind-clients(x86-32) wait for rhbz#968860
+#  wait for rhbz#968860 to require arch-specific samba-winbind-clients
+Requires:       /usr/bin/ntlm_auth
 Requires:       mesa-dri-drivers(x86-32)
 %endif
 
@@ -177,7 +173,6 @@ Requires:       wine-openal(x86-64) = %{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
-# Requires:       samba-winbind-clients(x86-64) wait for rhbz#968860
 Requires:       mesa-dri-drivers(x86-64)
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
@@ -536,12 +531,9 @@ This package adds an openal driver for wine.
 %prep
 %setup -q
 
-%patch1 -p1 -b.osmesa
-
 %patch511 -p1 -b.cjk
 
 %patch1001 -p1 -b.winepulse
-%patch1002 -p1 -b.winepulse-midi
 
 autoreconf
 
@@ -983,6 +975,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/atl.dll.so
 %{_libdir}/wine/atl80.dll.so
 %{_libdir}/wine/atl100.dll.so
+%{_libdir}/wine/atl110.dll.so
 %{_libdir}/wine/authz.dll.so
 %{_libdir}/wine/avicap32.dll.so
 %{_libdir}/wine/avifil32.dll.so
@@ -1016,6 +1009,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/d3drm.dll.so
 %{_libdir}/wine/d3dx9_*.dll.so
 %{_libdir}/wine/d3dx10_*.dll.so
+%{_libdir}/wine/d3dx11_42.dll.so
+%{_libdir}/wine/d3dx11_43.dll.so
 %{_libdir}/wine/d3dxof.dll.so
 %{_libdir}/wine/dbgeng.dll.so
 %{_libdir}/wine/dbghelp.dll.so
@@ -1170,6 +1165,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msxml6.dll.so
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
+%{_libdir}/wine/netcfgx.dll.so
 %{_libdir}/wine/netsh.exe.so
 %{_libdir}/wine/newdev.dll.so
 %{_libdir}/wine/normaliz.dll.so
@@ -1314,6 +1310,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/xinput1_1.dll.so
 %{_libdir}/wine/xinput1_2.dll.so
 %{_libdir}/wine/xinput1_3.dll.so
+%{_libdir}/wine/xinput1_4.dll.so
 %{_libdir}/wine/xinput9_1_0.dll.so
 %{_libdir}/wine/xmllite.dll.so
 %{_libdir}/wine/xolehlp.dll.so
@@ -1558,6 +1555,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Sep 15 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.2-1
+- version upgrade
+- workaround for rhbz#968860
+- upgraded winepulse
+
 * Sat Aug 31 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.1-2
 - fix icons with patch provided by Frank Dana (rhbz#997543) 
