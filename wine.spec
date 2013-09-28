@@ -1,9 +1,9 @@
 %global no64bit   0
-%global winegecko 2.21
+%global winegecko 2.24
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.7.2
+Version:        1.7.3
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -56,11 +56,11 @@ Patch511:       wine-cjk.patch
 # Sat, 31 Aug 2013 06:36:03 +0000
 # based on wine tree 1.7.1
 ##
-# git clone http://repo.or.cz/w/wine/multimedia.git
-# cd multimedia.git
+# git clone http://repo.or.cz/r/wine/multimedia.git
+# cd multimedia
 # git format-patch -k --stdout bea77093864177659aa16aab5d81b213015990b9~..eecbc197a50ddee696590019e8aa644108f3efb2 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.1.patch
 # git format-patch -k --stdout 8513286932d086a28eeab6652b81990b7cb3f36d~..5a091534be9dcb6cdfa8bdf9f4e642b42acd35de --stdout >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.1.patch
-Patch1001:      wine-pulse-1.7.1.patch
+Patch1001:      wine-pulse-1.7.3.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -788,7 +788,7 @@ fi
 /bin/systemctl try-restart systemd-binfmt.service
 
 %postun systemd
-if [$1 -eq 0]; then
+if [ $1 -eq 0 ]; then
 /bin/systemctl try-restart systemd-binfmt.service
 fi
 
@@ -1555,6 +1555,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Sep 28 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.3-1
+- version upgrade (rhbz#1008441)
+- upgraded winepulse
+- wine gecko 2.24
+- fix systemd subpackage scriplet (rhbz#1010742)
+
 * Sun Sep 15 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.2-1
 - version upgrade
