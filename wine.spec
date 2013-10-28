@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.7.3
+Version:        1.7.4
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1555,6 +1555,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Oct 12 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.4-1
+- version upgrade
+
 * Sat Sep 28 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.3-1
 - version upgrade (rhbz#1008441)
