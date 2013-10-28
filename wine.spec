@@ -3,7 +3,7 @@
 %global winemono  0.0.8
 
 Name:           wine
-Version:        1.7.4
+Version:        1.7.5
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -53,14 +53,15 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Sat, 31 Aug 2013 06:36:03 +0000
-# based on wine tree 1.7.1
+# Fri, 18 Oct 2013 23:16:38 +0000
+# based on wine tree 1.7.4
 ##
 # git clone http://repo.or.cz/r/wine/multimedia.git
 # cd multimedia
-# git format-patch -k --stdout bea77093864177659aa16aab5d81b213015990b9~..eecbc197a50ddee696590019e8aa644108f3efb2 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.1.patch
-# git format-patch -k --stdout 8513286932d086a28eeab6652b81990b7cb3f36d~..5a091534be9dcb6cdfa8bdf9f4e642b42acd35de --stdout >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.1.patch
-Patch1001:      wine-pulse-1.7.3.patch
+#git format-patch -k --stdout 9bed77776bc322ed482aa1ac2525f60d457130e6~..a2cb619b3d2b7160ce15d49c483c8531532747cd > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.4.patch
+#git format-patch -k --stdout 6f9b97bc5b9c0871e7cebe5f041169232468d2e8~..fbbd11d703f1b18281d430c7d8fbcdcb93f4c07a >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.4.patch
+
+Patch1001:      wine-pulse-1.7.4.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -974,6 +975,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
 %{_libdir}/wine/atl80.dll.so
+%{_libdir}/wine/atl90.dll.so
 %{_libdir}/wine/atl100.dll.so
 %{_libdir}/wine/atl110.dll.so
 %{_libdir}/wine/authz.dll.so
@@ -1390,7 +1392,6 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_datadir}/wine/gecko
 %dir %{_datadir}/wine/mono
 %dir %{_datadir}/wine/fonts
-%{_datadir}/wine/generic.ppd
 %{_datadir}/wine/wine.inf
 %{_datadir}/wine/l_intl.nls
 
@@ -1555,9 +1556,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Oct 28 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.5-1
+- version upgrade (rhbz#1023716)
+- upgraded winepulse
+
 * Sat Oct 12 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.4-1
-- version upgrade
+- version upgrade (rhbz#1018601)
 
 * Sat Sep 28 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.3-1
