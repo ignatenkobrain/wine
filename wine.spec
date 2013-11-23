@@ -1,9 +1,10 @@
 %global no64bit   0
 %global winegecko 2.24
 %global winemono  0.0.8
+%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.5
+Version:        1.7.7
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1556,6 +1557,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Nov 23 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.7-1
+- version upgrade
+
 * Mon Oct 28 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.5-1
 - version upgrade (rhbz#1023716)
