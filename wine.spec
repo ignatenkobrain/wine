@@ -1,10 +1,10 @@
 %global no64bit   0
 %global winegecko 2.24
-%global winemono  0.0.8
-%global _default_patch_fuzz 2
+%global winemono  4.5.2
+#%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.7
+Version:        1.7.8
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -54,15 +54,15 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Fri, 18 Oct 2013 23:16:38 +0000
-# based on wine tree 1.7.4
+# Fri, 6 Dec 2013 20:18:55 +0000
+# based on wine tree 1.7.8
 ##
 # git clone http://repo.or.cz/r/wine/multimedia.git
 # cd multimedia
-#git format-patch -k --stdout 9bed77776bc322ed482aa1ac2525f60d457130e6~..a2cb619b3d2b7160ce15d49c483c8531532747cd > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.4.patch
-#git format-patch -k --stdout 6f9b97bc5b9c0871e7cebe5f041169232468d2e8~..fbbd11d703f1b18281d430c7d8fbcdcb93f4c07a >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.4.patch
+# git format-patch -k --stdout 8376f764411b8ca7f6f80a25e2abe63a4dc48fa0~..1d4db9d1cefac51737b438b498f8c30d41fa7ef1 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.8.patch
+# git format-patch -k --stdout a6484f959a11b2e3e10be7c0fd399f4b97583e90~..bbc04a603b99e7db5a71aff2fa323852aebc0495 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.8.patch
 
-Patch1001:      wine-pulse-1.7.4.patch
+Patch1001:      wine-pulse-1.7.8.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -907,6 +907,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/fakedlls/*
 
 %{_libdir}/wine/attrib.exe.so
+%{_libdir}/wine/arp.exe.so
 %{_libdir}/wine/aspnet_regiis.exe.so
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/conhost.exe.so
@@ -1557,6 +1558,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Dec 08 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.8-1
+- version upgrade
+- wine mono 4.5.2
+- upgraded winepulse
+
 * Sat Nov 23 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.7-1
 - version upgrade

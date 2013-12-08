@@ -1,6 +1,6 @@
-From 9bed77776bc322ed482aa1ac2525f60d457130e6 Mon Sep 17 00:00:00 2001
+From 8376f764411b8ca7f6f80a25e2abe63a4dc48fa0 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winmm: Load winealsa if winepulse is found
 
 Fixes midi on winepulse
@@ -9,10 +9,10 @@ Fixes midi on winepulse
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/dlls/winmm/lolvldrv.c b/dlls/winmm/lolvldrv.c
-index f387323..3b1be27 100644
+index c3b3674..56cfe35 100644
 --- a/dlls/winmm/lolvldrv.c
 +++ b/dlls/winmm/lolvldrv.c
-@@ -543,7 +543,10 @@ static void MMDRV_Init(void)
+@@ -544,7 +544,10 @@ static void MMDRV_Init(void)
      drvA = HeapAlloc(GetProcessHeap(), 0, size);
      WideCharToMultiByte(CP_ACP, 0, pv.u.pwszVal, -1, drvA, size, NULL, NULL);
  
@@ -25,12 +25,12 @@ index f387323..3b1be27 100644
      HeapFree(GetProcessHeap(), 0, drvA);
      PropVariantClear(&pv);
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 368c519a2231055881f592e3a1266d85dec9b62c Mon Sep 17 00:00:00 2001
+From 77927f6e282821ff21c637fc1c9a5d710f5f59e4 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add initial stub for pulseaudio support
 
 ---
@@ -49,7 +49,7 @@ added here.
  create mode 100644 dlls/winepulse.drv/winepulse.drv.spec
 
 diff --git a/configure b/configure
-index 683043c..bf5e7f9 100755
+index 81a474f..879ef8f 100755
 --- a/configure
 +++ b/configure
 @@ -658,6 +658,8 @@ OSS4INCL
@@ -61,7 +61,7 @@ index 683043c..bf5e7f9 100755
  LIBGETTEXTPO
  ZLIB
  FREETYPE_LIBS
-@@ -834,6 +836,7 @@ with_osmesa
+@@ -835,6 +837,7 @@ with_osmesa
  with_oss
  with_png
  with_pthread
@@ -69,7 +69,7 @@ index 683043c..bf5e7f9 100755
  with_sane
  with_tiff
  with_v4l
-@@ -2044,6 +2047,7 @@ Optional Packages:
+@@ -2048,6 +2051,7 @@ Optional Packages:
    --without-oss           do not use the OSS sound support
    --without-png           do not use PNG
    --without-pthread       do not use the pthread library
@@ -77,7 +77,7 @@ index 683043c..bf5e7f9 100755
    --without-sane          do not use SANE (scanner support)
    --without-tiff          do not use TIFF
    --without-v4l           do not use v4l1 (v4l support)
-@@ -3273,6 +3277,12 @@ if test "${with_pthread+set}" = set; then :
+@@ -3283,6 +3287,12 @@ if test "${with_pthread+set}" = set; then :
  fi
  
  
@@ -90,7 +90,7 @@ index 683043c..bf5e7f9 100755
  # Check whether --with-sane was given.
  if test "${with_sane+set}" = set; then :
    withval=$with_sane;
-@@ -11710,6 +11720,87 @@ esac
+@@ -11689,6 +11699,87 @@ esac
  fi
  fi
  
@@ -178,7 +178,7 @@ index 683043c..bf5e7f9 100755
  if test "x$with_gstreamer" != "xno"
  then
      if test -n "$GSTREAMER_CFLAGS"; then :
-@@ -12987,12 +13078,13 @@ fi
+@@ -13026,12 +13117,13 @@ fi
  
  test -n "$ALSALIBS" || enable_winealsa_drv=${enable_winealsa_drv:-no}
  test -n "$COREAUDIO" || enable_winecoreaudio_drv=${enable_winecoreaudio_drv:-no}
@@ -194,19 +194,19 @@ index 683043c..bf5e7f9 100755
  then
      as_fn_append wine_warnings "|No sound system was found. Windows applications will be silent."
  fi
-@@ -17205,6 +17297,7 @@ wine_fn_config_dll winemp3.acm enable_winemp3_acm
+@@ -17281,6 +17373,7 @@ wine_fn_config_dll winemp3.acm enable_winemp3_acm
  wine_fn_config_dll wineoss.drv enable_wineoss_drv
- wine_fn_config_dll wineps.drv enable_wineps_drv po
+ wine_fn_config_dll wineps.drv enable_wineps_drv clean,po
  wine_fn_config_dll wineps16.drv16 enable_win16
 +wine_fn_config_dll winepulse.drv enable_winepulse_drv
  wine_fn_config_dll wineqtdecoder enable_wineqtdecoder
  wine_fn_config_dll winex11.drv enable_winex11_drv
  wine_fn_config_dll wing.dll16 enable_win16
 diff --git a/configure.ac b/configure.ac
-index fc68e1d..4252e05 100644
+index 0124652..6a3d59c 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -67,6 +67,7 @@ AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound
+@@ -68,6 +68,7 @@ AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound
  AC_ARG_WITH(png,       AS_HELP_STRING([--without-png],[do not use PNG]))
  AC_ARG_WITH(pthread,   AS_HELP_STRING([--without-pthread],[do not use the pthread library]),
              [if test "x$withval" = "xno"; then ac_cv_header_pthread_h=no; fi])
@@ -214,7 +214,7 @@ index fc68e1d..4252e05 100644
  AC_ARG_WITH(sane,      AS_HELP_STRING([--without-sane],[do not use SANE (scanner support)]))
  AC_ARG_WITH(tiff,      AS_HELP_STRING([--without-tiff],[do not use TIFF]))
  AC_ARG_WITH(v4l,       AS_HELP_STRING([--without-v4l],[do not use v4l1 (v4l support)]))
-@@ -1540,6 +1541,30 @@ then
+@@ -1522,6 +1523,30 @@ then
            [GetText ${notice_platform}development files not found (or too old), po files can't be rebuilt.])
  fi
  
@@ -245,7 +245,7 @@ index fc68e1d..4252e05 100644
  dnl **** Check for gstreamer ****
  if test "x$with_gstreamer" != "xno"
  then
-@@ -1758,13 +1783,14 @@ WINE_CHECK_SONAME(odbc,SQLConnect,,[AC_DEFINE_UNQUOTED(SONAME_LIBODBC,["libodbc.
+@@ -1746,13 +1771,14 @@ fi
  dnl **** Disable unsupported winmm drivers ****
  test -n "$ALSALIBS" || enable_winealsa_drv=${enable_winealsa_drv:-no}
  test -n "$COREAUDIO" || enable_winecoreaudio_drv=${enable_winecoreaudio_drv:-no}
@@ -262,9 +262,9 @@ index fc68e1d..4252e05 100644
  then
      WINE_WARNING([No sound system was found. Windows applications will be silent.])
  fi
-@@ -3242,6 +3268,7 @@ WINE_CONFIG_DLL(winemp3.acm)
+@@ -3249,6 +3275,7 @@ WINE_CONFIG_DLL(winemp3.acm)
  WINE_CONFIG_DLL(wineoss.drv)
- WINE_CONFIG_DLL(wineps.drv,,[po])
+ WINE_CONFIG_DLL(wineps.drv,,[clean,po])
  WINE_CONFIG_DLL(wineps16.drv16,enable_win16)
 +WINE_CONFIG_DLL(winepulse.drv)
  WINE_CONFIG_DLL(wineqtdecoder)
@@ -606,12 +606,12 @@ index 0000000..a089166
 +@ stdcall -private GetAudioEndpoint(ptr ptr long ptr) AUDDRV_GetAudioEndpoint
 +@ stdcall -private GetAudioSessionManager(ptr ptr) AUDDRV_GetAudioSessionManager
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From c1e85b6fe49bec3ec081f80ad4788f03a78eee10 Mon Sep 17 00:00:00 2001
+From 3c94a9022cb90e8b0d1b7524edd55f516f496832 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add format and period probing
 
 ---
@@ -779,12 +779,12 @@ index d187bdc..40db26d 100644
          UINT *num, UINT *def_index)
  {
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 2fd945fc084010cd5cda1ab8cd391f805a173f6d Mon Sep 17 00:00:00 2001
+From 7c1a11a6602b67babc52e7fbb03ecb18114248cc Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add audioclient
 
 ---
@@ -1878,12 +1878,12 @@ index 40db26d..37d85ff 100644
          IAudioSessionManager2 **out)
  {
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From c8eebef87664b3ce579fccc2e1d025948c11624d Mon Sep 17 00:00:00 2001
+From 32cb2815c43bcd74c833dcc5087cc2ad08e3a170 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add IAudioRenderClient and IAudioCaptureClient
 
 ---
@@ -2230,12 +2230,12 @@ index 37d85ff..01cfd25 100644
          IAudioSessionManager2 **out)
  {
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 09641562ebb7d3403e5c67064ae35fb1c27f8759 Mon Sep 17 00:00:00 2001
+From 648205cd61009d72c373717cd0eb9fc434b2203b Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add IAudioClock and IAudioClock2
 
 ---
@@ -2440,12 +2440,12 @@ index 01cfd25..3ed2288 100644
          IAudioSessionManager2 **out)
  {
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From a4b9609c7136ba7702b1ebb832a5036d40d5811d Mon Sep 17 00:00:00 2001
+From d93c422fed531827cfaaa6ce43c4f0b98b8dd14a Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add audiostreamvolume
 
 ---
@@ -2726,12 +2726,12 @@ index 3ed2288..b7414c2 100644
          IAudioSessionManager2 **out)
  {
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 5fdc48b529e9d29e837ac3c1fbdf04a69e14f246 Mon Sep 17 00:00:00 2001
+From 36901117b08c85dc683d199e5c62cdfccfaac7f0 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Add session support
 
 ---
@@ -3663,12 +3663,12 @@ index b7414c2..64ee62e 100644
 +    return S_OK;
  }
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 7863d23c5bcc99a237ffe63fdfd7ac76212fbd64 Mon Sep 17 00:00:00 2001
+From 08ae6d589046aefcfad38f880b6a9c63b27cecdb Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: fix fdels trailing whitespaces
 
 Happy? :P
@@ -3699,12 +3699,12 @@ index 64ee62e..5a71a3d 100644
      if (*pos < This->clock_lastpos)
          *pos = This->clock_lastpos;
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 8d9f5b918d7477258c61cac331c3ff3133d13245 Mon Sep 17 00:00:00 2001
+From 7d0b90f4bab447fb8a5af373e78f82bfe8f9cb6d Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse v12
 
 Changes since v11:
@@ -3748,12 +3748,12 @@ index 5a71a3d..960af3c 100644
              copy = rem;
              if (copy > src_len)
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From d4891c720ed1a43035d31ef2a6f172bc57856908 Mon Sep 17 00:00:00 2001
+From 37b37d25cc6db1328ad1d405ddf6729467a75ba8 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:09 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse v15: Add support for missing formats, and silence an error
  for missing format tags
 
@@ -3790,12 +3790,12 @@ index 960af3c..f52f119 100644
      This->ss.channels = This->map.channels;
      if (!pa_channel_map_valid(&This->map) || This->ss.format == PA_SAMPLE_INVALID) {
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From e9cba9021d291e22b7fcb767efbfcbdf8cd32a95 Mon Sep 17 00:00:00 2001
+From 852ac745ba93ad750e726e162111a8bdf791fe1a Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse v16: Add official warning wine doesn't want to support
  winepulse
 
@@ -3870,12 +3870,12 @@ index f52f119..76a2e0e 100644
          return E_UNEXPECTED;
  
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From d366e3cb55816d79eaf90140d20a96c724976a75 Mon Sep 17 00:00:00 2001
+From dafe04928a3025f93346045e8988e8627233ee91 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <m.b.lankhorst@gmail.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse v17: Fix winmm tests
 
 Handle dwChannelMask = SPEAKER_ALL better so WAVE_FORMAT_EXTENSIBLE tests pass too
@@ -3996,12 +3996,12 @@ index 76a2e0e..6e75674 100644
      if (hr == S_OK || !out) {
          CoTaskMemFree(closest);
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 50a0e36b8bae78c66b99fa02a316b6ae08b21771 Mon Sep 17 00:00:00 2001
+From cdfb7e5da3b77681795be280694b0b25c1f80748 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse v18: Latency and compilation improvements
 
 Changes since v17:
@@ -4204,12 +4204,12 @@ index 6e75674..8e76826 100644
      /* Make time never go backwards */
      if (*pos < This->clock_lastpos)
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 41ff43e8e0a32c2e110cc8d5eefe483df1a6ccc5 Mon Sep 17 00:00:00 2001
+From 8c63eb09664f3fc458a86ace66cb422fb4aa7c42 Mon Sep 17 00:00:00 2001
 From: Juergen Tretthahn <orson@orson.at>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: API Compatibility with 1.5.2 onward, v2
 
 V2: Add winepulse.drv.spec to commit too
@@ -4319,12 +4319,12 @@ index a089166..612bf46 100644
 +@ stdcall -private GetAudioEndpoint(ptr ptr ptr) AUDDRV_GetAudioEndpoint
  @ stdcall -private GetAudioSessionManager(ptr ptr) AUDDRV_GetAudioSessionManager
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 82a81bf8d00f2f00334d9319165df0c971ea2322 Mon Sep 17 00:00:00 2001
+From 3f2bab86289d3d3c21d4421c66e5f67c27e6ad36 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: Fix low latency support
 
 Some games request a 20 ms buffer and will only fill 20 ms.
@@ -4378,12 +4378,12 @@ index b374b53..7c07f54 100644
      return S_OK;
  }
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 57e62655e388ea3d8569edd11d97d6e25fb59ed7 Mon Sep 17 00:00:00 2001
+From ce9eb7dd4b99f863343b789e7ccf7ea90c0ee5e5 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:54 +0100
 Subject: winepulse: drop realtime priority before thread destruction
 
 prevents having to handle a kernel RT Watchdog Timeout.
@@ -4405,12 +4405,12 @@ index 7c07f54..ba68102 100644
             pa_context_disconnect(pulse_ctx);
             pa_context_unref(pulse_ctx);
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 2a88932762f4c71db41f334eb522127a59d676cd Mon Sep 17 00:00:00 2001
+From 02e87980b9f45f455209e9e79d989a8cc91cdbc9 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse: remove bogus SetEvent from pulse_started_callback
 
 ---
@@ -4434,12 +4434,12 @@ index ba68102..68de00c 100644
  
  static void pulse_rd_loop(ACImpl *This, size_t bytes)
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 64b69b3cb8c5ca13b39d0c3f7f92ed5e77600129 Mon Sep 17 00:00:00 2001
+From 294ef98df514ddda423949b8084bdefa0a663ade Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse: disable the setevent part of the latency hack
 
 If you get playback glitches in skyrim or other games as a result of
@@ -4476,12 +4476,12 @@ index 68de00c..643d55e 100644
      return S_OK;
  }
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From f9d9312f88a49f4f5a3651aafa37bfcce25768d4 Mon Sep 17 00:00:00 2001
+From 147d3b2ad463e42501c16144690c9a73546d1b71 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse v20: fix the checks in IsFormatSupported
 
 Thanks to DGhost001 for reporting and isolating the issue.
@@ -4505,12 +4505,12 @@ index 643d55e..86dd10a 100644
          CoTaskMemFree(closest);
          if (out)
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 3d403834d3fc3866ddfa7144084d4d380719402f Mon Sep 17 00:00:00 2001
+From c28401f918f3ed1981d7cc21c52efdf9bdca1468 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse: fixup IsFormatSupported calls
 
 ---
@@ -4519,10 +4519,10 @@ Subject: winepulse: fixup IsFormatSupported calls
  2 files changed, 283 insertions(+), 57 deletions(-)
 
 diff --git a/dlls/mmdevapi/tests/render.c b/dlls/mmdevapi/tests/render.c
-index 7cfd440..57fa4b1 100644
+index 026be48..19b5b56 100644
 --- a/dlls/mmdevapi/tests/render.c
 +++ b/dlls/mmdevapi/tests/render.c
-@@ -474,6 +474,169 @@ static void test_formats(AUDCLNT_SHAREMODE mode)
+@@ -477,6 +477,169 @@ static void test_formats(AUDCLNT_SHAREMODE mode)
      }
  }
  
@@ -4692,7 +4692,7 @@ index 7cfd440..57fa4b1 100644
  static void test_references(void)
  {
      IAudioClient *ac;
-@@ -2241,6 +2404,7 @@ START_TEST(render)
+@@ -2255,6 +2418,7 @@ START_TEST(render)
      test_audioclient();
      test_formats(AUDCLNT_SHAREMODE_EXCLUSIVE);
      test_formats(AUDCLNT_SHAREMODE_SHARED);
@@ -4919,12 +4919,12 @@ index 86dd10a..554a9fc 100644
      TRACE("returning: %08x %p\n", hr, out ? *out : NULL);
      return hr;
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From 5c3cc52ddd0629a18e00ed8ab53663826911871d Mon Sep 17 00:00:00 2001
+From 1f5f438d3362867d2bcc5f87477f89c5fc671b36 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse v21: return early if padding didn't update
 
 ---
@@ -4948,12 +4948,12 @@ index 554a9fc..a4575d5 100644
      This->clock_written += oldpad - This->pad;
      TRACE("New pad: %zu (-%zu)\n", This->pad / pa_frame_size(&This->ss), (oldpad - This->pad) / pa_frame_size(&This->ss));
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From decfeaf6b57351f42bdea44ae0feccf2eefe2989 Mon Sep 17 00:00:00 2001
+From c9ca50953d00d6d11dfef623addef2d71227b95f Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse: fix unneeded free in write..
 
 ---
@@ -4985,12 +4985,12 @@ index a4575d5..3ca68fd 100644
      This->locked_ptr = NULL;
      TRACE("Released %u, pad %zu\n", written_frames, This->pad / pa_frame_size(&This->ss));
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From a2cb619b3d2b7160ce15d49c483c8531532747cd Mon Sep 17 00:00:00 2001
+From 1d4db9d1cefac51737b438b498f8c30d41fa7ef1 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:10 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse v23: fixup a invalid free in mmdevapi
 
 array members of ids should be dynamically allocated, judging from valgrind output.
@@ -5037,11 +5037,11 @@ index 3ca68fd..5b041a2 100644
          (*keys)[0] = pulse_render_guid;
      else
 -- 
-1.8.3.1
+1.8.4.2
 
-From 6f9b97bc5b9c0871e7cebe5f041169232468d2e8 Mon Sep 17 00:00:00 2001
+From a6484f959a11b2e3e10be7c0fd399f4b97583e90 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:11 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse: use a pi-mutex for serialization.
 
 The winepulse thread is realtime, to prevent blocking it indefinitely
@@ -5104,12 +5104,12 @@ index 5b041a2..a09ce7f 100644
          if (pulse_thread)
             SetThreadPriority(pulse_thread, 0);
 -- 
-1.8.3.1
+1.8.4.2
 
 
-From fbbd11d703f1b18281d430c7d8fbcdcb93f4c07a Mon Sep 17 00:00:00 2001
+From bbc04a603b99e7db5a71aff2fa323852aebc0495 Mon Sep 17 00:00:00 2001
 From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
-Date: Fri, 11 Oct 2013 20:32:11 +0200
+Date: Fri, 6 Dec 2013 21:18:55 +0100
 Subject: winepulse: add support for IMarshal
 
 Fixes bug 32161 for winepulse. Based On Jeff Klein's patches for the
@@ -5242,5 +5242,5 @@ index a09ce7f..f052a08 100644
      return E_NOINTERFACE;
  }
 -- 
-1.8.3.1
+1.8.4.2
 
