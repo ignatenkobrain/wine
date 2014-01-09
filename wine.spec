@@ -4,7 +4,7 @@
 #%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.8
+Version:        1.7.10
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -54,15 +54,15 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Fri, 6 Dec 2013 20:18:55 +0000
-# based on wine tree 1.7.8
+# Sat, 4 Jan 2014 06:16:23 +0000
+# based on wine tree 1.7.10
 ##
 # git clone http://repo.or.cz/r/wine/multimedia.git
 # cd multimedia
-# git format-patch -k --stdout 8376f764411b8ca7f6f80a25e2abe63a4dc48fa0~..1d4db9d1cefac51737b438b498f8c30d41fa7ef1 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.8.patch
-# git format-patch -k --stdout a6484f959a11b2e3e10be7c0fd399f4b97583e90~..bbc04a603b99e7db5a71aff2fa323852aebc0495 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.8.patch
+# git format-patch -k --stdout 3822f907cd790b0405d2bad772a8240d559aa0aa~..1845d1db19da5e3007231e2632d9ed093b8faa11 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.10.patch
+# git format-patch -k --stdout 04887220fbd530e03cc73ef45dd8f55f8a6f3b12~..20e40bc5eb0a8cbd8e9c6817091311bc05b53f94 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.10.patch
 
-Patch1001:      wine-pulse-1.7.8.patch
+Patch1001:      wine-pulse-1.7.10.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -1247,6 +1247,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/t2embed.dll.so
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/taskkill.exe.so
+%{_libdir}/wine/taskschd.dll.so
 %{_libdir}/wine/traffic.dll.so
 %{_libdir}/wine/unicows.dll.so
 %{_libdir}/wine/unlodctr.exe.so
@@ -1558,6 +1559,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Jan 09 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.10-1
+- version upgrade
+- upgraded winepulse
+
 * Sun Dec 08 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.8-1
 - version upgrade
