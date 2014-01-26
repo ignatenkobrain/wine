@@ -4,7 +4,7 @@
 #%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.10
+Version:        1.7.11
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -959,8 +959,16 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/api-ms-win-core-debug-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-errorhandling-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-interlocked-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localregistry-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-processthreads-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-profile-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-string-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-sysinfo-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-util-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-error-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.dll.so
@@ -1559,6 +1567,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jan 26 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.11-1
+- version upgrade
+
 * Thu Jan 09 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.10-1
 - version upgrade
