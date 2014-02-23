@@ -4,7 +4,7 @@
 #%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.11
+Version:        1.7.13
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -54,15 +54,15 @@ Patch511:       wine-cjk.patch
 
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
-# Sat, 4 Jan 2014 06:16:23 +0000
-# based on wine tree 1.7.10
+# Fri, 31 Jan 2014 10:37:53 +0000
+# based on wine tree 1.7.11
 ##
 # git clone http://repo.or.cz/r/wine/multimedia.git
 # cd multimedia
-# git format-patch -k --stdout 3822f907cd790b0405d2bad772a8240d559aa0aa~..1845d1db19da5e3007231e2632d9ed093b8faa11 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.10.patch
-# git format-patch -k --stdout 04887220fbd530e03cc73ef45dd8f55f8a6f3b12~..20e40bc5eb0a8cbd8e9c6817091311bc05b53f94 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.10.patch
+# git format-patch -k --stdout 28e56d726918e4bc59c456b1947b42f40321763f~..7d0fb975eba0f764a125de6b5ab18aecc56b3db4 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch
+# git format-patch -k --stdout 773bf038fd47159d18f8d996bdae2435aaa31f7e~..ba0286680493a48c6795ab8a20a70618ba2ef403 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch 
 
-Patch1001:      wine-pulse-1.7.10.patch
+Patch1001:      wine-pulse-1.7.11.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -912,6 +912,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/cacls.exe.so
 %{_libdir}/wine/conhost.exe.so
 %{_libdir}/wine/cscript.exe.so
+%{_libdir}/wine/dpnsvr.exe.so
 %{_libdir}/wine/expand.exe.so
 %{_libdir}/wine/extrac32.exe.so
 %{_libdir}/wine/findstr.exe.so
@@ -959,15 +960,37 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/advapi32.dll.so
 %{_libdir}/wine/advpack.dll.so
 %{_libdir}/wine/amstream.dll.so
+%{_libdir}/wine/api-ms-win-core-com-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-console-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-debug-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-errorhandling-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-file-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-handle-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-heap-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-interlocked-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-io-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-libraryloader-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-localization-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localregistry-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-memory-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-namedpipe-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-processenvironment-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-profile-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-psapi-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-registry-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-rtlsupport-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-shlwapi-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-string-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-synch-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-sysinfo-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-threadpool-legacy-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-timezone-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-url-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-util-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-error-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-0.dll.so
@@ -980,7 +1003,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-downlevel-shlwapi-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-user32-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-version-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-eventing-provider-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-ntuser-dc-access-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-security-base-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-security-base-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-security-sddl-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-service-core-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-service-management-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-service-winsvc-l1-2-0.dll.so
 %{_libdir}/wine/apphelp.dll.so
 %{_libdir}/wine/appwiz.cpl.so
 %{_libdir}/wine/atl.dll.so
@@ -1013,7 +1043,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/cryptui.dll.so
 %{_libdir}/wine/ctapi32.dll.so
 %{_libdir}/wine/ctl3d32.dll.so
+%{_libdir}/wine/d2d1.dll.so
 %{_libdir}/wine/d3d10.dll.so
+%{_libdir}/wine/d3d10_1.dll.so
 %{_libdir}/wine/d3d10core.dll.so
 %{_libdir}/wine/d3d11.dll.so
 %{_libdir}/wine/d3dcompiler_*.dll.so
@@ -1061,6 +1093,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/dxgi.dll.so
 %{_libdir}/wine/eject.exe.so
 %{_libdir}/wine/explorerframe.dll.so
+%{_libdir}/wine/ext-ms-win-gdi-devcaps-l1-1-0.dll.so
 %{_libdir}/wine/faultrep.dll.so
 %{_libdir}/wine/fltlib.dll.so
 %{_libdir}/wine/fusion.dll.so
@@ -1295,6 +1328,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wmi.dll.so
 %{_libdir}/wine/wmic.exe.so
 %{_libdir}/wine/wmiutils.dll.so
+%{_libdir}/wine/wmp.dll.so
 %{_libdir}/wine/wmvcore.dll.so
 %{_libdir}/wine/spoolss.dll.so
 %{_libdir}/wine/winscard.dll.so
@@ -1567,6 +1601,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Feb 23 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.13-1
+- version upgrade
+- upgraded winepulse
+
+* Sat Feb 08 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.12-1
+- version upgrade
+
 * Sun Jan 26 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.11-1
 - version upgrade
