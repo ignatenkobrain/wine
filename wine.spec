@@ -4,7 +4,7 @@
 #%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.13
+Version:        1.7.14
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -942,6 +942,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/tasklist.exe.so
 %{_libdir}/wine/termsv.exe.so
 %{_libdir}/wine/view.exe.so
+%{_libdir}/wine/wevtutil.exe.so
 %{_libdir}/wine/wineboot.exe.so
 %{_libdir}/wine/winebrowser.exe.so
 %{_libdir}/wine/wineconsole.exe.so
@@ -1096,6 +1097,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/ext-ms-win-gdi-devcaps-l1-1-0.dll.so
 %{_libdir}/wine/faultrep.dll.so
 %{_libdir}/wine/fltlib.dll.so
+%{_libdir}/wine/fntcache.dll.so
+%{_libdir}/wine/fontsub.dll.so
 %{_libdir}/wine/fusion.dll.so
 %{_libdir}/wine/fwpuclnt.dll.so
 %{_libdir}/wine/gameux.dll.so
@@ -1601,6 +1604,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Mar 08 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.14-1
+- version upgrade
+
 * Sun Feb 23 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.13-1
 - version upgrade
