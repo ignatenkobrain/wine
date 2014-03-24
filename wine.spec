@@ -4,7 +4,7 @@
 #%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.14
+Version:        1.7.15
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1274,6 +1274,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/sfc_os.dll.so
 %{_libdir}/wine/shdoclc.dll.so
 %{_libdir}/wine/shdocvw.dll.so
+%{_libdir}/wine/schedsvc.dll.so
 %{_libdir}/wine/shell32.dll.so
 %{_libdir}/wine/shfolder.dll.so
 %{_libdir}/wine/shlwapi.dll.so
@@ -1604,6 +1605,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Mar 24 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.15-1
+- version upgrade
+
 * Sat Mar 08 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.14-1
 - version upgrade
