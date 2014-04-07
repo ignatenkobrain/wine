@@ -5,7 +5,7 @@
 
 Name:           wine
 Version:        1.7.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -219,6 +219,8 @@ Requires:       nss-mdns(x86-32)
 Requires:       gnutls(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXcursor(x86-32)
+#dlopen in windowscodesc (fixes rhbz#1085075)
+Requires:       libpng(x86-32)
 %endif
 
 %ifarch x86_64
@@ -227,6 +229,8 @@ Requires:       nss-mdns(x86-64)
 Requires:       gnutls(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
+#dlopen in windowscodesc (fixes rhbz#1085075)
+Requires:       libpng(x86-64)
 %endif
 
 %ifarch %{arm}
@@ -235,6 +239,8 @@ Requires:       nss-mdns
 Requires:       gnutls
 Requires:       libXrender
 Requires:       libXcursor
+#dlopen in windowscodesc (fixes rhbz#1085075)
+Requires:       libpng
 %endif
 
 # old removed packages
@@ -1606,6 +1612,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Apr 07 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.16-2
+- explicitly require libpng (fixes rhbz#1085075)
+
 * Mon Apr 07 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.16-1
 - version upgrade
