@@ -4,8 +4,8 @@
 #%global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.16
-Release:        2%{?dist}
+Version:        1.7.17
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -941,6 +941,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/rpcss.exe.so
 %{_libdir}/wine/rundll32.exe.so
 %{_libdir}/wine/schtasks.exe.so
+%{_libdir}/wine/sdbinst.exe.so
 %{_libdir}/wine/secedit.exe.so
 %{_libdir}/wine/servicemodelreg.exe.so
 %{_libdir}/wine/services.exe.so
@@ -1221,6 +1222,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/nddeapi.dll.so
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/netcfgx.dll.so
+%{_libdir}/wine/netprofm.dll.so
 %{_libdir}/wine/netsh.exe.so
 %{_libdir}/wine/newdev.dll.so
 %{_libdir}/wine/normaliz.dll.so
@@ -1612,6 +1614,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Apr 22 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.17-1
+- version upgrade
+
 * Mon Apr 07 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.16-2
 - explicitly require libpng (fixes rhbz#1085075)
