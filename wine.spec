@@ -5,7 +5,7 @@
 
 Name:           wine
 Version:        1.7.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -590,8 +590,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/wine
 mkdir -p %{buildroot}%{_initrddir}
 install -p -c -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/wine
 %if 0%{?fedora} >= 15
-mkdir -p %{buildroot}%{_sysconfdir}/binfmt.d/
-install -p -c -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/binfmt.d/wine.conf
+mkdir -p %{buildroot}%{_usr}/lib/binfmt.d
+install -p -c -m 644 %{SOURCE2} %{buildroot}%{_usr}/lib/binfmt.d/wine.conf
 %endif
 
 # add wine dir to desktop
@@ -1550,7 +1550,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %if 0%{?fedora} >= 15
 %files systemd
-%config %{_sysconfdir}/binfmt.d/wine.conf
+%config %{_usr}/lib/binfmt.d/wine.conf
 
 %files sysvinit
 %endif
@@ -1614,6 +1614,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Apr 25 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.17-2
+- fix systemd binfmt location (rhbz#1090170)
+
 * Tue Apr 22 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.17-1
 - version upgrade
