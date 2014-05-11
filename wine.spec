@@ -1,11 +1,11 @@
 %global no64bit   0
 %global winegecko 2.24
 %global winemono  4.5.2
-#%global _default_patch_fuzz 2
+#global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.17
-Release:        2%{?dist}
+Version:        1.7.18
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1614,6 +1614,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat May 10 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.18-1
+- version upgrade
+
 * Fri Apr 25 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.17-2
 - fix systemd binfmt location (rhbz#1090170)
