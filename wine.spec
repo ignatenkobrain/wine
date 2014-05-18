@@ -4,7 +4,7 @@
 #global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.18
+Version:        1.7.19
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1141,6 +1141,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/itss.dll.so
 %{_libdir}/wine/joy.cpl.so
 %{_libdir}/wine/jscript.dll.so
+%{_libdir}/wine/jsproxy.dll.so
 %{_libdir}/wine/kernel32.dll.so
 %{_libdir}/wine/ktmw32.dll.so
 %{_libdir}/wine/loadperf.dll.so
@@ -1614,6 +1615,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun May 18 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.19-1
+- version upgrade
+
 * Sat May 10 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.18-1
 - version upgrade
