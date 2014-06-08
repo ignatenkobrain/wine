@@ -5,7 +5,7 @@
 
 Name:           wine
 Version:        1.7.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1615,6 +1615,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.7.19-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Sun May 18 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.19-1
 - version upgrade
