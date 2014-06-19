@@ -4,8 +4,8 @@
 #global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.19
-Release:        2%{?dist}
+Version:        1.7.20
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1168,6 +1168,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msacm32.dll.so
 %{_libdir}/wine/msacm32.drv.so
 %{_libdir}/wine/msadp32.acm.so
+%{_libdir}/wine/msasn1.dll.so
 %{_libdir}/wine/mscat32.dll.so
 %{_libdir}/wine/mscoree.dll.so
 %{_libdir}/wine/msctf.dll.so
@@ -1615,6 +1616,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Jun 19 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.20-1
+- version upgrade
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.7.19-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
