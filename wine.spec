@@ -4,7 +4,7 @@
 #global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.20
+Version:        1.7.21
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1245,6 +1245,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/olepro32.dll.so
 %{_libdir}/wine/olesvr32.dll.so
 %{_libdir}/wine/olethk32.dll.so
+%{_libdir}/wine/packager.dll.so
 %{_libdir}/wine/pdh.dll.so
 %{_libdir}/wine/photometadatahandler.dll.so
 %{_libdir}/wine/pidgen.dll.so
@@ -1616,6 +1617,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Tue Jul 01 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+- 1.7.21-1
+- version upgrade
+
 * Thu Jun 19 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.20-1
 - version upgrade
