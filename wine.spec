@@ -5,7 +5,7 @@
 
 Name:           wine
 Version:        1.7.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -136,13 +136,14 @@ Requires:       wine-fonts = %{version}-%{release}
 
 # x86-32 parts
 %ifarch %{ix86} x86_64
+%if 0%{?fedora} || 0%{?rhel} <= 6
 Requires:       wine-core(x86-32) = %{version}-%{release}
 Requires:       wine-capi(x86-32) = %{version}-%{release}
 Requires:       wine-cms(x86-32) = %{version}-%{release}
 Requires:       wine-ldap(x86-32) = %{version}-%{release}
 Requires:       wine-twain(x86-32) = %{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{version}-%{release}
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
+%if 0%{?fedora} >= 10 || 0%{?rhel} == 6
 Requires:       wine-openal(x86-32) = %{version}-%{release}
 %endif
 %if 0%{?fedora} >= 17
@@ -153,9 +154,10 @@ Requires:       wine-mono = %winemono
 Requires:       /usr/bin/ntlm_auth
 Requires:       mesa-dri-drivers(x86-32)
 %endif
+%endif
 
 %ifarch %{ix86}
-%if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
+%if 0%{?fedora} >= 10 || 0%{?rhel} == 6
 Requires:       wine-wow(x86-32) = %{version}-%{release}
 %endif
 %endif
@@ -334,7 +336,11 @@ Requires(postun): desktop-file-utils >= 0.8
 %ifarch %{arm}
 Requires:       wine-core = %{version}-%{release}
 %else
+%if 0%{?rhel} >= 7
+Requires:       wine-core(x86-64) = %{version}-%{release}
+%else
 Requires:       wine-core(x86-32) = %{version}-%{release}
+%endif
 %endif
 Requires:       wine-common = %{version}-%{release}
 %if 0%{?fedora} >= 15
@@ -582,6 +588,11 @@ chrpath --delete %{buildroot}%{_bindir}/wineserver
 chrpath --delete %{buildroot}%{_bindir}/wine64
 %else
 chrpath --delete %{buildroot}%{_bindir}/wine
+%endif
+
+# RHEL7 dropped 32-bit support, provide symlink for wine apps
+%if 0%{?rhel} >= 7
+%{__ln_s} %{_bindir}/wine64 %{buildroot}%{_bindir}/wine
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
@@ -903,6 +914,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %ifarch x86_64
+%if 0%{?rhel} >= 7
+%{_bindir}/wine
+%endif
 %{_bindir}/wine64
 %{_bindir}/wine64-preloader
 %config %{_sysconfdir}/ld.so.conf.d/wine-64.conf
@@ -1617,6 +1631,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Wed Jul 09 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.18-2
+- Fixes for EPEL7 (rhbz#1117422)
+
 * Tue Jul 01 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.21-1
 - version upgrade
