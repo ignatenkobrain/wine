@@ -3,9 +3,13 @@
 %global winemono  4.5.2
 #global _default_patch_fuzz 2
 
+# build with compholio-patches, see:  http://www.compholio.com/wine-compholio/
+# uncomment to enable; comment-out to disable.
+%global compholio 1
+
 Name:           wine
 Version:        1.7.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -52,6 +56,11 @@ Source502:      wine-README-tahoma
 
 Patch511:       wine-cjk.patch
 
+# wine compholio patches for pipelight.
+# pulseaudio-patch is covered by that patch-set, too.
+%if 0%{?compholio}
+Source900:      https://github.com/compholio/wine-compholio-daily/archive/v%{version}.tar.gz#/wine-compholio-%{version}.tar.gz
+%else # 0%{?compholio}
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
 # Fri, 31 Jan 2014 10:37:53 +0000
@@ -60,9 +69,10 @@ Patch511:       wine-cjk.patch
 # git clone http://repo.or.cz/r/wine/multimedia.git
 # cd multimedia
 # git format-patch -k --stdout 28e56d726918e4bc59c456b1947b42f40321763f~..7d0fb975eba0f764a125de6b5ab18aecc56b3db4 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch
-# git format-patch -k --stdout 773bf038fd47159d18f8d996bdae2435aaa31f7e~..ba0286680493a48c6795ab8a20a70618ba2ef403 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch 
+# git format-patch -k --stdout 773bf038fd47159d18f8d996bdae2435aaa31f7e~..ba0286680493a48c6795ab8a20a70618ba2ef403 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch
 
 Patch1001:      wine-pulse-1.7.11.patch
+%endif # 0%{?compholio}
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -124,6 +134,11 @@ BuildRequires:  libtiff-devel
 BuildRequires:  prelink
 BuildRequires:  gettext-devel
 BuildRequires:  chrpath
+
+# Silverlight DRM-stuff needs XATTR enabled.
+%if 0%{?compholio}
+BuildRequires:  libattr-devel
+%endif # 0%{?compholio}
 
 %if 0%{?fedora} >= 10 || 0%{?rhel} >= 6
 BuildRequires:  openal-soft-devel
@@ -196,6 +211,12 @@ Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
 %endif
 
+# vitual Provides for claiming the presence of compholio-patchset.
+%if 0%{?compholio}
+Provides:       %{name}(compholio) = %{version}-%{release}
+%{?_isa:Provides: %{name}(compholio)%{?_isa} = %{version}-%{release}}
+%endif # 0%{?compholio}
+
 %description
 Wine as a compatibility layer for UNIX to run Windows applications. This
 package includes a program loader, which allows unmodified Windows
@@ -203,7 +224,7 @@ package includes a program loader, which allows unmodified Windows
 .dll files if they are available.
 
 In Fedora wine is a meta-package which will install everything needed for wine
-to work smoothly. Smaller setups can be achieved by installing some of the 
+to work smoothly. Smaller setups can be achieved by installing some of the
 wine-* sub packages.
 
 %package core
@@ -356,6 +377,12 @@ handler service.
 Summary:       Wine font files
 Group:         Applications/Emulators
 BuildArch:     noarch
+# arial-fonts are available with compholio-patchset, only.
+%if 0%{?compholio}
+Requires:      wine-arial-fonts = %{version}-%{release}
+%else # 0%{?compholio}
+Obsoletes:     wine-arial-fonts <= %{version}-%{release}
+%endif # 0%{?compholio}
 Requires:      wine-courier-fonts = %{version}-%{release}
 Requires:      wine-fixedsys-fonts = %{version}-%{release}
 Requires:      wine-small-fonts = %{version}-%{release}
@@ -373,6 +400,17 @@ Requires:      liberation-narrow-fonts
 
 %description fonts
 %{summary}
+
+%if 0%{?compholio}
+%package arial-fonts
+Summary:       Wine Arial font family
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+
+%description arial-fonts
+%{summary}
+%endif # 0%{?compholio}
 
 %package courier-fonts
 Summary:       Wine Courier font family
@@ -544,12 +582,22 @@ This package adds an openal driver for wine.
 
 %prep
 %setup -q
-
 %patch511 -p1 -b.cjk
 
+# setup and apply compholio-patches or pulseaudio-patch.
+%if 0%{?compholio}
+gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+%{__make} -C patches DESTDIR="`pwd`" install
+
+# fix parallelized build
+sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
+
+%else # 0%{?compholio}
 %patch1001 -p1 -b.winepulse
 
+# already run after applying compholio-patchset
 autoreconf
+%endif # 0%{?compholio}
 
 %build
 # disable fortify as it breaks wine
@@ -567,9 +615,10 @@ export CFLAGS="`echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno
 %ifarch x86_64
  --enable-win64 \
 %endif
+%{?compholio: --with-xattr} \
  --disable-tests
 
-%{__make} TARGETFLAGS="" %{?_smp_mflags}
+%{__make} %{?_smp_mflags} TARGETFLAGS=""
 
 %install
 
@@ -739,6 +788,11 @@ install -p -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 
 
 # install fonts
+%if 0%{?compholio}
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-arial-fonts
+mv %{buildroot}/%{_datadir}/wine/fonts/arial* %{buildroot}/%{_datadir}/fonts/wine-arial-fonts/
+%endif # 0%{?compholio}
+
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-courier-fonts
 mv %{buildroot}/%{_datadir}/wine/fonts/cou* %{buildroot}/%{_datadir}/fonts/wine-courier-fonts/
 
@@ -1504,6 +1558,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files fonts
 # meta package
 
+%if 0%{?compholio}
+%files arial-fonts
+%doc COPYING.LIB
+%{_datadir}/fonts/wine-arial-fonts
+%endif #0%{?compholio}
+
 %files courier-fonts
 %doc COPYING.LIB
 %{_datadir}/fonts/wine-courier-fonts
@@ -1631,6 +1691,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sat Jul 12 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-2
+- added conditionalized option to build with compholio-patchset for pipelight
+  Source900 -- compholio-patchset, wine-arial-fonts sub-package,
+  BR: libattr-devel and configure --with-xattr for Silverlight DRM-stuff
+
 * Fri Jul 11 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.22-1
 - version upgrade
@@ -1734,7 +1799,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Sat Aug 31 2013 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 - 1.7.1-2
-- fix icons with patch provided by Frank Dana (rhbz#997543) 
+- fix icons with patch provided by Frank Dana (rhbz#997543)
 - pull in mesa-dri-drivers in meta package to make direct rendering work out
   of the box (rhbz#827776)
 - restart systemd binfmt handler on post/postun (rhbz#912354)
@@ -2815,7 +2880,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Sat Apr 15 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.12-1
 - fix rpath issues (#187429,#188905)
-- version upgrade 
+- version upgrade
 
 * Mon Apr 03 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.11-1
@@ -2867,9 +2932,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - fix cflags for compile
 - test new BR
 
-* Wed Jan 04 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>     
-0.9.4-5                                                                 
-- fix #176834 
+* Wed Jan 04 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
+0.9.4-5
+- fix #176834
 
 * Mon Jan 02 2006 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
 0.9.4-4
