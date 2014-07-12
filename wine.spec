@@ -4,8 +4,8 @@
 #global _default_patch_fuzz 2
 
 Name:           wine
-Version:        1.7.21
-Release:        2%{?dist}
+Version:        1.7.22
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1631,8 +1631,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Jul 11 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.22-1
+- version upgrade
+
 * Wed Jul 09 2014 Michael Cronenworth <mike@cchtml.com>
-- 1.7.18-2
+- 1.7.21-2
 - Fixes for EPEL7 (rhbz#1117422)
 
 * Tue Jul 01 2014 Andreas Bierfert <andreas.bierfert[AT]lowlatency.de>
