@@ -9,7 +9,7 @@
 
 Name:           wine
 Version:        1.7.22
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -210,12 +210,6 @@ Requires:       wine-wow = %{version}-%{release}
 Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
 %endif
-
-# vitual Provides for claiming the presence of compholio-patchset.
-%if 0%{?compholio}
-Provides:       %{name}(compholio) = %{version}-%{release}
-%{?_isa:Provides: %{name}(compholio)%{?_isa} = %{version}-%{release}}
-%endif # 0%{?compholio}
 
 %description
 Wine as a compatibility layer for UNIX to run Windows applications. This
@@ -1691,6 +1685,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Jul 14 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-3
+- dropped virtual Provides: %%{name}(compholio)
+
 * Sat Jul 12 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-2
 - added conditionalized option to build with compholio-patchset for pipelight
   Source900 -- compholio-patchset, wine-arial-fonts sub-package,
