@@ -5,11 +5,13 @@
 
 # build with compholio-patches, see:  http://www.compholio.com/wine-compholio/
 # uncomment to enable; comment-out to disable.
+%if 0%{?fedora}
 %global compholio 1
+%endif # 0%{?fedora}
 
 Name:           wine
 Version:        1.7.22
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -1685,6 +1687,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Thu Jul 17 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-4
+- prevent accidential build with compholio-patchset on EPEL
+
 * Mon Jul 14 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-3
 - dropped virtual Provides: %%{name}(compholio)
 
