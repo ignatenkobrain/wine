@@ -1689,6 +1689,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %changelog
 * Thu Jul 17 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-4
 - prevent accidential build with compholio-patchset on EPEL
+- rebuild for pulseaudio (bug #1117683)
 
 * Mon Jul 14 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-3
 - dropped virtual Provides: %%{name}(compholio)
