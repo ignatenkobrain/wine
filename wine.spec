@@ -10,8 +10,8 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.22
-Release:        4%{?dist}
+Version:        1.7.24
+Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -61,7 +61,7 @@ Patch511:       wine-cjk.patch
 # wine compholio patches for pipelight.
 # pulseaudio-patch is covered by that patch-set, too.
 %if 0%{?compholio}
-Source900:      https://github.com/compholio/wine-compholio-daily/archive/v%{version}.tar.gz#/wine-compholio-%{version}.tar.gz
+Source900:      https://github.com/compholio/wine-compholio/archive/v%{version}.tar.gz#/wine-compholio-%{version}.tar.gz
 %else # 0%{?compholio}
 ## winepulse backend
 # http://repo.or.cz/w/wine/multimedia.git
@@ -783,40 +783,12 @@ install -p -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/ld.so.conf.d/
 %endif
 
 
-# install fonts
-%if 0%{?compholio}
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-arial-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/arial* %{buildroot}/%{_datadir}/fonts/wine-arial-fonts/
-%endif # 0%{?compholio}
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-courier-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/cou* %{buildroot}/%{_datadir}/fonts/wine-courier-fonts/
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-fixedsys-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/*vgafix.fon %{buildroot}/%{_datadir}/fonts/wine-fixedsys-fonts/
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-system-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/*sys.* %{buildroot}/%{_datadir}/fonts/wine-system-fonts/
-mv %{buildroot}/%{_datadir}/wine/fonts/vgas*.* %{buildroot}/%{_datadir}/fonts/wine-system-fonts/
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-small-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/sma* %{buildroot}/%{_datadir}/fonts/wine-small-fonts/
-mv %{buildroot}/%{_datadir}/wine/fonts/jsma* %{buildroot}/%{_datadir}/fonts/wine-small-fonts/
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-marlett-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/marlett.ttf %{buildroot}/%{_datadir}/fonts/wine-marlett-fonts/
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/sse* %{buildroot}/%{_datadir}/fonts/wine-ms-sans-serif-fonts/
-
+# install Tahoma font for system package
 install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
 pushd %{buildroot}/%{_datadir}/fonts/wine-tahoma-fonts
 ln -s ../../wine/fonts/tahoma.ttf tahoma.ttf
 ln -s ../../wine/fonts/tahomabd.ttf tahomabd.ttf
 popd
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/symbol.ttf %{buildroot}/%{_datadir}/fonts/wine-symbol-fonts/
 
 # add config and readme for tahoma
 install -m 0755 -d %{buildroot}%{_fontconfig_templatedir} \
@@ -825,9 +797,6 @@ install -p -m 0644 %{SOURCE501} %{buildroot}%{_fontconfig_templatedir}/20-wine-t
 
 ln -s %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf \
       %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
-
-install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts
-mv %{buildroot}/%{_datadir}/wine/fonts/wingding.ttf %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts/
 
 
 # clean readme files
@@ -1557,32 +1526,46 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %if 0%{?compholio}
 %files arial-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-arial-fonts
+%{_datadir}/wine/fonts/arial*
 %endif #0%{?compholio}
 
 %files courier-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-courier-fonts
+%{_datadir}/wine/fonts/cou*
 
 %files fixedsys-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-fixedsys-fonts
+%{_datadir}/wine/fonts/*vgafix.fon
 
 %files system-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-system-fonts
+%{_datadir}/wine/fonts/cvgasys.fon
+%{_datadir}/wine/fonts/hvgasys.fon
+%{_datadir}/wine/fonts/jvgasys.fon
+%{_datadir}/wine/fonts/svgasys.fon
+%{_datadir}/wine/fonts/vgas1255.fon
+%{_datadir}/wine/fonts/vgas1256.fon
+%{_datadir}/wine/fonts/vgas1257.fon
+%{_datadir}/wine/fonts/vgas874.fon
+%{_datadir}/wine/fonts/vgasys.fon
+%{_datadir}/wine/fonts/vgasyse.fon
+%{_datadir}/wine/fonts/vgasysg.fon
+%{_datadir}/wine/fonts/vgasysr.fon
+%{_datadir}/wine/fonts/vgasyst.fon
 
 %files small-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-small-fonts
+%{_datadir}/wine/fonts/sma*
+%{_datadir}/wine/fonts/jsma*
 
 %files marlett-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-marlett-fonts
+%{_datadir}/wine/fonts/marlett.ttf
 
 %files ms-sans-serif-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-ms-sans-serif-fonts
+%{_datadir}/wine/fonts/sse*
+%{_datadir}/wine/fonts/msyh.ttf
 
 %files tahoma-fonts
 %doc COPYING.LIB
@@ -1596,11 +1579,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %files symbol-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-symbol-fonts
+%{_datadir}/wine/fonts/symbol.ttf
 
 %files wingdings-fonts
 %doc COPYING.LIB
-%{_datadir}/fonts/wine-wingdings-fonts
+%{_datadir}/wine/fonts/wingding.ttf
 
 %files desktop
 %{_datadir}/applications/wine-notepad.desktop
@@ -1687,6 +1670,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Aug 15 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.24-1
+- version upgrade
+- No longer install Wine fonts into system directory (rhbz#1039763)
+
 * Thu Jul 17 2014 Björn Esser <bjoern.esser@gmail.com> - 1.7.22-4
 - prevent accidential build with compholio-patchset on EPEL
 - rebuild for pulseaudio (bug #1117683)
