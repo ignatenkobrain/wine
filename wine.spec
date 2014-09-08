@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.25
+Version:        1.7.26
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1123,6 +1123,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/dpnet.dll.so
 %{_libdir}/wine/dpnhpast.dll.so
 %{_libdir}/wine/dpnlobby.dll.so
+%{_libdir}/wine/dpvoice.dll.so
 %{_libdir}/wine/dpwsockx.dll.so
 %{_libdir}/wine/drmclien.dll.so
 %{_libdir}/wine/dsound.dll.so
@@ -1262,6 +1263,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/newdev.dll.so
 %{_libdir}/wine/normaliz.dll.so
 %{_libdir}/wine/npmshtml.dll.so
+%{_libdir}/wine/npptools.dll.so
 %{_libdir}/wine/ntdll.dll.so
 %{_libdir}/wine/ntdsapi.dll.so
 %{_libdir}/wine/ntprint.dll.so
@@ -1670,6 +1672,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Sep 08 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.26-1
+- version upgrade
+
 * Sun Aug 24 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.25-1
 - version upgrade
