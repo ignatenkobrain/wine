@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.26
+Version:        1.7.27
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1672,6 +1672,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Wed Sep 24 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.27-1
+- version upgrade
+
 * Mon Sep 08 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.26-1
 - version upgrade
