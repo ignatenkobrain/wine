@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.27
+Version:        1.7.28
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -504,6 +504,18 @@ Requires:      fontpackages-filesystem
 
 %description wingdings-fonts
 %{summary}
+Please note: If you want system integration for wine wingdings fonts install the
+wine-wingdings-fonts-system package.
+
+%package wingdings-fonts-system
+Summary:       Wine Wingdings font family system integration
+Group:         User Interface/X
+BuildArch:     noarch
+Requires:      fontpackages-filesystem
+Requires:      wine-wingdings-fonts = %{version}-%{release}
+
+%description wingdings-fonts-system
+%{summary}
 
 
 %package ldap
@@ -798,6 +810,11 @@ install -p -m 0644 %{SOURCE501} %{buildroot}%{_fontconfig_templatedir}/20-wine-t
 ln -s %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf \
       %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
 
+# install Wingdings font for system package
+install -p -m 0755 -d %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts
+pushd %{buildroot}/%{_datadir}/fonts/wine-wingdings-fonts
+ln -s ../../wine/fonts/wingding.ttf wingding.ttf
+popd
 
 # clean readme files
 pushd documentation
@@ -1587,6 +1604,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %doc COPYING.LIB
 %{_datadir}/wine/fonts/wingding.ttf
 
+%files wingdings-fonts-system
+%{_datadir}/fonts/wine-wingdings-fonts
+
 %files desktop
 %{_datadir}/applications/wine-notepad.desktop
 %{_datadir}/applications/wine-winefile.desktop
@@ -1672,6 +1692,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Oct 05 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.28-1
+- version upgrade
+- New sub-package for wingdings font system integration
+
 * Wed Sep 24 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.27-1
 - version upgrade
