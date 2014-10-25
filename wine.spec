@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.28
+Version:        1.7.29
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1194,6 +1194,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/jscript.dll.so
 %{_libdir}/wine/jsproxy.dll.so
 %{_libdir}/wine/kernel32.dll.so
+%{_libdir}/wine/ksuser.dll.so
 %{_libdir}/wine/ktmw32.dll.so
 %{_libdir}/wine/loadperf.dll.so
 %{_libdir}/wine/localspl.dll.so
@@ -1353,6 +1354,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/svchost.exe.so
 %{_libdir}/wine/svrapi.dll.so
 %{_libdir}/wine/sxs.dll.so
+%{_libdir}/wine/systeminfo.exe.so
 %{_libdir}/wine/t2embed.dll.so
 %{_libdir}/wine/tapi32.dll.so
 %{_libdir}/wine/taskkill.exe.so
@@ -1692,6 +1694,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Oct 24 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.29-1
+- version upgrade
+
 * Sun Oct 05 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.28-1
 - version upgrade
