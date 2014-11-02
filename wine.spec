@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.29
+Version:        1.7.30
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -60,21 +60,7 @@ Patch511:       wine-cjk.patch
 
 # wine compholio patches for pipelight.
 # pulseaudio-patch is covered by that patch-set, too.
-%if 0%{?compholio}
-Source900:      https://github.com/compholio/wine-compholio/archive/v%{version}.tar.gz#/wine-compholio-%{version}.tar.gz
-%else # 0%{?compholio}
-## winepulse backend
-# http://repo.or.cz/w/wine/multimedia.git
-# Fri, 31 Jan 2014 10:37:53 +0000
-# based on wine tree 1.7.11
-##
-# git clone http://repo.or.cz/r/wine/multimedia.git
-# cd multimedia
-# git format-patch -k --stdout 28e56d726918e4bc59c456b1947b42f40321763f~..7d0fb975eba0f764a125de6b5ab18aecc56b3db4 > ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch
-# git format-patch -k --stdout 773bf038fd47159d18f8d996bdae2435aaa31f7e~..ba0286680493a48c6795ab8a20a70618ba2ef403 >> ~/cvs/fedora/rpms/wine/wine-pulse-1.7.11.patch
-
-Patch1001:      wine-pulse-1.7.11.patch
-%endif # 0%{?compholio}
+Source900: https://github.com/compholio/wine-compholio/archive/v%{version}.tar.gz#/wine-staging-%{version}.tar.gz
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -107,6 +93,7 @@ BuildRequires:  zlib-devel
 BuildRequires:  fontforge freetype-devel
 BuildRequires:  libgphoto2-devel
 BuildRequires:  isdn4k-utils-devel
+BuildRequires:  libpcap-devel
 # modular x
 BuildRequires:  libX11-devel
 BuildRequires:  mesa-libGL-devel mesa-libGLU-devel mesa-libOSMesa-devel
@@ -593,15 +580,22 @@ This package adds an openal driver for wine.
 %patch511 -p1 -b.cjk
 
 # setup and apply compholio-patches or pulseaudio-patch.
-%if 0%{?compholio}
+# since the pulse patch is included in the compholio patches use it from
+# there
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+
+%if 0%{?compholio}
 %{__make} -C patches DESTDIR="`pwd`" install
 
 # fix parallelized build
 sed -i -e 's!^loader server: libs/port libs/wine tools.*!& include!' Makefile.in
 
 %else # 0%{?compholio}
-%patch1001 -p1 -b.winepulse
+
+for p in `ls patches/winepulse-PulseAudio_Support/*patch`; do
+echo $p
+patch -p1 < $p
+done
 
 # already run after applying compholio-patchset
 autoreconf
@@ -1274,6 +1268,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msxml4.dll.so
 %{_libdir}/wine/msxml6.dll.so
 %{_libdir}/wine/nddeapi.dll.so
+%{_libdir}/wine/ndis.sys.so
 %{_libdir}/wine/netapi32.dll.so
 %{_libdir}/wine/netcfgx.dll.so
 %{_libdir}/wine/netprofm.dll.so
@@ -1305,6 +1300,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/powrprof.dll.so
 %{_libdir}/wine/presentationfontcache.exe.so
 %{_libdir}/wine/printui.dll.so
+%{_libdir}/wine/prntvpt.dll.so
 %{_libdir}/wine/propsys.dll.so
 %{_libdir}/wine/psapi.dll.so
 %{_libdir}/wine/pstorec.dll.so
@@ -1406,6 +1402,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/wintrust.dll.so
 %{_libdir}/wine/wlanapi.dll.so
 %{_libdir}/wine/wnaspi32.dll.so
+%{_libdir}/wine/wpcap.dll.so
 %{_libdir}/wine/ws2_32.dll.so
 %{_libdir}/wine/wshom.ocx.so
 %{_libdir}/wine/wsnmp32.dll.so
@@ -1694,6 +1691,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Nov 02 2014 Andreas Bierfert <andreas.bierfert@lowlatency.de>
+- 1.7.30-1
+- version upgrade (rhbz#1159548)
+- use winepulse patch from compholio patchset when build w/o
+  compholio (rhbz#1151862)
+
 * Fri Oct 24 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.29-1
 - version upgrade
