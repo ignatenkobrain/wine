@@ -1,5 +1,5 @@
 %global no64bit   0
-%global winegecko 2.24
+%global winegecko 2.34
 %global winemono  4.5.2
 #global _default_patch_fuzz 2
 
@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.30
+Version:        1.7.31
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -227,6 +227,10 @@ Requires:       libXrender(x86-32)
 Requires:       libXcursor(x86-32)
 #dlopen in windowscodesc (fixes rhbz#1085075)
 Requires:       libpng(x86-32)
+Requires:       libpcap(x86-32)
+Requires:       mesa-libOSMesa(x86-32)
+Requires:       libv4l(x86-32)
+Requires:       unixODBC(x86-32)
 %endif
 
 %ifarch x86_64
@@ -237,6 +241,10 @@ Requires:       libXrender(x86-64)
 Requires:       libXcursor(x86-64)
 #dlopen in windowscodesc (fixes rhbz#1085075)
 Requires:       libpng(x86-64)
+Requires:       libpcap(x86-64)
+Requires:       mesa-libOSMesa(x86-64)
+Requires:       libv4l(x86-64)
+Requires:       unixODBC(x86-64)
 %endif
 
 %ifarch %{arm}
@@ -247,6 +255,10 @@ Requires:       libXrender
 Requires:       libXcursor
 #dlopen in windowscodesc (fixes rhbz#1085075)
 Requires:       libpng
+Requires:       libpcap
+Requires:       mesa-libOSMesa
+Requires:       libv4l
+Requires:       unixODBC
 %endif
 
 # old removed packages
@@ -525,6 +537,15 @@ Color Management for wine
 Summary: Twain support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
+%ifarch %{ix86}
+Requires: sane-backends-libs(x86-32)
+%endif
+%ifarch x86_64
+Requires: sane-backends-libs(x86-64)
+%endif
+%ifarch %{arm}
+Requires: sane-backends-libs
+%endif
 
 %description twain
 Twain support for wine
@@ -533,6 +554,18 @@ Twain support for wine
 Summary: ISDN support for wine
 Group: System Environment/Libraries
 Requires: wine-core = %{version}-%{release}
+#FIXME: parallel installable rhbz#1164355
+#%ifarch x86_64
+#Requires:       isdn4k-utils(x86-64)
+#%endif
+
+#%ifarch %{ix86}
+#Requires:       isdn4k-utils(x86-32)
+#%endif
+
+#%ifarch %{arm}
+Requires:       isdn4k-utils
+#%endif
 
 %description capi
 ISDN support for wine
@@ -1249,12 +1282,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msvcp90.dll.so
 %{_libdir}/wine/msvcp100.dll.so
 %{_libdir}/wine/msvcp110.dll.so
+%{_libdir}/wine/msvcp120.dll.so
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcr80.dll.so
 %{_libdir}/wine/msvcr90.dll.so
 %{_libdir}/wine/msvcr100.dll.so
 %{_libdir}/wine/msvcr110.dll.so
+%{_libdir}/wine/msvcr120.dll.so
 %{_libdir}/wine/msvcrt.dll.so
 %{_libdir}/wine/msvcrt20.dll.so
 %{_libdir}/wine/msvcrt40.dll.so
@@ -1691,6 +1726,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Fri Nov 14 2014 Andreas Bierfert <andreas.bierfert@lowlatency.de>
+- 1.7.31-1
+- version upgrade
+- wine-gecko upgrade
+- add some missing arch requires
+
 * Sun Nov 02 2014 Andreas Bierfert <andreas.bierfert@lowlatency.de>
 - 1.7.30-1
 - version upgrade (rhbz#1159548)
