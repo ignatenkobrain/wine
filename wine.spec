@@ -1,6 +1,6 @@
 %global no64bit   0
 %global winegecko 2.34
-%global winemono  4.5.2
+%global winemono  4.5.4
 #global _default_patch_fuzz 2
 
 # build with compholio-patches, see:  http://www.compholio.com/wine-compholio/
@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.31
+Version:        1.7.32
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1047,9 +1047,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/amstream.dll.so
 %{_libdir}/wine/api-ms-win-core-com-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-console-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-datetime-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-datetime-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-debug-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-errorhandling-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-fibers-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-fibers-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-file-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-file-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-handle-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
@@ -1058,6 +1063,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-core-kernel32-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-libraryloader-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-localization-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-localization-l1-2-1.dll.so
 %{_libdir}/wine/api-ms-win-core-localization-obsolete-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-localregistry-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-memory-l1-1-1.dll.so
@@ -1078,7 +1084,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-core-url-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-util-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-error-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-winrt-error-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-winrt-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-winrt-string-l1-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-xstate-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-advapi32-l2-1-0.dll.so
 %{_libdir}/wine/api-ms-win-downlevel-normaliz-l1-1-0.dll.so
@@ -1124,6 +1133,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/crypt32.dll.so
 %{_libdir}/wine/cryptdlg.dll.so
 %{_libdir}/wine/cryptdll.dll.so
+%{_libdir}/wine/cryptext.dll.so
 %{_libdir}/wine/cryptnet.dll.so
 %{_libdir}/wine/cryptui.dll.so
 %{_libdir}/wine/ctapi32.dll.so
@@ -1407,6 +1417,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/vcomp100.dll.so
 %{_libdir}/wine/vdmdbg.dll.so
 %{_libdir}/wine/version.dll.so
+%{_libdir}/wine/vssapi.dll.so
 %{_libdir}/wine/wbemdisp.dll.so
 %{_libdir}/wine/wbemprox.dll.so
 %{_libdir}/wine/webservices.dll.so
@@ -1726,6 +1737,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Nov 30 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.32-1
+- version upgrade
+- wine-mono upgrade
+
 * Fri Nov 14 2014 Andreas Bierfert <andreas.bierfert@lowlatency.de>
 - 1.7.31-1
 - version upgrade
