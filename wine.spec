@@ -10,7 +10,7 @@
 %endif # 0%{?fedora}
 
 Name:           wine
-Version:        1.7.32
+Version:        1.7.33
 Release:        1%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1051,10 +1051,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-core-datetime-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-debug-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-errorhandling-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-errorhandling-l1-1-2.dll.so
 %{_libdir}/wine/api-ms-win-core-fibers-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-fibers-l1-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-file-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-file-l2-1-0.dll.so
+%{_libdir}/wine/api-ms-win-core-file-l2-1-1.dll.so
 %{_libdir}/wine/api-ms-win-core-handle-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-heap-obsolete-l1-1-0.dll.so
@@ -1071,6 +1073,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-core-processenvironment-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-processthreads-l1-1-1.dll.so
+%{_libdir}/wine/api-ms-win-core-processthreads-l1-1-2.dll.so
 %{_libdir}/wine/api-ms-win-core-profile-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-psapi-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-registry-l1-1-0.dll.so
@@ -1079,6 +1082,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/api-ms-win-core-string-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-synch-l1-2-0.dll.so
 %{_libdir}/wine/api-ms-win-core-sysinfo-l1-2-0.dll.so
+%{_libdir}/wine/api-ms-win-core-sysinfo-l1-2-1.dll.so
 %{_libdir}/wine/api-ms-win-core-threadpool-legacy-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-timezone-l1-1-0.dll.so
 %{_libdir}/wine/api-ms-win-core-url-l1-1-0.dll.so
@@ -1123,6 +1127,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/cfgmgr32.dll.so
 %{_libdir}/wine/clock.exe.so
 %{_libdir}/wine/clusapi.dll.so
+%{_libdir}/wine/combase.dll.so
 %{_libdir}/wine/comcat.dll.so
 %{_libdir}/wine/comctl32.dll.so
 %{_libdir}/wine/comdlg32.dll.so
@@ -1245,6 +1250,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/mciqtz32.dll.so
 %{_libdir}/wine/mciseq.dll.so
 %{_libdir}/wine/mciwave.dll.so
+%{_libdir}/wine/mfplat.dll.so
+%{_libdir}/wine/mfreadwrite.dll.so
 %{_libdir}/wine/mgmtapi.dll.so
 %{_libdir}/wine/midimap.dll.so
 %{_libdir}/wine/mlang.dll.so
@@ -1293,6 +1300,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msvcp100.dll.so
 %{_libdir}/wine/msvcp110.dll.so
 %{_libdir}/wine/msvcp120.dll.so
+%{_libdir}/wine/msvcp120_app.dll.so
 %{_libdir}/wine/msvcr70.dll.so
 %{_libdir}/wine/msvcr71.dll.so
 %{_libdir}/wine/msvcr80.dll.so
@@ -1300,6 +1308,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_libdir}/wine/msvcr100.dll.so
 %{_libdir}/wine/msvcr110.dll.so
 %{_libdir}/wine/msvcr120.dll.so
+%{_libdir}/wine/msvcr120_app.dll.so
 %{_libdir}/wine/msvcrt.dll.so
 %{_libdir}/wine/msvcrt20.dll.so
 %{_libdir}/wine/msvcrt40.dll.so
@@ -1737,6 +1746,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Sun Dec 14 2014 Michael Cronenworth <mike@cchtml.com>
+- 1.7.33-1
+- version upgrade
+
 * Sun Nov 30 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.32-1
 - version upgrade
