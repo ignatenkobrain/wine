@@ -11,7 +11,7 @@
 
 Name:           wine
 Version:        1.7.33
-Release:        1%{?dist}
+Release:        1.d3d%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Group:          Applications/Emulators
@@ -61,6 +61,29 @@ Patch511:       wine-cjk.patch
 # wine compholio patches for pipelight.
 # pulseaudio-patch is covered by that patch-set, too.
 Source900: https://github.com/compholio/wine-compholio/archive/v%{version}.tar.gz#/wine-staging-%{version}.tar.gz
+
+# git clone https://github.com/iXit/wine.git
+# cd wine
+# git format-patch aa026e061446d5afee9d55b808402998fae94f1f
+# mv *.patch ../
+Patch901: 0001-dbghelp-implement-DW_TAG_unspecified_type-v2.patch
+Patch902: 0002-d3dadapter-Add-ID3DAdapter9-support.patch
+Patch903: 0003-d3dadapter-Respect-wined3d-s-PCI-ID-overrides.patch
+Patch904: 0004-d3dadapter-fix-fullscreen-initialization.patch
+Patch905: 0005-d3dadapter-allow-simple-configuration-through-winecf.patch
+Patch906: 0006-d3dadapter-make-state-and-setting-more-visible-to-us.patch
+Patch907: 0007-d3dadapter-Begin-DRI3-implementation.patch
+Patch908: 0008-d3dadapter-typo-fixes-trivial.patch
+Patch909: 0009-d3dadapter-workaround-libxcb-bug.patch
+Patch910: 0010-d3dadapter-Rework-serial-handling.patch
+Patch911: 0011-d3dadapter-Fix-a-bug-when-the-pixmap-is-released-bef.patch
+Patch912: 0012-d3dadapter-Use-new-interface.patch
+Patch913: 0013-d3dadapter-Rework-of-the-xcb-connection.patch
+Patch914: 0014-d3dadapter-Implement-new-interface.patch
+Patch915: 0015-d3dadapter-restore-basic-autoconfiguration-use-pkg-c.patch
+Patch916: 0016-d3dadapter-implement-DRI3PresentGroup_CreateAddition.patch
+Patch917: 0017-D3dadapter9-add-dri2-fallback-and-various-cleanups.patch
+Patch918: 0018-Restore-EGL-api-bound-when-using-EGL.patch
 
 %if !%{?no64bit}
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -123,6 +146,7 @@ BuildRequires:  libtiff-devel
 BuildRequires:  prelink
 BuildRequires:  gettext-devel
 BuildRequires:  chrpath
+BuildRequires:  mesa-libd3d-devel
 
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?compholio}
@@ -157,6 +181,7 @@ Requires:       wine-mono = %winemono
 #  wait for rhbz#968860 to require arch-specific samba-winbind-clients
 Requires:       /usr/bin/ntlm_auth
 Requires:       mesa-dri-drivers(x86-32)
+Requires:       mesa-libd3d(x86-32)
 %endif
 %endif
 
@@ -182,6 +207,7 @@ Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
 %endif
 Requires:       mesa-dri-drivers(x86-64)
+Requires:       mesa-libd3d(x86-64)
 Requires:       wine-wow(x86-64) = %{version}-%{release}
 Conflicts:      wine-wow(x86-32) = %{version}-%{release}
 %endif
@@ -633,6 +659,27 @@ done
 # already run after applying compholio-patchset
 autoreconf
 %endif # 0%{?compholio}
+
+# d3d patches
+%patch901 -p1
+%patch902 -p1
+%patch903 -p1
+%patch904 -p1
+%patch905 -p1
+%patch906 -p1
+%patch907 -p1
+%patch908 -p1
+%patch909 -p1
+%patch910 -p1
+%patch911 -p1
+%patch912 -p1
+%patch913 -p1
+%patch914 -p1
+%patch915 -p1
+%patch916 -p1
+%patch917 -p1
+%patch918 -p1
+autoreconf
 
 %build
 # disable fortify as it breaks wine
@@ -1747,6 +1794,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %endif
 
 %changelog
+* Mon Dec 22 2014 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 1.7.33-1.d3d
+- Add d3d support
+
 * Sun Dec 14 2014 Michael Cronenworth <mike@cchtml.com>
 - 1.7.33-1
 - version upgrade
